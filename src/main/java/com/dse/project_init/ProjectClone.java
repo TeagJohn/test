@@ -51,7 +51,7 @@ public class ProjectClone {
     public static final String CLONED_FILE_EXTENSION = ".akaignore";
     public static final String MAIN_REFACTOR_NAME = "AKA_MAIN(";
     public static final String MAIN_REGEX = "\\bmain\\b\\s*\\(";
-    protected static final AkaLogger logger = AkaLogger.get(ProjectClone.class);
+    private static final AkaLogger logger = AkaLogger.get(ProjectClone.class);
     protected static List<String> sLibraries;
     protected final Map<String, String> refactors = new TreeMap<>(
             (o1, o2) -> {
@@ -66,7 +66,7 @@ public class ProjectClone {
     List<String> globalDeclarations = new ArrayList<>();
     protected boolean whiteBoxEnable;
     protected List<String> libraries;
-    protected List<IEnvironmentNode> stubLibraries = new ArrayList<>();
+    protected List<IEnvironmentNode> stubLibraries;
     protected boolean canStub;
 
     /**
@@ -74,50 +74,12 @@ public class ProjectClone {
      */
     public static void cloneEnvironment() {
         List<String> libraries = getLibraries();
-
-        boolean onWhiteBoxMode = Environment.getInstance().isOnWhiteBoxMode();
-
         ProjectNode projectRoot = Environment.getInstance().getProjectNode();
+
         List<ISourcecodeFileNode> sources = Search.searchNodes(projectRoot, new SourcecodeFileNodeCondition());
-        if (onWhiteBoxMode) {
-            List<ISourcecodeFileNode> headerNodes = new ArrayList<>();
-            sources.forEach(source -> {
-                if (libraries.contains(source.getAbsolutePath())) {
-                    headerNodes.add(source);
-                }
-            });
-            for (ISourcecodeFileNode headerNode : headerNodes) {
-                try {
-                    String cloneFilePath = getClonedFilePath(headerNode.getAbsolutePath());
-
-                    ProjectClone clone = new ProjectClone();
-
-                    clone.libraries = libraries;
-                    clone.whiteBoxEnable = onWhiteBoxMode;
-
-                    Utils.copy(headerNode.getFile(), new File(cloneFilePath));
-
-                    String newContent = clone.generateFileContent(headerNode);
-                    logger.debug("Generate instrument file of " + headerNode.getName() + " successfully");
-                    Utils.writeContentToFile(newContent, cloneFilePath);
-
-//                    String cloneFilePath = getClonedFilePath(headerNode.getAbsolutePath());
-//                    ProjectClone clone = new ProjectClone();
-//                    Utils.copy(headerNode.getFile(), new File(cloneFilePath));
-//                    String oldContent = Utils.readFileContent(headerNode.getAbsolutePath());
-//                    String newContent = clone.refactorWhiteBox(oldContent);
-//                    logger.debug("Generate instrument file of " + headerNode.getName() + " successfully");
-//                    Utils.writeContentToFile(newContent, cloneFilePath);
-
-                } catch (InterruptedException | IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-
         sources.removeIf(source -> libraries.contains(source.getAbsolutePath()));
 
-        ExecutorService executor = Executors.newFixedThreadPool(Environment.getInstance().getMaxThreadCount());
+        ExecutorService executor = Executors.newFixedThreadPool(5);
         List<Callable<String>> cloneSourceCodeTasks = new ArrayList<>();
         for (ISourcecodeFileNode sourceCode : sources) {
             cloneSourceCodeTasks.add(() -> {
@@ -128,7 +90,7 @@ public class ProjectClone {
 
         try {
             executor.invokeAll(cloneSourceCodeTasks);
-            logger.debug("Done cloning all source code files!");
+            logger.debug("Done cloning all source code files using multi-threading");
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -357,7 +319,7 @@ public class ProjectClone {
 
         int size = redefines.size();
 
-        ExecutorService es = Executors.newFixedThreadPool(Environment.getInstance().getMaxThreadCount());
+        ExecutorService es = Executors.newFixedThreadPool(5);
         AtomicInteger counter = new AtomicInteger();
         List<Callable<Void>> tasks = new ArrayList<>();
         for (INode child : redefines) {
@@ -390,7 +352,7 @@ public class ProjectClone {
         for (Map.Entry<String, String> entry : refactors.entrySet()) {
             String prev = entry.getKey();
             String newC = entry.getValue();
-            // logger.debug("New content: " + newC);
+            logger.debug("New content: " + newC);
             // String regex = "\\W" + Pattern.quote(prev);
             // oldContent = oldContent.replaceAll(regex, newC);
             oldContent = oldContent.replace(prev, newC);
@@ -418,7 +380,6 @@ public class ProjectClone {
         if (!filePath.endsWith(IProjectLoader.C_FILE_SYMBOL)) {
             if (!Environment.getInstance().isC()) {
                 additionDeclaration = "#include <string>\n" +
-                        "#include <string.h>\n" +
                         "extern int strcmp(const char * str1, const char * str2);\n" +
                         "extern int AKA_mark(std::string append);\n" +
                         "extern void AKA_assert(std::string actualName, int actualVal, std::string expectedName, int expectedVal);\n"
@@ -700,19 +661,7 @@ public class ProjectClone {
     private String guardIncludeHeader(INode child) {
         if (child instanceof IncludeHeaderNode) {
             String oldIncludeHeader = ((IncludeHeaderNode) child).getAST().getRawSignature();
-            if (this.whiteBoxEnable) {
-                if (child.getParent() instanceof SourcecodeFileNode) {
-                    SourcecodeFileNode sourcecodeFileNode = (SourcecodeFileNode) child.getParent();
-                    for (Dependency dependency : sourcecodeFileNode.getDependencies()) {
-                        if (((IncludeHeaderNode) child).getAST().getName().toString().endsWith(dependency.getEndArrow().getName())) {
-                            int lastDotPos = oldIncludeHeader.lastIndexOf(SpecialCharacter.DOT);
-                            oldIncludeHeader = oldIncludeHeader.substring(0, lastDotPos) + CLONED_FILE_EXTENSION
-                                    + oldIncludeHeader.substring(lastDotPos);
-                            break;
-                        }
-                    }
-                }
-            }
+
             String header = child.getName().replaceAll("[^\\w]", SpecialCharacter.UNDERSCORE).toUpperCase();
 
             return wrapInIncludeGuard(SourceConstant.INCLUDE_PREFIX + header, oldIncludeHeader);
@@ -815,19 +764,14 @@ public class ProjectClone {
             instrumentedSourceCode = fail + functionNode.getAST().getRawSignature();
         } else {
             int bodyIdx;
-//            if (functionNode instanceof ConstructorNode
-//                    && astInstrumentedFunction.getFileLocation() != null
-//                    && astInstrumentedFunction.getBody() != null
-//                    && astInstrumentedFunction.getBody().getFileLocation() != null) {
-//                bodyIdx = astInstrumentedFunction.getBody().getFileLocation().getNodeOffset()
-//                        - astInstrumentedFunction.getFileLocation().getNodeOffset() + 1;
-//            } else {
-//                String beginMarker = String.format("/* << Aka begin of function %s >> */\n", functionNode.getName());
-//                bodyIdx = instrument.indexOf(beginMarker) + beginMarker.length() + 1;
-//                //bodyIdx = instrument.indexOf(SpecialCharacter.OPEN_BRACE) + 1;
-//            }
-            String beginMarker = String.format("/* << Aka begin of function %s >> */\n", functionNode.getName());
-            bodyIdx = instrument.indexOf(beginMarker) + beginMarker.length() + 1;
+            if (functionNode instanceof ConstructorNode
+                    && astInstrumentedFunction.getFileLocation() != null
+                    && astInstrumentedFunction.getBody() != null
+                    && astInstrumentedFunction.getBody().getFileLocation() != null) {
+                bodyIdx = astInstrumentedFunction.getBody().getFileLocation().getNodeOffset()
+                        - astInstrumentedFunction.getFileLocation().getNodeOffset() + 1;
+            } else
+                bodyIdx = instrument.indexOf(SpecialCharacter.OPEN_BRACE) + 1;
 
             instrument = instrument.substring(0, bodyIdx)
                     + generateCallingMark(functionNode.getAbsolutePath()) // insert mark start function
@@ -846,7 +790,7 @@ public class ProjectClone {
             String script = entry.getValue();
             String newPath = getClonedFilePath(originPath);
             newPath = Utils.doubleNormalizePath(newPath);
-            script = script.replace("\"" + originPath + "\"", "\"" + newPath + "\"");
+            script = script.replaceFirst("\"[^\"]+\"", "\"" + newPath + "\"");
             script += SpecialCharacter.SPACE + testCase.generateDefinitionCompileCmd();
             script += " -DASSERT_ENABLE";
 

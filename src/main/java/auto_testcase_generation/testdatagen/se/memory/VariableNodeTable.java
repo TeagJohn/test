@@ -39,8 +39,6 @@ public class VariableNodeTable extends ArrayList<ISymbolicVariable> implements I
 	private ICommonFunctionNode functionNode;
 	private String currentNameSpace = "";
 
-	List<Node> listStubNode = new ArrayList<>();
-
 	public VariableNodeTable() {
 	}
 
@@ -455,14 +453,6 @@ public class VariableNodeTable extends ArrayList<ISymbolicVariable> implements I
 	@Override
 	public void setFunctionNode(ICommonFunctionNode functionNode) {
 		this.functionNode = functionNode;
-	}
-
-	public List<Node> getListStubNode() {
-		return this.listStubNode;
-	}
-
-	public void setListStubNode(List<Node> listStubNode) {
-		this.listStubNode = listStubNode;
 	}
 
 	/**

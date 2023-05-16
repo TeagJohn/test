@@ -13,17 +13,12 @@ import com.dse.parser.object.INode;
 import com.dse.search.Search;
 import com.dse.search.condition.ClassNodeCondition;
 import com.dse.search.condition.SourcecodeFileNodeCondition;
-import com.dse.search.condition.StructNodeCondition;
 import com.dse.search.condition.VariableNodeCondition;
 import com.dse.testdata.InputCellHandler;
 import com.dse.testdata.Iterator;
 import com.dse.testdata.comparable.AssertMethod;
 import com.dse.testdata.object.*;
 import com.dse.testdata.object.GlobalRootDataNode;
-import com.dse.testdata.object.Gmock.GMockValueDataNode;
-import com.dse.testdata.object.Gmock.GmockObjectNode;
-import com.dse.testdata.object.Gmock.TimesNode;
-import com.dse.testdata.object.Gmock.WithNode;
 import com.dse.testdata.object.RootDataNode;
 import com.dse.testdata.object.stl.*;
 import com.dse.user_code.objects.AssertUserCode;
@@ -67,8 +62,6 @@ public class TestCaseDataImporter {
                 node = (DataNode) Class.forName(type).newInstance();
 
                 String name = jsonObject.get("name").getAsString();
-
-
                 node.setName(name);
 
                 String dataType = "", realType = "", assertMethod;
@@ -123,20 +116,6 @@ public class TestCaseDataImporter {
                         if (!value.equals("null"))
                             ((NumberOfCallNode) dataNode).setValue(value);
                     }
-
-                    if (node instanceof GMockValueDataNode) {
-                        String value = null;
-                        try {
-                            value = jsonObject.get("value").getAsString();
-                        }
-                        catch (Exception e) {
-                            if (e instanceof NullPointerException) {
-                                value = null;
-                            }
-                        }
-                        if (value != null)
-                            ((GMockValueDataNode) dataNode).setValue(value);
-                    }
                 }
 
                 if (node instanceof MacroSubprogramDataNode) {
@@ -178,14 +157,6 @@ public class TestCaseDataImporter {
                         if (PathUtils.equals(cast.getAbsolutePath(), sourcePath))
                             unit.setSourceNode(cast);
                     }
-
-                    if (unit instanceof GmockObjectNode) {
-                        unit.setName(name);
-                        ((GmockObjectNode) unit).setTypeObj(Integer.parseInt(jsonObject.get("typeObj").getAsString()));
-                        ((GmockObjectNode) unit).setNameObj(jsonObject.get("nameObj").getAsString());
-                        ((GmockObjectNode) unit).setNameClass(jsonObject.get("nameClass").getAsString());
-                    }
-
 //                        List<INode> possibles = Search.searchNodes(
 //                                Environment.getInstance().getProjectNode(), new SourcecodeFileNodeCondition(), Utils.normalizePath(sourcePath));
 //                        if (!possibles.isEmpty())
@@ -360,7 +331,7 @@ public class TestCaseDataImporter {
                             ((IterationSubprogramNode) dataNode).setIndex(Integer.parseInt(index));
                     }
 
-                } else if (dataNode instanceof ISubStructOrClassDataNode
+                } else if (dataNode instanceof SubClassDataNode
                         && jsonObject.get("correspondingType") != null
                         && jsonObject.get("correspondingVar") != null) {
 
@@ -374,14 +345,12 @@ public class TestCaseDataImporter {
 
                             INode projectRoot = Environment.getInstance().getProjectNode();
                             List<INode> nodes = Search.searchNodes(projectRoot, new ClassNodeCondition());
-                            nodes.addAll(Search.searchNodes(projectRoot, new StructNodeCondition()));
 
                             INode dataRoot = Environment.getInstance().getUserCodeRoot();
                             nodes.addAll(Search.searchNodes(dataRoot, new ClassNodeCondition()));
-                            nodes.addAll(Search.searchNodes(dataRoot, new StructNodeCondition()));
 
                             for (INode n : nodes) {
-                                StructOrClassNode cast = (StructOrClassNode) n;
+                                ClassNode cast = (ClassNode) n;
                                 if (PathUtils.equals(cast.getAbsolutePath(), classPath)) {
                                     dataNode.setCorrespondingVar(refactorVariableType(dataType, prevVar, n));
                                     break;
@@ -395,7 +364,7 @@ public class TestCaseDataImporter {
                         String constructorName = jsonObject.get("selectedConstructor").getAsString();
                         if (constructorName != null) {
                             try {
-                                ((IConstructorExpanableDataNode) dataNode).chooseConstructor(constructorName);
+                                ((SubClassDataNode) dataNode).chooseConstructor(constructorName);
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
@@ -461,7 +430,7 @@ public class TestCaseDataImporter {
                         && jsonObject.get("correspondingType") != null) {
 
                     if (!loadCorrespondingDependency(jsonObject, dataNode))
-                        logger.error("Can not load corresponding var for StructDataNode: " + dataNode.getName());
+                        logger.error("Can not load corresponding var for UnionDataNode: " + dataNode.getName());
 
                 } else if (dataNode instanceof ListBaseDataNode) {
                     if (loadCorrespondingDependency(jsonObject, dataNode)) {
@@ -588,15 +557,7 @@ public class TestCaseDataImporter {
                 }
 
                 // if dataNode is sut, load expected outputs of parameters
-                if (dataNode instanceof IterationSubprogramNode && jsonObject.get("paramStubInputs") != null) {
-                    for (JsonElement eo : jsonObject.get("paramStubInputs").getAsJsonArray()) {
-                        DataNode eoDataNode = context.deserialize(eo, DataNode.class);
-                        if (eoDataNode != null) {
-                            eoDataNode.setParent(node);
-                            ((IterationSubprogramNode) dataNode).putParamInput((ValueDataNode) eoDataNode);
-                        }
-                    }
-                } else if (dataNode instanceof SubprogramNode) {
+                if (dataNode instanceof SubprogramNode) {
                     if (jsonObject.get("paramExpectedOuputs") != null) {
                         for (JsonElement eo : jsonObject.get("paramExpectedOuputs").getAsJsonArray()) {
                             DataNode eoDataNode = context.deserialize(eo, DataNode.class);
@@ -742,11 +703,9 @@ public class TestCaseDataImporter {
 
     private void generateTreeDependency(DataNode parent, DataNode child) {
         // set subClass
-        if (child instanceof ISubStructOrClassDataNode && parent instanceof StructOrClassDataNode) {
-             ((StructOrClassDataNode) parent).setSubStructure((ISubStructOrClassDataNode) child);
-        } else if (child instanceof SubUnionDataNode && parent instanceof UnionDataNode) {
-            ((UnionDataNode) parent).setSubUnion((SubUnionDataNode) child);
-        } else  {
+        if (child instanceof SubClassDataNode && parent instanceof ClassDataNode)
+            ((ClassDataNode) parent).setSubClass((SubClassDataNode) child);
+        else {
             parent.getChildren().add(child);
             child.setParent(parent);
 

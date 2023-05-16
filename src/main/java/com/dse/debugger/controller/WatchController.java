@@ -17,8 +17,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.ResourceBundle;
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
 
 public class WatchController implements Initializable {
 
@@ -26,27 +24,7 @@ public class WatchController implements Initializable {
 
     private static WatchController watchController = null;
     private static TitledPane titledPane = null;
-    /**
-     * @param showTextOption
-     * 1: add watchPoint
-     * 2: edit watchPoint
-     */
-    int showTextOption = 1;
 
-    /**
-     * Only let user add variable to watchPoint list.
-     *
-     * @param exp exp
-     * @return variable
-     */
-    public static boolean useRegex( String exp) {
-        // Compile regular expression
-        final Pattern pattern = Pattern.compile("^*[a-zA-Z_$][a-zA-Z_$0-9]+\\[[0-9]+\\]*|^[a-zA-Z_$][a-zA-Z_$0-9]*$", Pattern.CASE_INSENSITIVE);
-        // Match regex against input
-        final Matcher matcher = pattern.matcher(exp);
-        // Use results...
-        return matcher.matches();
-    }
     private static void prepare() {
         FXMLLoader loader = new FXMLLoader(WatchController.class.getResource("/FXML/debugger/Watches.fxml"));
         try {
@@ -86,8 +64,6 @@ public class WatchController implements Initializable {
     Button dupBtn;
 
     @FXML
-    Button editBtn;
-    @FXML
     ToolBar supportTools;
 
     @FXML
@@ -102,7 +78,6 @@ public class WatchController implements Initializable {
     private TextField addField = new TextField();
 
     private WatchMode watchMode;
-
 
     @Override
     public void initialize(URL location, ResourceBundle resource) {
@@ -138,7 +113,6 @@ public class WatchController implements Initializable {
             upBtn.setDisable(true);
             downBtn.setDisable(true);
             dupBtn.setDisable(true);
-            editBtn.setDisable(true);
             return;
         }
         if (num == 1) {
@@ -146,12 +120,10 @@ public class WatchController implements Initializable {
             upBtn.setDisable(true);
             downBtn.setDisable(true);
             dupBtn.setDisable(false);
-            editBtn.setDisable(false);
         }
         if (num > 1) {
             delBtn.setDisable(false);
             dupBtn.setDisable(false);
-            editBtn.setDisable(false);
             int idx = rootNode.getChildren().indexOf(selecting);
             if (idx == 0) {
                 downBtn.setDisable(false);
@@ -182,20 +154,10 @@ public class WatchController implements Initializable {
 
     private void setUpTextField() {
         addField.setOnKeyPressed(event -> {
-
                     if (event.getCode() == KeyCode.ENTER) {
                         String text = addField.getText();
                         column.getChildren().remove(1);
-                        if (!useRegex(text)&&!text.contains("*")) {
-                            logger.debug("Cant add non-variable type argument");
-                            return;
-                        }
-                        if (showTextOption == 1) {
-                            add(text);
-                        }
-                        else if (showTextOption == 2) {
-                            editWatchPoint(text);
-                        }
+                        add(text);
                     }
                 }
         );
@@ -236,8 +198,6 @@ public class WatchController implements Initializable {
      */
     private void addNormalWatchPoint(String exp) {
         TreeItem<GDBVar> item = DebugController.getDebugController().getGdb().addNormalWatch(exp);
-        String realName = item.getValue().getRealName();
-        exp = realName;
         if (item != null && item.getValue().getType() != null) {
             TreeItem<GDBVar> selecting = getRootSelected();
             int idx = 0;
@@ -253,18 +213,8 @@ public class WatchController implements Initializable {
         }
     }
 
-    public void showTextFieldForAddBtn() {
+    public void showTextField() {
         if (column.getChildren().size() == 2) {
-            showTextOption = 1;
-            column.getChildren().add(1, addField);
-            addField.setText(null);
-            addField.selectAll();
-            addField.requestFocus();
-        }
-    }
-    public void showTextFieldForEditBtn() {
-        if (column.getChildren().size() == 2) {
-            showTextOption = 2;
             column.getChildren().add(1, addField);
             addField.setText(null);
             addField.selectAll();
@@ -336,25 +286,6 @@ public class WatchController implements Initializable {
         }
         exp = watchPoint.getExp();
         add(exp);
-    }
-
-    public void editWatchPoint(String exp) {
-        TreeItem<GDBVar> item = DebugController.getDebugController().getGdb().addNormalWatch(exp);
-        if (item != null && item.getValue().getType() != null) {
-            {
-                TreeItem<GDBVar> selecting = getRootSelected();
-                if (selecting == null) {
-                    logger.debug("No selecting item to edit");
-                }
-                WatchPoint watchPoint = selecting.getValue().getWatchPoint();
-                if (watchPoint == null) {
-                    logger.debug("No watch point in this item");
-                    return;
-                }
-                watchPoint.setExp(exp);
-                updateWatches();
-            }
-        }
     }
 
     public void updateWatches() {

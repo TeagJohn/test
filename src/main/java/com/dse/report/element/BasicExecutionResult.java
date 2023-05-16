@@ -6,8 +6,6 @@ import com.dse.coverage.FunctionCoverageComputation;
 import com.dse.parser.object.ICommonFunctionNode;
 import com.dse.parser.object.ISourcecodeFileNode;
 import com.dse.parser.object.MacroFunctionNode;
-import com.dse.testcase_execution.ITestcaseExecution;
-import com.dse.testcase_execution.result_trace.gtest2.Failure;
 import com.dse.testdata.object.IterationSubprogramNode;
 import com.dse.testdata.object.RootDataNode;
 import com.dse.util.PathUtils;
@@ -73,11 +71,11 @@ public class BasicExecutionResult extends AbstractExecutionResult {
         String coverageHighlight = null;
 
         String typeOfCoverage = Environment.getInstance().getTypeofCoverage();
-        switch (typeOfCoverage) {
+        switch (typeOfCoverage){
             case EnviroCoverageTypeNode.STATEMENT:
             case EnviroCoverageTypeNode.BRANCH:
             case EnviroCoverageTypeNode.BASIS_PATH:
-            case EnviroCoverageTypeNode.MCDC: {
+            case EnviroCoverageTypeNode.MCDC:{
                 coverageHighlight = Utils.readFileContent(testCase.getHighlightedFunctionPath(typeOfCoverage));
                 break;
             }
@@ -87,7 +85,7 @@ public class BasicExecutionResult extends AbstractExecutionResult {
                 break;
             }
 
-            case EnviroCoverageTypeNode.STATEMENT_AND_MCDC: {
+            case EnviroCoverageTypeNode.STATEMENT_AND_MCDC:{
                 coverageHighlight = Utils.readFileContent(testCase.getHighlightedFunctionPath(EnviroCoverageTypeNode.MCDC));
                 break;
             }
@@ -104,12 +102,7 @@ public class BasicExecutionResult extends AbstractExecutionResult {
 
     private void generateBody(TestCase testCase) {
         generateCoverageHighlight(testCase);
-        boolean pass;
-        if (Environment.getInstance().getCompiler().isUseGTest()) {
-            pass = !(testCase.getExecuteLog().endsWith("FAILED TEST") || testCase.getExecuteLog().endsWith("FAILED TESTS"));
-        } else {
-            pass = generateEventsSection(testCase);
-        }
+        boolean pass = generateEventsSection(testCase);
 
         File testPath = new File(testCase.getTestPathFile());
 
@@ -129,12 +122,7 @@ public class BasicExecutionResult extends AbstractExecutionResult {
     }
 
     private boolean generateEventsSection(TestCase testCase) {
-        List<IResultTrace> failures;
-        if (Environment.getInstance().getCompiler().isUseGTest()) {
-            failures = Failure.load(testCase);
-        } else {
-            failures = ResultTrace.load(testCase);
-        }
+        List<IResultTrace> failures = ResultTrace.load(testCase);
 
         List<FunctionCall> calledFunctions = TestPathUtils.traceFunctionCall(testCase.getTestPathFile());
 
@@ -218,10 +206,10 @@ public class BasicExecutionResult extends AbstractExecutionResult {
 
         Table resultsSummary = new Table();
         resultsSummary.getRows().add(
-                new Table.Row(
-                        new Text(String.format("Expected Results matched %.2f%%", passPercent)),
-                        new Text(String.format("(%d/%d) PASS", results.getPass(), results.getTotal()), TEXT_STYLE.BOLD, textColor)
-                )
+            new Table.Row(
+                new Text(String.format("Expected Results matched %.2f%%", passPercent)),
+                new Text(String.format("(%d/%d) PASS", results.getPass(), results.getTotal()), TEXT_STYLE.BOLD, textColor)
+            )
         );
 
         body.add(resultsSummary);

@@ -1,10 +1,6 @@
 package com.dse.testdata.object;
 
-import com.dse.environment.Environment;
-import com.dse.search.Search2;
-import com.dse.testcase_execution.ITestcaseExecution;
 import com.dse.testdata.comparable.*;
-import com.dse.testdata.comparable.gtest.*;
 import com.dse.util.SpecialCharacter;
 import com.dse.util.Utils;
 import com.dse.util.VariableTypeUtils;
@@ -14,7 +10,7 @@ import com.dse.util.VariableTypeUtils;
  *
  * @author DucAnh
  */
-public abstract class NormalDataNode extends ValueDataNode implements IValueComparable, IBooleanComparable, IBinaryComparison {
+public abstract class NormalDataNode extends ValueDataNode implements IValueComparable, IBooleanComparable {
     public static final String CHARACTER_QUOTE = "'";
 
     /**
@@ -145,30 +141,12 @@ public abstract class NormalDataNode extends ValueDataNode implements IValueComp
 
     @Override
     public String getAssertion() {
+        String expectedName = getVituralName();
+        String actualName = getActualName();
+
         String assertMethod = getAssertMethod();
 
         if (assertMethod != null) {
-            if (Environment.getInstance().getCompiler().isUseGTest()) {
-                return getAssertStm();
-            }
-//                    assertMethod = assertMethod.split(" \\u00B1 ")[0];
-//                    if (IBinaryComparison.assertMethods.contains(assertMethod)) {
-//                        return getBinaryComparisonAssertionWithMark();
-//                    } else if (IFloatingPointComparison.assertMethods.contains(assertMethod)) {
-//                        if (assertMethod.equals(IGTestAssertMethod.EXPECT_NEAR) || assertMethod.equals(IGTestAssertMethod.ASSERT_NEAR)) {
-//                            if (this instanceof NormalNumberDataNode) {
-//                                return ((NormalNumberDataNode) this).getFloatingPointComparisonAssertionWithMark();
-//                            } else {
-//                                return ((NormalCharacterDataNode) this).getFloatingPointComparisonAssertionWithMark();
-//                            }
-//                        } else {
-//                            return getBinaryComparisonAssertionWithMark();
-//                        }
-//                    } else if (IBooleanConditions.assertMethods.contains(assertMethod)) {
-//                        return ((NormalNumberDataNode) this).getBooleanConditionAssertionWithMark();
-//                    }
-            String expectedName = getVituralName();
-            String actualName = getActualName();
             switch (assertMethod) {
                 case AssertMethod.ASSERT_EQUAL:
                     return assertEqual(expectedName, actualName);
@@ -192,66 +170,5 @@ public abstract class NormalDataNode extends ValueDataNode implements IValueComp
         }
 
         return SpecialCharacter.EMPTY;
-    }
-
-    @Override
-    public String getAssertStm() {
-        String assertMethod = getAssertMethod();
-
-        if (assertMethod != null) {
-            if (Environment.getInstance().getCompiler().isUseGTest()) {
-                assertMethod = assertMethod.split(" " + SpecialCharacter.DELTA + " ")[0];
-                assertMethod = assertMethod.split(": ")[0];
-                if (IBinaryComparison.assertMethods.contains(assertMethod) || IStringComparison.assertMethods.contains(assertMethod)) {
-
-                    return this.getBinaryComparisonAssertion();
-
-                } else if (IFloatingPointComparison.assertMethods.contains(assertMethod)) {
-                    if (assertMethod.equals(IGTestAssertMethod.EXPECT_NEAR) || assertMethod.equals(IGTestAssertMethod.ASSERT_NEAR)) {
-                        if (this instanceof NormalNumberDataNode) {
-                            return ((NormalNumberDataNode) this).getFloatingPointComparisonAssertion();
-                        } else {
-                            return ((NormalCharacterDataNode) this).getFloatingPointComparisonAssertion();
-                        }
-                    } else {
-                        return this.getBinaryComparisonAssertion();
-                    }
-                } else if (IBooleanConditions.assertMethods.contains(assertMethod)) {
-                    return ((NormalNumberDataNode) this).getBooleanConditionAssertion();
-                } else if (IGeneralizedAssertion.assertMethods.contains(assertMethod)) {
-                    return this.getGeneralizedAssertion();
-                }
-            } else {
-                String expectedName = Search2.getExpectedValue(this).getVituralName();
-                String actualName = getActualName();
-                switch (assertMethod) {
-                    case AssertMethod.ASSERT_EQUAL:
-                        return assertEqual(expectedName, actualName);
-                    case AssertMethod.ASSERT_NOT_EQUAL:
-                        return assertNotEqual(expectedName, actualName);
-                    case AssertMethod.ASSERT_TRUE:
-                        return assertTrue(actualName);
-                    case AssertMethod.ASSERT_FALSE:
-                        return assertFalse(actualName);
-                    case AssertMethod.ASSERT_LOWER:
-                        return assertLower(expectedName, actualName);
-                    case AssertMethod.ASSERT_GREATER:
-                        return assertGreater(expectedName, actualName);
-                    case AssertMethod.ASSERT_LOWER_OR_EQUAL:
-                        return assertLowerOrEqual(expectedName, actualName);
-                    case AssertMethod.ASSERT_GREATER_OR_EQUAL:
-                        return assertGreaterOrEqual(expectedName, actualName);
-                    case AssertMethod.USER_CODE:
-                        return getAssertUserCode().normalize();
-                }
-            }
-        }
-
-        return SpecialCharacter.EMPTY;
-    }
-
-    @Override
-    public String getBinaryComparisonAssertion() {
-        return new BinaryComparisonStatementGenerator(this).getBinaryComparisonAssertion();
     }
 }

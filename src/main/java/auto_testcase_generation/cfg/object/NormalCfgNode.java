@@ -17,8 +17,12 @@ import java.util.Map;
 public abstract class NormalCfgNode extends CfgNode {
 
 	private IASTNode ast;
+	private int startOffset = -1;
+	private int lineOffset = -1;
 
 	private Map<IASTFunctionCallExpression, ICFG> subCFGs;
+
+	public NormalCfgNode(){}
 
 	public NormalCfgNode(IASTNode node) {
 		ast = node;
@@ -32,6 +36,22 @@ public abstract class NormalCfgNode extends CfgNode {
 //		return ast.getFileLocation().getNodeOffset() * -1 - 1;
 //	}
 
+	public int getStartOffset() {
+		return startOffset;
+	}
+
+	public void setStartOffset(int startOffset) {
+		this.startOffset = startOffset;
+	}
+
+	public int getLineOffset() {
+		return lineOffset;
+	}
+
+	public void setLineOffset(int lineOffset) {
+		this.lineOffset = lineOffset;
+	}
+
 	public IASTNode getAst() {
 		return ast;
 	}
@@ -39,6 +59,8 @@ public abstract class NormalCfgNode extends CfgNode {
 	public void setAst(IASTNode ast) {
 		if (ast != null) {
 			this.ast = ast;
+			setStartOffset(ast.getFileLocation().getNodeOffset());
+			setLineOffset(ast.getFileLocation().getStartingLineNumber());
 			setContent(ast.getRawSignature());
 		}
 	}

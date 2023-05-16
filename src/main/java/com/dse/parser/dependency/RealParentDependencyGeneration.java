@@ -5,7 +5,6 @@ import com.dse.parser.dependency.finder.Level;
 import com.dse.parser.dependency.finder.VariableSearchingSpace;
 import com.dse.parser.object.*;
 import com.dse.search.Search;
-import com.dse.search.condition.ClassStructUnionvsNamespaceCondition;
 import com.dse.search.condition.ClassvsStructvsNamespaceCondition;
 import com.dse.search.condition.FunctionNodeCondition;
 import com.dse.util.SpecialCharacter;
@@ -99,10 +98,10 @@ public class RealParentDependencyGeneration extends AbstractDependencyGeneration
                     reconstructWithAST(f);
             } else{
                 RealParentDependency d = new RealParentDependency(functionNode, f.getParent());
-                if (!functionNode.onlyGetDependencies().contains(d))
-                    functionNode.onlyGetDependencies().add(d);
-                if (!f.getParent().onlyGetDependencies().contains(d))
-                    f.getParent().onlyGetDependencies().add(d);
+                if (!functionNode.getDependencies().contains(d))
+                    functionNode.getDependencies().add(d);
+                if (!f.getParent().getDependencies().contains(d))
+                    f.getParent().getDependencies().add(d);
             }
         }
     }
@@ -120,7 +119,7 @@ public class RealParentDependencyGeneration extends AbstractDependencyGeneration
 
             for (Level l : space) {
                 for (INode n : l) {
-                    List<INode> possibleNodes = Search.searchNodes(n, new ClassStructUnionvsNamespaceCondition());
+                    List<INode> possibleNodes = Search.searchNodes(n, new ClassvsStructvsNamespaceCondition());
                     for (INode possibleNode : possibleNodes) {
                         if (possibleNode.getName().equals(realParentName)) {
 

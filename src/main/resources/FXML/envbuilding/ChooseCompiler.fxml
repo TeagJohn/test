@@ -11,6 +11,7 @@
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.StackPane?>
 
 <AnchorPane prefHeight="520.0" prefWidth="570.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dse.guifx_v3.controllers.build_environment.ChooseCompilerController">
    <children>
@@ -18,8 +19,7 @@
       <Label layoutX="9.0" layoutY="47.0" text="Execute command" />
       <Label layoutX="10.0" layoutY="18.0" text="Compilers" />
       <ComboBox layoutX="123.0" layoutY="43.0" prefHeight="25.0" prefWidth="438.0" promptText="run.exe" AnchorPane.leftAnchor="120.0" AnchorPane.rightAnchor="10.0" />
-      <CheckBox fx:id="cmakeChecking" layoutX="428.0" layoutY="77.0" mnemonicParsing="false" onMouseClicked="#onCmakeCheckClicked" text="Project using CMake" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="80.0" />
-      <CheckBox fx:id="gtestChecking" layoutX="300.0" layoutY="77.0" mnemonicParsing="false" onMouseClicked="#onGTestCheckClicked" text="GTest" AnchorPane.rightAnchor="180.0" AnchorPane.topAnchor="80.0" />
+      <CheckBox fx:id="chbUseMake" layoutX="428.0" layoutY="77.0" mnemonicParsing="false" text="Project uses CMake or GNU Make" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="80.0" />
       <TabPane layoutX="16.0" layoutY="113.0" prefHeight="410.0" prefWidth="550.0" style="-fx-border-color: black; -fx-border-width: 0.2;" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0">
         <tabs>
           <Tab closable="false" text="Preprocessor Compiler">
@@ -86,12 +86,38 @@
                      </children></AnchorPane>
             </content>
           </Tab>
-            <Tab fx:id="cmakeConfigTab" closable="false" disable="true" text="CMake Config">
+            <Tab fx:id="makeConfigTab" closable="false" disable="true" text="Make Config">
                <content>
                   <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="171.0" prefWidth="187.0">
                      <children>
-                        <Label layoutX="14.0" layoutY="3.0" text="CMake  Generators:" AnchorPane.leftAnchor="10.0" />
-                        <ComboBox fx:id="cbCMakeGenerators" layoutX="10.0" layoutY="29.0" prefHeight="26.0" prefWidth="347.0" promptText="Choose generator" AnchorPane.leftAnchor="10.0" />
+                        <Label layoutX="10.0" layoutY="14.0" text="Project's build system:" />
+                        <ComboBox fx:id="cbBuildSystem" layoutX="203.0" layoutY="9.0" onAction="#onChooseBuildSystem" prefHeight="26.0" prefWidth="370.0" promptText="Choose build system" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
+                        <StackPane fx:id="spBuildSystemConfig" layoutX="39.0" layoutY="102.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="332.0" prefWidth="550.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="50.0">
+                           <children>
+                              <AnchorPane fx:id="apCmake" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="335.0" prefWidth="550.0">
+                                 <children>
+                                    <Label layoutX="14.0" layoutY="14.0" text="CMake  Generators:" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="5.0" />
+                                    <ComboBox fx:id="cbCMakeGenerators" layoutX="160.0" layoutY="1.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="26.0" prefWidth="370.0" promptText="Choose generator" AnchorPane.rightAnchor="11.0" />
+                                    <Label fx:id="lCmakeWarning" layoutX="10.0" layoutY="44.0" maxWidth="-Infinity" text="Warning: " wrapText="true" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" />
+                                    <Label fx:id="lCmakeNote" layoutX="10.0" layoutY="77.0" maxWidth="-Infinity" text="Note: " wrapText="true" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" />
+                                 </children>
+                              </AnchorPane>
+                              <AnchorPane fx:id="apGnuMake" layoutX="10.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="335.0" prefWidth="550.0">
+                                 <children>
+                                    <ComboBox fx:id="cbBuildStrategy" layoutX="117.0" layoutY="36.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onAction="#onChooseGnuMakeBuildStrategy" prefHeight="26.0" prefWidth="370.0" promptText="Choose strategy" AnchorPane.rightAnchor="11.0" AnchorPane.topAnchor="0.0" />
+                                    <Label layoutX="21.0" layoutY="20.0" text="Build strategy:" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="5.0" />
+                                    <Label fx:id="lBuildStrategyDetail" layoutX="14.0" layoutY="50.0" maxWidth="-Infinity" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="40.0" />
+                                    <AnchorPane fx:id="apDefaultStrategy" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="80.0">
+                                       <children>
+                                          <TextField fx:id="tfMakeTarget" layoutX="222.0" layoutY="-4.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="26.0" prefWidth="370.0" promptText="default" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="0.0" />
+                                          <Label text="Make target:" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="5.0" />
+                                          <Label layoutX="60.0" layoutY="105.0" text="Project will be built by command: &quot;make&quot;" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="40.0" />
+                                       </children>
+                                    </AnchorPane>
+                                 </children>
+                              </AnchorPane>
+                           </children>
+                        </StackPane>
                      </children>
                   </AnchorPane>
                </content>

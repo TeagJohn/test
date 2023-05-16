@@ -8,6 +8,7 @@ import com.dse.environment.Environment;
 import com.dse.guifx_v3.helps.UIController;
 import com.dse.project_init.ProjectClone;
 import com.dse.thread.AbstractAkaTask;
+import com.dse.util.PathUtils;
 import com.dse.util.Utils;
 import javafx.concurrent.Task;
 import javafx.scene.control.Alert;
@@ -37,6 +38,8 @@ public class CompileSourcecodeFilesTask extends AbstractAkaTask<Boolean> {
         AtomicInteger counter = new AtomicInteger();
 
         for (String filePath : commandConfig.getCompilationCommands().keySet()) {
+            String absolutePath = PathUtils.toAbsolute(filePath);
+            if (!new File(absolutePath).exists()) continue;
             if (!isCancelled()) {
                 Compiler c = Environment.getInstance().getCompiler();
                 String outPath = ProjectClone.getClonedFilePath(filePath) + c.getOutputExtension();

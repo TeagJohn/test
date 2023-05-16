@@ -41,7 +41,6 @@ public class FunctionCallDependencyGeneration extends AbstractDependencyGenerati
     }
 
     public void dependencyGeneration(INode root) {
-        logger.debug("Start dependency generation for function call " + root.getNewType());
         if (root instanceof IFunctionNode) {
             if (!((IFunctionNode) root).isFunctionCallDependencyState()) {
                 IASTFunctionDefinition fnAst = ((IFunctionNode) root).getAST();
@@ -110,11 +109,11 @@ public class FunctionCallDependencyGeneration extends AbstractDependencyGenerati
 
                 if (refferedNode != null) {
                     FunctionCallDependency d = new FunctionCallDependency(owner, refferedNode);
-                    if (!owner.onlyGetDependencies().contains(d)
-                            && !refferedNode.onlyGetDependencies().contains(d)) {
-                        owner.onlyGetDependencies().add(d);
-                        refferedNode.onlyGetDependencies().add(d);
-                        // logger.debug("Found a function call dependency: " + d.toString());
+                    if (!owner.getDependencies().contains(d)
+                            && !refferedNode.getDependencies().contains(d)) {
+                        owner.getDependencies().add(d);
+                        refferedNode.getDependencies().add(d);
+                        logger.debug("Found a function call dependency: " + d.toString());
                     }
                 } else {
                     //logger.debug("expression " + expression.getFunctionNameExpression().getRawSignature() + " in " + owner.getAbsolutePath() + " is not a function!");
@@ -178,18 +177,18 @@ public class FunctionCallDependencyGeneration extends AbstractDependencyGenerati
 
             MethodFinder finder = new MethodFinder(owner);
             try {
-                List<INode> referredNodes = finder.find(funcName, nParameters);
-                for (INode referredNode : referredNodes) {
-                    FunctionCallDependency d = new FunctionCallDependency(owner, referredNode);
-                    if (!owner.onlyGetDependencies().contains(d)
-                            && !referredNode.onlyGetDependencies().contains(d)) {
-                        owner.onlyGetDependencies().add(d);
-                        referredNode.onlyGetDependencies().add(d);
-                        // logger.debug("Found an extended dependency: " + d.toString());
+                List<INode> refferedNodes = finder.find(funcName, nParameters);
+                for (INode refferedNode : refferedNodes) {
+                    FunctionCallDependency d = new FunctionCallDependency(owner, refferedNode);
+                    if (!owner.getDependencies().contains(d)
+                            && !refferedNode.getDependencies().contains(d)) {
+                        owner.getDependencies().add(d);
+                        refferedNode.getDependencies().add(d);
+                        logger.debug("Found an extended dependency: " + d.toString());
                     }
                 }
             } catch (Exception e) {
-                logger.debug("Couldn't find function " + funcName + " in " + owner.getAbsolutePath());
+                logger.debug("function " + funcName + " in " + owner.getAbsolutePath() + " can't found!");
             }
         }
     }

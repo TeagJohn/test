@@ -18,7 +18,6 @@ import auto_testcase_generation.testdatagen.se.solver.SmtLibGeneration;
 import auto_testcase_generation.testdatagen.se.solver.solutionparser.Z3SolutionParser;
 import com.dse.config.AkaConfig;
 import com.dse.config.WorkspaceConfig;
-import com.dse.environment.Environment;
 import com.dse.guifx_v3.controllers.TestCasesNavigatorController;
 import com.dse.guifx_v3.helps.CacheHelper;
 import com.dse.guifx_v3.helps.UIController;
@@ -104,7 +103,7 @@ public class OldFullBoundedTestGen extends AbstractAutomatedTestdataGeneration {
 
             this.generateTestpaths(testCasesInString);
 
-            ExecutorService es = Executors.newFixedThreadPool(Environment.getInstance().getMaxThreadCount());
+            ExecutorService es = Executors.newFixedThreadPool(5);
             List<Callable<String>> tasks = new ArrayList<>();
             for (String testCaseItem : testCasesInString) {
                 StringHandler task = new StringHandler(testCaseItem, iteration);
@@ -322,7 +321,7 @@ public class OldFullBoundedTestGen extends AbstractAutomatedTestdataGeneration {
     protected synchronized TestCase createTestcase(int iteration, ICommonFunctionNode functionNode) {
         TestCase testCase = null;
         // create a new test case at each iteration
-        String nameofTestcase = TestCaseManager.generateContinuousNameOfTestcase(TestCaseManager.getFunctionName(functionNode) + ITestCase.POSTFIX_TESTCASE_BY_BOUNDARY);
+        String nameofTestcase = TestCaseManager.generateContinuousNameOfTestcase(functionNode.getName() + ITestCase.POSTFIX_TESTCASE_BY_BOUNDARY);
 
         testCase = TestCaseManager.createTestCase(nameofTestcase, functionNode);
 

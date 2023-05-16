@@ -1,7 +1,5 @@
 # AKAUTAUTO
 
-## Deprecated README, DON'T follow these step
-
 ### Compile jar file
 
 - Require install maven

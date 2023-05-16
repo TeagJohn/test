@@ -7,6 +7,9 @@ import org.eclipse.cdt.internal.core.dom.parser.ASTNode;
 
 public class SimpleCfgNode extends NormalCfgNode {
 
+	public SimpleCfgNode(){
+		super();
+	}
 	public SimpleCfgNode(IASTNode node) {
 		super(node);
 	}

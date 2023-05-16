@@ -8,7 +8,6 @@ import com.dse.environment.Environment;
 import com.dse.coverage.gcov.LcovWorkspaceConfig;
 import com.dse.environment.EnvironmentSearch;
 import com.dse.environment.WorkspaceCreation;
-import com.dse.environment.object.EnviroCoverageTypeNode;
 import com.dse.environment.object.EnviroSBFNode;
 import com.dse.environment.object.EnviroUUTNode;
 import com.dse.environment.object.EnvironmentRootNode;
@@ -16,6 +15,7 @@ import com.dse.environment.object.IEnvironmentNode;
 import com.dse.guifx_v3.controllers.build_environment.AbstractCustomController;
 import com.dse.guifx_v3.controllers.build_environment.BaseController;
 import com.dse.guifx_v3.controllers.build_environment.UserCodeController;
+import com.dse.make_build_system.BuildSystemHandler;
 import com.dse.parser.object.ICommonFunctionNode;
 import com.dse.parser.object.INode;
 import com.dse.parser.object.ISourcecodeFileNode;
@@ -82,6 +82,12 @@ public class BuildNewEnvironmentTask extends AbstractAkaTask<BuildEnvironmentRes
 
         exportUserCodes();
 
+        if (Environment.getInstance().isUsingMakeBuildSystem()) {
+            BuildSystemHandler handler = Environment.getInstance().getMakeBuildSystemManager().getCurrentBSHandler();
+            handler.cloneCurrentProjectToInstrumentDirectory();
+            handler.prepareForBuild();
+        }
+
         if (shouldCompile) {
             // compile all
             int isCompiledSuccessfully = compileTheTestedProject(Environment.getInstance().getProjectNode());
@@ -93,14 +99,9 @@ public class BuildNewEnvironmentTask extends AbstractAkaTask<BuildEnvironmentRes
             logger.debug("The project " + Environment.getInstance().getProjectNode().getAbsolutePath() + " is compiled successfully");
         }
 
-        if (Environment.getInstance().getCompiler().isCmakeProject()) {
-            CMakeBuilder.cloneCurrentProjectToInstrumentDirectory();
-            CMakeBuilder.modifyAllCMakeListsFileInDirectory(
-                    new File(new WorkspaceConfig().fromJson().getInstrumentDirectory()));
-            CMakeBuilder.setExecutableFilePathFromCMakeLists(
-                    new File(
-                            new WorkspaceConfig().fromJson().getInstrumentDirectory()
-                                    + File.separator + CMakeBuilder.AKAIGNORE_CMAKE_LIST));
+        if (Environment.getInstance().isUsingMakeBuildSystem()) {
+            BuildSystemHandler handler = Environment.getInstance().getMakeBuildSystemManager().getCurrentBSHandler();
+            handler.doNecessaryModify();
         }
 
         // export physical_tree.json, dependencies, elements, etc. to initialized working space
@@ -112,9 +113,6 @@ public class BuildNewEnvironmentTask extends AbstractAkaTask<BuildEnvironmentRes
 
         File envFile = new File(new WorkspaceConfig().fromJson().getEnvironmentFile());
         EnvironmentRootNode envRoot = Environment.getInstance().getEnvironmentRootNode();
-        if (EnvironmentSearch.searchNode(envRoot, new EnviroCoverageTypeNode()).isEmpty()) {
-            envRoot.addChild(new EnviroCoverageTypeNode());
-        }
         int exportedEnvironmentDone = exportEnvironmentToFile(envFile, envRoot);
         if (exportedEnvironmentDone != BaseController.BUILD_NEW_ENVIRONMENT.SUCCESS.EXPORT_ENV_FILE) {
             result.setExitCode(exportedEnvironmentDone);
@@ -198,6 +196,7 @@ public class BuildNewEnvironmentTask extends AbstractAkaTask<BuildEnvironmentRes
         wkConfig.setConstraintFolder(workspace + File.separator + WorkspaceConfig.CONSTRAINTS_FOLDER_NAME);
         wkConfig.setCteFolder(workspace + File.separator + WorkspaceConfig.CTE_FOLDER_NAME);
 
+        wkConfig.setCfgDirectory(workspace + File.separator + WorkspaceConfig.CFG_FOLDER_NAME);
 
         String envUserCodeDir = workspace + File.separator + WorkspaceConfig.USER_CODE_FOLDER + File.separator + EnvironmentUserCode.ENVIR_FOLDER_NAME;
         wkConfig.setLcovPath(workspace + File.separator + "lcov");

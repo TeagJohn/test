@@ -4,9 +4,9 @@ import com.dse.environment.Environment;
 import com.dse.parser.object.*;
 import com.dse.parser.object.INode;
 import com.dse.search.Search2;
-import com.dse.testdata.comparable.gtest.*;
+import com.dse.testcase_execution.DriverConstant;
+import com.dse.testcase_manager.TestPrototype;
 import com.dse.testdata.gen.module.subtree.InitialArgTreeGen;
-import com.dse.testdata.object.Gmock.GmockUnitNode;
 import com.dse.util.*;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -14,8 +14,9 @@ import com.google.gson.JsonParser;
 
 import java.io.File;
 import java.util.*;
+import java.util.stream.Collectors;
 
-public class SubprogramNode extends ValueDataNode implements IExceptionAssertions, IPredicateAssertions, IDeathAssertions {
+public class SubprogramNode extends ValueDataNode {
 
     protected INode functionNode;
 //    private int called = 0;
@@ -101,11 +102,11 @@ public class SubprogramNode extends ValueDataNode implements IExceptionAssertion
                 root.setFunctionNode(castFunctionNode);
                 InitialArgTreeGen dataTreeGen = new InitialArgTreeGen();
                 List<ValueDataNode> actualNodes = Search2.searchParameterNodes(this);
-                retType = (functionNode.getChildren().get(0) instanceof InternalVariableNode) ? ((InternalVariableNode) functionNode.getChildren().get(0)).getRealType() : functionNode.getChildren().get(0).getNewType();
+                retType =(functionNode.getChildren().get(0) instanceof InternalVariableNode) ? ((InternalVariableNode)functionNode.getChildren().get(0)).getRealType() : functionNode.getChildren().get(0).getNewType();
                 for (INode child : castFunctionNode.getChildren()) {
                     if (child instanceof VariableNode) {
                         VariableNode schild = (VariableNode) ((VariableNode) child).clone();
-                        schild.setCoreType(schild.getCoreType().replace(retType, newType));
+                        schild.setCoreType( schild.getCoreType().replace(retType, newType));
                         schild.setRawType(schild.getRawType().replace(retType, newType));
                         schild.setReducedRawType(schild.getReducedRawType().replace(retType, newType));
                         ValueDataNode expected = dataTreeGen.genInitialTree(schild, root);
@@ -135,19 +136,13 @@ public class SubprogramNode extends ValueDataNode implements IExceptionAssertion
         return inputToExpectedOutputMap.values();
     }
 
-    public Collection<ValueDataNode> getParamInputs() {
-        return inputToExpectedOutputMap.keySet();
-    }
-
     public boolean putParamExpectedOutputs(ValueDataNode expectedOuput) {
         if (expectedOuput.getName().equals("RETURN"))
             return false;
 
         List<ValueDataNode> parameterNodes = Search2.searchParameterNodes(this);
         ValueDataNode input = parameterNodes.stream()
-                .filter(child -> (child.getCorrespondingVar() == expectedOuput.getCorrespondingVar()
-                        || (child instanceof StructOrClassDataNode && expectedOuput instanceof StructOrClassDataNode
-                        && child.getName().equals(expectedOuput.getName()) && child.getCorrespondingVar().equals(expectedOuput.getCorrespondingVar()))))
+                .filter(child -> child.getCorrespondingVar() == expectedOuput.getCorrespondingVar())
                 .findFirst()
                 .orElse(null);
 
@@ -162,7 +157,7 @@ public class SubprogramNode extends ValueDataNode implements IExceptionAssertion
 
     public boolean checkIsValidParamExpectedOuputs() {
         for (IDataNode input : getChildren()) {
-            if (!input.getName().equals("RETURN")) {
+            if (! input.getName().equals("RETURN")) {
                 ValueDataNode eo = getExpectedOuput((ValueDataNode) input);
                 if (eo == null) return false;
             }
@@ -293,46 +288,7 @@ public class SubprogramNode extends ValueDataNode implements IExceptionAssertion
         return false;
     }
 
-    public boolean isGMockSubprogram() {
-        if (!Environment.getInstance().getCompiler().isUseGTest()) {
-            return false;
-        }
-        if (this instanceof ConstructorDataNode)
-            return false;
-
-        if (getRoot() instanceof RootDataNode) {
-            NodeType type = ((RootDataNode) getRoot()).getLevel();
-
-            if (type == NodeType.STUB || type == NodeType.SBF)
-                return true;
-        }
-
-        if (getParent() instanceof UnitNode) {
-            UnitNode unit = getUnit();
-
-            return unit instanceof GmockUnitNode;
-        }
-
-        return false;
-    }
-
-
     public boolean isStub() {
         return !getChildren().isEmpty();
-    }
-
-    @Override
-    public String getExceptionAssertion(String functionCallStm) {
-        return new ExceptionAssertionsStatementGenerator(this).getExceptionAssertion(functionCallStm);
-    }
-
-    @Override
-    public String getPredicateAssertion(String functionCallStm) {
-        return new PredicateAssertionsStatementGenerator(this).getPredicateAssertion(functionCallStm);
-    }
-
-    @Override
-    public String getDeathAssertion(String functionCallStm) {
-        return new DeathAssertionStatementGenerator(this).getDeathAssertion(functionCallStm);
     }
 }

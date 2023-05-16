@@ -9,9 +9,9 @@ import auto_testcase_generation.cfg.object.ICfgNode;
  *
  */
 public class PathConstraint {
-	protected String constraint;
-	protected ICfgNode cfgNode;
-	protected int type;
+	private String constraint;
+	private ICfgNode cfgNode;
+	private int type;
 
 	public PathConstraint(String constraint, ICfgNode cfgNode, int type) {
 		this.constraint = constraint;

@@ -42,9 +42,7 @@ public class UILogger extends MessagesPaneLogger {
 
     // UILogger have to initialize when base scene controller is initialized
     public static void initializeUiLogger(TextArea textArea) {
-        if (UILogger.getLogMode() == null) {
-            UILogger.setLogMode(UILogger.MODE_GUI);
-        }
+        UILogger.setLogMode(UILogger.MODE_GUI);
         uiLogger = new UILogger(UILogger.class.getSimpleName(), textArea);
     }
 
@@ -72,10 +70,6 @@ public class UILogger extends MessagesPaneLogger {
 
     public static void setLogMode(String logMode) {
         UILogger.logMode = logMode;
-    }
-
-    public static String getLogMode() {
-        return logMode;
     }
 
     public static String MODE_CLI = "MODE_CLI";

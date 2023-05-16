@@ -32,8 +32,6 @@ public interface DriverConstant {
 
     String INCLUDE_CLONE_TAG = "/*{{INSERT_CLONE_SOURCE_FILE_PATHS_HERE}}*/";
 
-    String MOCK_PRE_TEST_SCRIPTS_TAG = "/*{{INSERT_MOCK_PRE_TEST_SCRIPTS_HERE}}*/";
-
     String TEST_SCRIPTS_TAG = "/*{{INSERT_TEST_SCRIPTS_HERE}}*/";
 
     String COMPOUND_SET_UP = "/* Compound test case setup */";

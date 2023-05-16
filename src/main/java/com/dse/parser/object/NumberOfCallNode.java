@@ -11,8 +11,10 @@ public class NumberOfCallNode extends ValueDataNode {
 
     private String value;
 
-    public NumberOfCallNode() {
-        super.setName("Number of calls");
+    public NumberOfCallNode() {}
+
+    public NumberOfCallNode(String name) {
+        super.setName(name);
         super.setRealType("int");
         super.setRawType("int");
     }

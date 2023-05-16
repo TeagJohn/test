@@ -17,8 +17,6 @@ public interface SpecialCharacter {
     char OPEN_BRACE = '{';
     char CLOSE_SQUARE_BRACE = ']';
     char OPEN_SQUARE_BRACE = '[';
-    char OPEN_ROUND_BRACE = '(';
-    char CLOSE_ROUND_BRACE = ')';
 
     String POINTER = "*";
 
@@ -31,6 +29,4 @@ public interface SpecialCharacter {
     String NO = "#";
 
     String POINT_TO = "->";
-
-    char DELTA = '\u0394';
 }

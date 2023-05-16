@@ -61,10 +61,6 @@ import javafx.stage.Stage;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.fxmisc.flowless.VirtualizedScrollPane;
 import org.fxmisc.richtext.CodeArea;
-import org.fxmisc.richtext.model.PlainTextChange;
-import org.fxmisc.undo.UndoManager;
-import org.fxmisc.undo.impl.UndoManagerImpl;
-import org.fxmisc.undo.impl.UnlimitedChangeQueue;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.events.EventListener;
@@ -73,7 +69,6 @@ import org.w3c.dom.html.HTMLAnchorElement;
 
 import java.awt.*;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -968,7 +963,7 @@ public class MDIWindowController implements Initializable {
             if (codeArea.isEditable() && event.getCode().equals(KeyCode.TAB)) {
                 String selectedText = codeArea.getSelectedText();
                 if (event.isShiftDown()) {
-                    int startOffset = codeArea.getAbsolutePosition(getFirstSelectedParagraph(codeArea), 0);
+                    int startOffset = getStartOffsetOfFirstSelectedParagraph(codeArea);
                     String oldText = "\n" + codeArea.getText(startOffset, codeArea.getSelection().getEnd());
                     String newText = oldText
                             .replaceAll("\\n[\\t]|\\n[^\\S\\t\\n\\r]{1,4}", "\n")
@@ -978,7 +973,7 @@ public class MDIWindowController implements Initializable {
                     event.consume();
                 } else {
                     if (selectedText.contains("\n")) {
-                        int startOffset = codeArea.getAbsolutePosition(getFirstSelectedParagraph(codeArea), 0);
+                        int startOffset = getStartOffsetOfFirstSelectedParagraph(codeArea);
                         String oldText = codeArea.getText(startOffset, codeArea.getSelection().getEnd());
                         String newText = "    " + oldText.replaceAll("\\n", "\n    ");
 
@@ -991,33 +986,6 @@ public class MDIWindowController implements Initializable {
                 }
             }
         });
-
-        codeArea.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
-            if (event.getCode().equals(KeyCode.ENTER)) {
-                int pIdx = getFirstSelectedParagraph(codeArea);
-                String space = "\n" + codeArea.getParagraph(pIdx).getText().split("[^ \t]", 2)[0];
-                codeArea.replaceText(codeArea.getSelection().getStart(), codeArea.getSelection().getEnd(), space);
-                event.consume();
-            }
-        });
-
-        codeArea.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
-            if (event.getCode().equals(KeyCode.Z) && event.isControlDown()) {
-                codeArea.undo();
-                UndoManager undoManager = codeArea.getUndoManager();
-                try {
-                    Field queueField = UndoManagerImpl.class.getDeclaredField("queue");
-                    queueField.setAccessible(true);
-                    UnlimitedChangeQueue queue = (UnlimitedChangeQueue) queueField.get(undoManager);
-                    int newRange = ((PlainTextChange) ((List) queue.peekNext()).get(0)).getRemovalEnd();
-                    codeArea.selectRange(newRange, newRange);
-                } catch (NoSuchFieldException | IllegalAccessException e) {
-                    throw new RuntimeException(e);
-                }
-                event.consume();
-            }
-        });
-
         sourceCodeViews.getTabs().add(scTab);
         scTab.setContent(sourceCodeView);
         sourceCodeViews.getSelectionModel().select(scTab);
@@ -1043,7 +1011,7 @@ public class MDIWindowController implements Initializable {
         return (low + high) / 2;
     }
 
-    private int getFirstSelectedParagraph(CodeArea codeArea) {
+    private int getStartOffsetOfFirstSelectedParagraph(CodeArea codeArea) {
         int selectedStartIdx = codeArea.getSelection().getStart();
         int low = 0;
         int high = codeArea.getParagraphs().size();
@@ -1060,7 +1028,8 @@ public class MDIWindowController implements Initializable {
         if (selectedStartIdx < codeArea.getAbsolutePosition(pIdx, 0)) {
             pIdx--;
         }
-        return pIdx;
+        int startOffset = codeArea.getAbsolutePosition(pIdx, 0);
+        return startOffset;
     }
 
     public void viewClassificationTree(IFunctionNode FFileNode, CteController cteController) {

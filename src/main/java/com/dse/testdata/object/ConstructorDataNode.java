@@ -1,7 +1,5 @@
 package com.dse.testdata.object;
 
-import com.dse.environment.Environment;
-import com.dse.parser.object.FunctionNode;
 import com.dse.parser.object.INode;
 import com.dse.parser.object.InstanceVariableNode;
 import com.dse.project_init.ProjectClone;
@@ -67,7 +65,7 @@ public class ConstructorDataNode extends SubprogramNode {
                 classVar = (ValueDataNode) tempClassVar;
             }
 
-            if (!(classVar instanceof ClassDataNode || ((classVar instanceof StructDataNode || classVar instanceof UnionDataNode) && !Environment.getInstance().isC())))
+            if (!(classVar instanceof ClassDataNode))
                 classVar = subclassVar;
 
             if (getTestCaseRoot().getFunctionNode().equals(getFunctionNode())) {
@@ -87,9 +85,6 @@ public class ConstructorDataNode extends SubprogramNode {
 
             String argumentInput = getConstructorArgumentsInputForGoogleTest();
 
-            if (functionNode instanceof FunctionNode) {
-                input += getVituralName() + " = " + functionNode.getName() + SpecialCharacter.END_OF_STATEMENT;
-            } else
             if (classVar.isInstance()) {
                 input += getVituralName() + " = new " + realType
                         + argumentInput + SpecialCharacter.END_OF_STATEMENT;
@@ -114,7 +109,7 @@ public class ConstructorDataNode extends SubprogramNode {
         return input;
     }
 
-    public String getConstructorArgumentsInputForGoogleTest() {
+    private String getConstructorArgumentsInputForGoogleTest() {
         StringBuilder input = new StringBuilder();
         input.append("(");
 

@@ -95,10 +95,10 @@ public class LambdaFunctionNode extends AbstractFunctionNode {
         convertToStandardFunctionAST(originalAST);
     }
 
-//    @Override
-//    public IFunctionConfig getFunctionConfig() {
-//        return null;
-//    }
+    @Override
+    public IFunctionConfig getFunctionConfig() {
+        return null;
+    }
 
     @Override
     public List<IVariableNode> getArguments() {
@@ -147,11 +147,6 @@ public class LambdaFunctionNode extends AbstractFunctionNode {
     @Override
     public boolean isTemplate() {
         return false;
-    }
-
-    @Override
-    public String getName() {
-        return name;
     }
 
     @Override

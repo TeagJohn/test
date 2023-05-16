@@ -83,6 +83,7 @@ public class InputColumnCellFactory implements Callback<TreeTableColumn<DataNode
                 TestDataTreeItem testDataTreeItem = (TestDataTreeItem) getTreeTableRow().getTreeItem();
                 TestDataTreeItem.ColumnType columnType = testDataTreeItem.getColumnType();
                 saveValueWhenUsersPressEnter(testDataTreeItem);
+
                 if (columnType != TestDataTreeItem.ColumnType.EXPECTED) {
                     showText(CellType.INPUT);
                 } else if (testDataTreeItem.getValue() != null && testDataTreeItem.getValue().getName().equals("RETURN")) {
@@ -109,16 +110,13 @@ public class InputColumnCellFactory implements Callback<TreeTableColumn<DataNode
             TestCasesNavigatorController.getInstance().refreshNavigatorTree();
 
             TreeTableRow<DataNode> row = getTreeTableRow();
-            TreeItem<DataNode> treeItem = row.getTreeItem();
             DataNode dataNode = row.getItem();
-
-//            if (treeItem instanceof TestDataStubParamTreeItem) {
-//                dataNode = ((TestDataStubParamTreeItem) treeItem).getInputDataNode();
-//            }
 
             if (dataNode == null) {
                 logger.debug("There is matching between a cell and its data");
             }
+
+            TreeItem<DataNode> treeItem = row.getTreeItem();
 
             try {
                 ValueDataNode valueDataNode = (ValueDataNode) dataNode;
@@ -130,7 +128,6 @@ public class InputColumnCellFactory implements Callback<TreeTableColumn<DataNode
                 // commit value
                 else {
                     onRetrieveValue(valueDataNode, newValue);
-                    treeItem.setValue(valueDataNode);
                 }
 
                 // reload các con của tree item
@@ -207,6 +204,17 @@ public class InputColumnCellFactory implements Callback<TreeTableColumn<DataNode
             return null;
         }
 
+        public boolean isPointerStubParameter(DataNode dataNode) {
+            DataNode check = dataNode;
+            while (dataNode instanceof ValueDataNode && !(check instanceof UnitUnderTestNode)) {
+                if (check instanceof PointerDataNode) {
+                    return true;
+                }
+                check = (DataNode) check.getParent();
+            }
+            return false;
+        }
+
         @Override
         public void updateItem(String item, boolean empty) {
             super.updateItem(item, empty);
@@ -237,7 +245,7 @@ public class InputColumnCellFactory implements Callback<TreeTableColumn<DataNode
 
                 // disable input when the variable is return variable
                 if (dataNode instanceof ValueDataNode)
-                    if (((ValueDataNode) dataNode).isExpected() && !isRefStubParameter(dataNode) && !isPointerStubParameter(dataNode)) {
+                    if (((ValueDataNode) dataNode).isExpected() && !isPointerStubParameter(dataNode)) {
 //                        disable();
                         return;
                     }

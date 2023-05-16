@@ -1,6 +1,5 @@
 package com.dse.testdata.gen.module.subtree;
 
-import auto_testcase_generation.instrument.FunctionInstrumentationForAllCoverages;
 import com.dse.environment.Environment;
 import com.dse.parser.funcdetail.IFunctionDetailTree;
 import com.dse.parser.object.*;
@@ -41,8 +40,10 @@ public class InitialUUTBranchGen extends AbstractInitialTreeGen {
 
             IDataNode sut = new InitialArgTreeGen().generate(unitNode, functionNode);
 
-            IDataNode staticRoot = generateStaticBranch(sut, functionNode);
-            sut.getChildren().add(0, staticRoot);
+            if (!functionNode.isTemplate() && !functionNode.isMethod()) {
+                IDataNode staticRoot = generateStaticBranch(sut, functionNode);
+                sut.getChildren().add(0, staticRoot);
+            }
 
             if (functionNode instanceof ConstructorNode) {
                 sut.getChildren().clear();
@@ -82,14 +83,7 @@ public class InitialUUTBranchGen extends AbstractInitialTreeGen {
         for (int i = 0; i < functions.size(); i++) {
             INode func = functions.get(i);
             String funcName = (func instanceof FunctionNode) ? ((FunctionNode) func).getAST().getDeclarator().getName().getRawSignature() : "";
-            boolean isContainFuncName = false;
-            for (String exp : expressions) {
-                if (funcName.contains(exp)) {
-                    isContainFuncName = true;
-                    break;
-                }
-            }
-            if (!isContainFuncName) {
+            if (!expressions.contains(funcName)) {
                 functions.remove(func);
                 i--;
             }
@@ -118,14 +112,11 @@ public class InitialUUTBranchGen extends AbstractInitialTreeGen {
         logger.debug("generateStaticBranch");
         RootDataNode staticRoot = new RootDataNode(STATIC);
 
-        if (FunctionInstrumentationForAllCoverages.STATIC_REFACTOR
-            && !functionNode.isTemplate() && !functionNode.isMethod()) {
-            List<StaticVariableNode> staticVars = sut.getStaticVariables();
+        List<StaticVariableNode> staticVars = sut.getStaticVariables();
 
-            for (StaticVariableNode staticVar : staticVars) {
-                ValueDataNode dataNode = genInitialTree(staticVar, staticRoot);
-                dataNode.setExternel(true);
-            }
+        for (StaticVariableNode staticVar : staticVars) {
+            ValueDataNode dataNode = genInitialTree(staticVar, staticRoot);
+            dataNode.setExternel(true);
         }
 
         staticRoot.setParent(current);

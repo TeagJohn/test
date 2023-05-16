@@ -1,13 +1,11 @@
 package com.dse.report.element;
 
-import com.dse.environment.Environment;
-import com.dse.report.converter.*;
-import com.dse.report.converter.gtest.GTestInitialAssertionConverter;
-import com.dse.report.converter.gtest.GTestLastAssertionConverter;
-import com.dse.report.converter.gtest.GTestMiddleAssertionConverter;
-import com.dse.testcase_execution.ITestcaseExecution;
 import com.dse.testcase_execution.result_trace.AssertionResult;
 import com.dse.testcase_execution.result_trace.IResultTrace;
+import com.dse.report.converter.AssertionConverter;
+import com.dse.report.converter.InitialAssertionConverter;
+import com.dse.report.converter.LastAssertionConverter;
+import com.dse.report.converter.MiddleAssertionConverter;
 import com.dse.testdata.object.SubprogramNode;
 
 import java.util.ArrayList;
@@ -56,26 +54,14 @@ public class Event implements IElement {
     public void generate() {
         generateEventHeader(elements, index);
 
-        Converter assertConverter;
+        AssertionConverter assertConverter;
 
-        if (Environment.getInstance().getCompiler().isUseGTest()) {
-            if (pos == Position.FIRST) {
-                assertConverter = new GTestInitialAssertionConverter(failures, index);
-            } else if (pos == Position.LAST) {
-                assertConverter = new GTestLastAssertionConverter(failures, index, numberOfCalls);
-            } else {
-                assertConverter = new GTestMiddleAssertionConverter(failures, index, iterator);
-            }
-        } else {
-            if (pos == Position.FIRST)
-                assertConverter = new InitialAssertionConverter(failures, index);
-            else if (pos == Position.LAST)
-                assertConverter = new LastAssertionConverter(failures, index, numberOfCalls);
-            else
-                assertConverter = new MiddleAssertionConverter(failures, index, iterator);
-
-        }
-
+        if (pos == Position.FIRST)
+            assertConverter = new InitialAssertionConverter(failures, index);
+        else if (pos == Position.LAST)
+            assertConverter = new LastAssertionConverter(failures, index, numberOfCalls);
+        else
+            assertConverter = new MiddleAssertionConverter(failures, index, iterator);
 
         Table assertTable = assertConverter.execute(subprogram);
 

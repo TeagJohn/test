@@ -2,13 +2,10 @@ package com.dse.testdata.gen.module;
 
 import com.dse.environment.Environment;
 import com.dse.logger.AkaLogger;
-import com.dse.parser.dependency.FunctionCallDependencyGeneration;
-import com.dse.parser.dependency.GlobalVariableDependencyGeneration;
 import com.dse.parser.funcdetail.IFunctionDetailTree;
 import com.dse.parser.object.ICommonFunctionNode;
 import com.dse.parser.object.INode;
 import com.dse.testdata.IDataTree;
-import com.dse.testdata.gen.module.subtree.InitialGMockUnitBranchGen;
 import com.dse.testdata.gen.module.subtree.InitialStubTreeGen;
 import com.dse.testdata.gen.module.subtree.InitialStubUnitBranchGen;
 import com.dse.testdata.gen.module.subtree.InitialUUTBranchGen;
@@ -40,8 +37,6 @@ public class DataTreeGeneration extends AbstractDataTreeGeneration {
 
     @Override
     public void generateTree() throws Exception {
-        (new FunctionCallDependencyGeneration()).dependencyGeneration(functionNode);
-        (new GlobalVariableDependencyGeneration()).dependencyGeneration(functionNode);
         root.setFunctionNode(functionNode);
         INode sourceCode = Utils.getSourcecodeFile(functionNode);
 
@@ -52,11 +47,6 @@ public class DataTreeGeneration extends AbstractDataTreeGeneration {
         for (INode sbf : Environment.getInstance().getSBFs()) {
             if (!sourceCode.equals(sbf))
                 new InitialStubUnitBranchGen().generate(root, sbf);
-        }
-
-        // generate gMock branch
-        if (Environment.getInstance().getCompiler().isUseGTest()) {
-            new InitialGMockUnitBranchGen().generate(root, functionNode);
         }
 
         // generate stub branch

@@ -1,7 +1,6 @@
 package com.dse.testcase_manager;
 
 import auto_testcase_generation.testdatagen.RandomInputGeneration;
-import com.dse.environment.Environment;
 import com.dse.guifx_v3.controllers.TestCaseTreeTableController;
 import com.dse.guifx_v3.objects.AbstractTableCell;
 import com.dse.logger.AkaLogger;
@@ -161,24 +160,7 @@ public class SimpleTestDataExporter {
 
             } else if (node instanceof ClassDataNode) {
                 ClassDataNode dataNode = (ClassDataNode) node;
-                if (dataNode.getSubStructure() != null) {
-                    json.addProperty("subclass", dataNode.getSubStructure().getName());
-
-                }
-
-            } else if (node instanceof SubStructDataNode) {
-                SubStructDataNode dataNode = (SubStructDataNode) node;
-                ConstructorDataNode constructorDataNode = dataNode.getConstructorDataNode();
-                if (constructorDataNode != null) {
-                    String constructor = constructorDataNode.getName();
-                    json.addProperty("selectedConstructor", constructor);
-                }
-
-            } else if (node instanceof StructDataNode) {
-                StructDataNode dataNode = (StructDataNode) node;
-                if (dataNode.getSubStructure() != null) {
-                    json.addProperty("substruct", dataNode.getSubStructure().getName());
-                }
+                json.addProperty("subclass", dataNode.getSubClass().getName());
 
             } else if (node instanceof EnumDataNode) {
                 EnumDataNode dataNode = (EnumDataNode) node;
@@ -187,27 +169,11 @@ public class SimpleTestDataExporter {
                     json.addProperty("value", dataNode.getValue());
                 }
 
-            } else if (node instanceof SubUnionDataNode) {
-                SubUnionDataNode dataNode = (SubUnionDataNode) node;
-                ConstructorDataNode constructorDataNode = dataNode.getConstructorDataNode();
-                if (constructorDataNode != null) {
-                    String constructor = constructorDataNode.getName();
-                    json.addProperty("selectedConstructor", constructor);
-                }
             } else if (node instanceof UnionDataNode) {
-                if (Environment.getInstance().isC()) {
-                    UnionDataNode dataNode = (UnionDataNode) node;
+                UnionDataNode dataNode = (UnionDataNode) node;
 
-                    if (dataNode.getSelectedField() != null) {
-                        json.addProperty("selectedField", dataNode.getSelectedField());
-                    }
-                } else {
-                    UnionDataNode dataNode = (UnionDataNode) node;
-                    if (dataNode.getSubUnion() != null) {
-                        json.addProperty("subsunion", dataNode.getSubUnion().getName());
-
-                    }
-
+                if (dataNode.getSelectedField() != null) {
+                    json.addProperty("selectedField", dataNode.getSelectedField());
                 }
 
             } else if (node instanceof FunctionPointerDataNode) {

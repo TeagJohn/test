@@ -2,6 +2,7 @@ package com.dse.util;
 
 import com.dse.environment.Environment;
 import com.dse.logger.AkaLogger;
+import com.dse.parser.ProjectParser;
 import com.dse.parser.SourcecodeFileParser;
 import com.dse.parser.dependency.Dependency;
 import com.dse.parser.dependency.TypeDependency;
@@ -18,12 +19,6 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -61,7 +56,7 @@ public class VariableTypeUtils {
      * @param rawType
      * @return
      */
-    public static String removeRedundantKeyword(String rawType) {
+    public static String removeRedundantKeyword(String rawType){
         for (int i = 0; i < 5; i++) {
             rawType = deleteUnionKeyword(rawType);
             rawType = deleteStructKeyword(rawType);
@@ -106,12 +101,12 @@ public class VariableTypeUtils {
             realRawType = realRawType.replaceFirst(newType, oldType);
         }
 
-        try {
-            realRawType = getRealTypeFromMacro(fileNode, realRawType);
-        } catch (Exception e) {
-            e.printStackTrace();
-            logger.error("Failed to get real type from macro");
-        }
+//        try {
+//            realRawType = getRealTypeFromMacro(fileNode, realRawType);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            logger.error("Failed to get real type from macro");
+//        }
 
         return realRawType;
     }
@@ -144,17 +139,15 @@ public class VariableTypeUtils {
         StringBuilder codeBuilder = new StringBuilder(realRawType);
         int index = realRawType.indexOf(SpecialCharacter.OPEN_SQUARE_BRACE);
         if (index > 0) {
-            codeBuilder.insert(index, " VAR");
+            codeBuilder.insert(index, "VAR");
         } else {
             codeBuilder.append(" VAR");
         }
         codeBuilder.append(SpecialCharacter.END_OF_STATEMENT);
         IASTTranslationUnit ast = parser.getIASTTranslationUnit(codeBuilder.toString().toCharArray());
         IASTSimpleDeclaration declaration = (IASTSimpleDeclaration) ast.getDeclarations()[0];
-        VariableNode temp = new VariableNode();
-        temp.setAST(declaration);
-        realRawType = temp.getRawType();
-        // realRawType = declaration.getDeclSpecifier().toString();
+        realRawType = declaration.getDeclSpecifier().toString();
+
         return realRawType;
     }
 
@@ -166,7 +159,6 @@ public class VariableTypeUtils {
      */
     public static String deleteStorageClasses(String type) {
         type = type.replaceAll("\\bconst\\b\\s+", "")
-                .replaceAll("\\bconst\\b$", "")
                 .replaceAll("\\s+const\\b$", "")
                 .replaceAll("\\s+const&", "&")
                 .replaceAll("\\s+const\\*", "*");
@@ -308,7 +300,7 @@ public class VariableTypeUtils {
     }
 
     public static String getElementIndex(String rawType) {
-        rawType = rawType.trim();
+        rawType =rawType.trim();
 
         StringBuilder elementIndex = new StringBuilder();
 
@@ -434,6 +426,7 @@ public class VariableTypeUtils {
     }
 
 
+
     public static boolean isPointer(String rawType) {
         rawType = deleteUnionKeyword(rawType);
         rawType = deleteStructKeyword(rawType);
@@ -446,11 +439,6 @@ public class VariableTypeUtils {
             return false;
 
         return rawType.contains(ONE_LEVEL);
-    }
-
-    // Not cover all cases but this is enough for now
-    public static boolean isReference(String type) {
-        return type.trim().endsWith(REFERENCE);
     }
 
     public static boolean isSet(String rawType) {
@@ -504,7 +492,6 @@ public class VariableTypeUtils {
     public static boolean isFunctionPointer(String rawType) {
         return rawType
                 .replace(SpecialCharacter.LINE_BREAK, SpecialCharacter.EMPTY)
-                .replaceAll("\\s+", " ")
                 .matches(IRegex.FUNCTION_POINTER);
     }
 
@@ -1026,13 +1013,8 @@ public class VariableTypeUtils {
         for (String type : getAllBasicFieldNames(BASIC.NUMBER.class)) {
             if (rawType.matches(type + MULTI_LEVEL_POINTER))
                 return true;
-        }
 
-        for (String type : getAllBasicFieldNames(BASIC.STDINT.class)) {
-            if (rawType.matches(type + MULTI_LEVEL_POINTER))
-                return true;
         }
-
         return false;
     }
 
@@ -1202,7 +1184,6 @@ public class VariableTypeUtils {
                 || isNumTwoDimensionFloat(rawType);
 
     }
-
     public static boolean isNumBasicInteger(String rawType) {
         rawType = deleteUnionKeyword(rawType);
         rawType = deleteStructKeyword(rawType);
@@ -1219,7 +1200,6 @@ public class VariableTypeUtils {
         }
         return false;
     }
-
     public static boolean isNumBasicFloat(String rawType) {
         rawType = deleteUnionKeyword(rawType);
         rawType = deleteStructKeyword(rawType);
@@ -1418,13 +1398,6 @@ public class VariableTypeUtils {
                 || isChTwoLevel(rawType);
     }
 
-    public static boolean isPrimitive(String rawType) {
-        return isBasic(rawType) || isVoid(rawType) || isBoolMultiDimension(rawType) || isBoolMultiLevel(rawType)
-                || isStrMultiDimension(rawType) || isStrMultiLevel(rawType) || isNumMultiDimension(rawType)
-                || isNumMultiLevel(rawType) || isChMultiDimension(rawType) || isChMultiLevel(rawType)
-                || isVoidPointer(rawType) || isVoidMultiLevel(rawType);
-    }
-
 //    public static List<String> getTemplateArguments(String rawType) {
 //        List<String> templateArguments = new ArrayList<>();
 //
@@ -1498,6 +1471,7 @@ public class VariableTypeUtils {
     /**
      * Get all fields in a class in lower case, including all fields in child
      * class
+     *
      */
     public static List<Field> getAllBasicFields(Class<?> c) {
         List<Field> fields = new ArrayList<>();
@@ -1516,6 +1490,7 @@ public class VariableTypeUtils {
      * Delete size from array variable type
      * <p>
      * Ex: int[3] ==> int[]
+     *
      */
     public static String deleteSizeFromArray(String type) {
         return type.replaceAll("\\[[0-9]+\\]", "[]")
@@ -1524,20 +1499,20 @@ public class VariableTypeUtils {
 
     /**
      * Remove pointer *
-     * <p>
+     *
      * "int" ---> "int"
-     * <p>
+     *
      * "int*" ----> "int"
-     * <p>
+     *
      * "int**" ----> "int"
-     * <p>
+     *
      * "vector<int*>* *" ----> "vector<int*>"
      *
      * @param type
      * @return
      */
-    public static String deletePointerOperator(String type) {
-        return type.trim().replaceAll("(\\s*\\*)+$", "");
+    public static String deletePointerOperator(String type){
+        return type.trim().replaceAll("(\\s*\\*)+$","");
     }
 
     public static boolean isStructureMultiLevel(String rawType) {
@@ -1637,18 +1612,10 @@ public class VariableTypeUtils {
 
     public static boolean isStructureSimple(String type) {
         type = removeRedundantKeyword(type);
-        if (isBasic(type) || isVoid(type) || type.equals("auto")) {
+        if (isBasic(type) || isVoid(type) || type.equals("auto"))
             return false;
-        } else {
-            if (VariableTypeUtils.isFunctionPointer(type)) {
-                return false;
-            }
-            try {
-                return TimeLimitedMatcherFactory.matcher(Pattern.compile(STRUCTURE.SIMPLE_STRUCTURE_REGEX), type).matches();
-            } catch (Exception e) {
-                return false;
-            }
-        }
+        else
+            return type.matches(STRUCTURE.SIMPLE_STRUCTURE_REGEX);
     }
 
 //    public static boolean isTemplateClass(String type) {
@@ -1911,7 +1878,7 @@ public class VariableTypeUtils {
             public static final String SIGNED_CHAR = "signed char";
             public static final String UNSIGNED_CHAR = "unsigned char";
             public static final String WCHAR__T = "wchar__t";
-            //            public static final String ____WCHAR__T = "__wchar_t";
+//            public static final String ____WCHAR__T = "__wchar_t";
             public static final String CHAR16__T = "char16_t";
             public static final String CHAR32__T = "char32_t";
         }
@@ -1929,31 +1896,24 @@ public class VariableTypeUtils {
         public static class VECTOR {
             public static final String VECTOR = "vector";
         }
-
         public static class LIST {
             public static final String LIST = "list";
         }
-
         public static class QUEUE {
             public static final String QUEUE = "queue";
         }
-
         public static class STACK {
             public static final String STACK = "stack";
         }
-
         public static class SET {
             public static final String SET = "set";
         }
-
         public static class PAIR {
             public static final String PAIR = "pair";
         }
-
         public static class MAP {
             public static final String MAP = "map";
         }
-
         public static class ARRAY {
             public static final String ARRAY = "array";
         }
@@ -2089,11 +2049,10 @@ public class VariableTypeUtils {
      * "int*" ---> "int"
      *
      * "int**" ---> "int*"
-     *
      * @param type
      * @return
      */
-    public static String getElementTypeOfPointer(String type) {
+    public static String getElementTypeOfPointer(String type){
         return type.replaceAll("\\*$", "");
     }
 }

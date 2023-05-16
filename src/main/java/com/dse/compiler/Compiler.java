@@ -3,8 +3,6 @@ package com.dse.compiler;
 import com.dse.compiler.message.CompileMessage;
 import com.dse.compiler.message.ICompileMessage;
 import com.dse.config.AkaConfig;
-import com.dse.config.WorkspaceConfig;
-import com.dse.environment.Environment;
 import com.dse.logger.AkaLogger;
 import com.dse.parser.object.INode;
 import com.dse.project_init.ProjectClone;
@@ -12,8 +10,6 @@ import com.dse.user_code.envir.EnvironmentUserCode;
 import com.dse.util.*;
 
 import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,8 +34,6 @@ public class Compiler implements ICompiler {
     private List<String> defines = new ArrayList<>();
 
     private String name;
-
-    private boolean useGTest;
 
     /*
      * TODO: other option
@@ -132,28 +126,13 @@ public class Compiler implements ICompiler {
                 .append(SpecialCharacter.SPACE)
                 .append("\"" + filePath + "\"")
                 .append(SpecialCharacter.SPACE);
-        if (Environment.getInstance().isOnWhiteBoxMode()) {
-            if (includePaths != null && includePaths.size() != 0) {
-                Path rootPath = Paths.get(Environment.getInstance().getProjectNode().getAbsolutePath());
-                for (String path : includePaths) {
-                    Path originPath = Paths.get(PathUtils.toAbsolute(path));
-                    String relativePath = rootPath.relativize(originPath).toString();
-                    String newPath = new WorkspaceConfig().fromJson().getInstrumentDirectory() + File.separator + relativePath;
-                    builder.append(includeFlag)
-                            .append("\"" + newPath + "\"")
-                            .append(SpecialCharacter.SPACE);
-                }
-            }
 
-        } else {
-            if (includePaths != null && includePaths.size() != 0) {
-                for (String path : includePaths) {
-                    builder.append(includeFlag)
-                            .append("\"" + path + "\"")
-                            .append(SpecialCharacter.SPACE);
-                }
+        if (includePaths != null && includePaths.size() != 0) {
+            for (String path : includePaths) {
+                builder.append(includeFlag)
+                        .append("\"" + path + "\"")
+                        .append(SpecialCharacter.SPACE);
             }
-
         }
 
         List<String> userCodes = EnvironmentUserCode.getInstance().getAllFilePath();
@@ -374,18 +353,10 @@ public class Compiler implements ICompiler {
     }
 
     public boolean isGccCommand(){
-        return !compileCommand.contains("++");
+        return compileCommand.contains("gcc");
     }
 
     public boolean isGPlusPlusCommand(){
-        return compileCommand.contains("++");
-    }
-
-    public boolean isUseGTest() {
-        return useGTest;
-    }
-
-    public void setUseGTest(boolean useGTest) {
-        this.useGTest = useGTest;
+        return compileCommand.contains("g++");
     }
 }

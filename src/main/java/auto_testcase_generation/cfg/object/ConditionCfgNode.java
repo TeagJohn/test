@@ -7,6 +7,8 @@ public abstract class ConditionCfgNode extends NormalCfgNode {
 
 	private boolean isVisitedFalseBranch = false;
 
+	public ConditionCfgNode(){super();}
+
 	public ConditionCfgNode(IASTNode node) {
 		super(node);
 	}

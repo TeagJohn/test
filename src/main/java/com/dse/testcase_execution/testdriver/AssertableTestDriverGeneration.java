@@ -1,16 +1,10 @@
 package com.dse.testcase_execution.testdriver;
 
-import com.dse.environment.Environment;
 import com.dse.parser.object.ConstructorNode;
-import com.dse.parser.object.FunctionNode;
 import com.dse.search.Search2;
 import com.dse.stub_manager.StubManager;
-import com.dse.testcase_execution.DriverConstant;
-import com.dse.testcase_execution.ITestcaseExecution;
 import com.dse.testcase_manager.TestCase;
 import com.dse.testdata.comparable.AssertMethod;
-import com.dse.testdata.comparable.gmock.GmockUtils;
-import com.dse.testdata.comparable.gtest.*;
 import com.dse.testdata.object.*;
 import com.dse.util.SourceConstant;
 import com.dse.util.SpecialCharacter;
@@ -29,34 +23,22 @@ public abstract class AssertableTestDriverGeneration extends TestDriverGeneratio
         // STEP 2: Generate initialization of variables
         String initialization = generateInitialization(testCase);
 
-        //STEP 2.5: Generate EXPECT_CALL
-        String expectCall = generateExpectCall(testCase);
-
         // STEP 3: Generate full function call
         String functionCall = generateFunctionCall(testCase);
 
         // STEP 4: FCALLS++ - Returned from UUT
         String increaseFcall;
-        if (testCase.getFunctionNode() instanceof ConstructorNode) {
+        if (testCase.getFunctionNode() instanceof ConstructorNode)
             increaseFcall = SpecialCharacter.EMPTY;
-        } else {
+        else
             increaseFcall = SourceConstant.INCREASE_FCALLS + generateReturnMark(testCase);
-        }
-
 
         // STEP 5: Generation assertion actual & expected values
         String assertion = generateAssertion(testCase);
 
-        String beginMark = "";
-        String endMark = "";
-        if (Environment.getInstance().getCompiler().isUseGTest()) {
-            String testCaseName = testCase.getName().replaceAll("[^\\w]", SpecialCharacter.UNDERSCORE);
-            beginMark = String.format(DriverConstant.MARK + "(\"BEGIN OF %s\");\n", testCaseName);
-            endMark = String.format(DriverConstant.MARK + "(\"END OF %s\");\n", testCaseName);
-        }
         // STEP 6: Repeat iterator
         String singleScript = String.format(
-                "{\n" +
+                    "{\n" +
                         "%s\n" +
                         "%s\n" +
                         "%s\n" +
@@ -64,21 +46,13 @@ public abstract class AssertableTestDriverGeneration extends TestDriverGeneratio
                         "%s\n" +
                         "%s\n" +
                         "%s\n" +
-                        "%s\n" +
-                        "%s\n" +
-                        "%s\n" +
-                        "%s\n" +
-                        "}",
+                    "}",
                 testCaseNameAssign,
-                beginMark,
                 testCase.getTestCaseUserCode().getSetUpContent(),
                 initialization,
-                expectCall,
                 functionCall,
                 increaseFcall,
-                endMark,
                 assertion,
-                GmockUtils.createVerifyAndClearExpectations(testCase),
                 testCase.getTestCaseUserCode().getTearDownContent());
 
 //        StringBuilder script = new StringBuilder();
@@ -102,15 +76,10 @@ public abstract class AssertableTestDriverGeneration extends TestDriverGeneratio
 
         // not void function
         if (expectedOutputDataNode != null) {
-            if (!(expectedOutputDataNode.getParent() instanceof SubprogramNode
-                    && IPredicateAssertions.assertMethods
-                    .contains(((SubprogramNode) expectedOutputDataNode.getParent()).getAssertMethod()))) {
-                assertion = expectedOutputDataNode.getAssertion();
-            }
 //            if (expectedOutputDataNode.getRawType().equals("void*")){
 //                assertion = "/*Does not support CU_ASSERT for void pointer comparison*/";
 //            } else {
-//            assertion = expectedOutputDataNode.getAssertion();
+                assertion = expectedOutputDataNode.getAssertion();
 //            }
         }
 
@@ -130,23 +99,21 @@ public abstract class AssertableTestDriverGeneration extends TestDriverGeneratio
         if (sut != null) {
             initialize = SpecialCharacter.LINE_BREAK;
 
-//            List<IDataNode> expectedGlobals = Search2.findGlobalRoot(testCase.getRootDataNode()).getChildren();
-//            List<IDataNode> expectedGlobals = new ArrayList<>(globalExpectedMap.values()); //fix classes
+            List<IDataNode> expectedGlobals = Search2.findGlobalRoot(testCase.getRootDataNode()).getChildren();
+
             try {
                 // sut arguments
                 initialize += addParamAssert(sut, true);
 
                 // global variables
-                for (Map.Entry expectedMap : globalExpectedMap.entrySet()) {
-                    IDataNode actualDataNode = (IDataNode) expectedMap.getKey();
-                    IDataNode expected = (IDataNode) expectedMap.getValue();
-                    if (actualDataNode instanceof ValueDataNode) {
-                        boolean shouldInit = shouldInitializeExpected((ValueDataNode) actualDataNode);
-                        boolean haveMethod = unnecessaryInitializeExpected((ValueDataNode) actualDataNode);
+                for (IDataNode expected : expectedGlobals) {
+                    if (expected instanceof ValueDataNode) {
+                        boolean shouldInit = shouldInitializeExpected((ValueDataNode) expected);
+                        boolean haveMethod = unnecessaryInitializeExpected((ValueDataNode) expected);
                         if (shouldInit || haveMethod) {
                             initialize += expected.getInputForGoogleTest(false);
                             initialize += SpecialCharacter.LINE_BREAK;
-                            initialize += ((ValueDataNode) actualDataNode).getAssertion();
+                            initialize += ((ValueDataNode) expected).getAssertion();
                         }
                     }
                 }
@@ -176,7 +143,7 @@ public abstract class AssertableTestDriverGeneration extends TestDriverGeneratio
             boolean haveMethod = unnecessaryInitializeExpected(param);
 
             ValueDataNode expected = Search2.getExpectedValue(param);
-            SubprogramNode subprogramNode = Search2.findSubprogramUnderTest(((TestCase) testCase).getRootDataNode());
+            SubprogramNode subprogramNode = Search2.findSubprogramUnderTest(((TestCase)testCase).getRootDataNode());
             TemplateSubprogramDataNode templateSubprogramDataNode = (subprogramNode != null && subprogramNode instanceof TemplateSubprogramDataNode) ? (TemplateSubprogramDataNode) subprogramNode : null;
             if (templateSubprogramDataNode != null && expected != null) {
                 Map<String, String> typeMap = templateSubprogramDataNode.getRealTypeMapping();
@@ -205,14 +172,11 @@ public abstract class AssertableTestDriverGeneration extends TestDriverGeneratio
                 } else {
                     if (expected != null) {
                         output.append(expected.getAssertion());
-                    } else {
-                        output.append(addParamAssert(param, false));
                     }
                 }
-            } else {
-                output.append(addParamAssert(param, false));
             }
 
+            output.append(addParamAssert(param, false));
         }
 
         return output.toString();
@@ -223,15 +187,6 @@ public abstract class AssertableTestDriverGeneration extends TestDriverGeneratio
             return false;
 
         String assertMethod = dataNode.getAssertMethod();
-        if (Environment.getInstance().getCompiler().isUseGTest()) {
-            assertMethod = assertMethod.split(": ")[0];
-            return IGeneralizedAssertion.assertMethods.contains(assertMethod)
-                    || IBooleanConditions.assertMethods.contains(assertMethod)
-                    || IExceptionAssertions.assertMethods.contains(assertMethod)
-                    || IPredicateAssertions.assertMethods.contains(assertMethod)
-                    || IStringComparison.assertMethods.contains(assertMethod)
-                    || IDeathAssertions.assertMethods.contains(assertMethod);
-        }
 
         return assertMethod.equals(AssertMethod.ASSERT_TRUE)
                 || assertMethod.equals(AssertMethod.ASSERT_FALSE)
@@ -254,55 +209,12 @@ public abstract class AssertableTestDriverGeneration extends TestDriverGeneratio
             return ((NormalDataNode) dataNode).getValue() != null;
 
         if (dataNode instanceof ClassDataNode) {
-            ISubStructOrClassDataNode subClass = ((ClassDataNode) dataNode).getSubStructure();
+            SubClassDataNode subClass = ((ClassDataNode) dataNode).getSubClass();
 
             if (subClass == null)
                 return false;
 
             ConstructorDataNode constructor = subClass.getConstructorDataNode();
-
-            if (constructor == null)
-                return false;
-
-//            if (constructor.getChildren().size() == 0)
-//                return false;
-
-            for (IDataNode argument : constructor.getChildren()) {
-                if (!shouldInitializeExpected((ValueDataNode) argument))
-                    return false;
-            }
-
-            return true;
-        }
-
-        if (dataNode instanceof StructDataNode) {
-            ISubStructOrClassDataNode subStruct = ((StructDataNode) dataNode).getSubStructure();
-
-            if (subStruct == null)
-                return false;
-
-            ConstructorDataNode constructor = subStruct.getConstructorDataNode();
-
-            if (constructor == null)
-                return false;
-
-//            if (constructor.getChildren().size() == 0)
-//                return false;
-
-            for (IDataNode argument : constructor.getChildren()) {
-                if (!shouldInitializeExpected((ValueDataNode) argument))
-                    return false;
-            }
-
-            return true;
-        }
-        if (dataNode instanceof UnionDataNode) {
-            SubUnionDataNode subUnion = ((UnionDataNode) dataNode).getSubUnion();
-
-            if (subUnion == null)
-                return false;
-
-            ConstructorDataNode constructor = subUnion.getConstructorDataNode();
 
             if (constructor == null)
                 return false;
@@ -317,7 +229,6 @@ public abstract class AssertableTestDriverGeneration extends TestDriverGeneratio
 
             return true;
         }
-
 
         if (dataNode instanceof EnumDataNode) {
             ((EnumDataNode) dataNode).getValue();

@@ -6,4 +6,6 @@ package auto_testcase_generation.cfg.object;
  * @author ducanh
  */
 public class ForwardCfgNode extends CfgNode {
+    public ForwardCfgNode() {
+    }
 }

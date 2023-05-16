@@ -1,7 +1,14 @@
 package com.dse.regression;
 
+import com.dse.environment.Environment;
+import com.dse.environment.EnvironmentSearch;
+import com.dse.environment.object.EnviroSearchListNode;
+import com.dse.environment.object.IEnvironmentNode;
+import com.dse.parser.VectorCastProjectLoader;
 import com.dse.parser.object.INode;
 import com.dse.parser.object.ISourcecodeFileNode;
+import com.dse.parser.object.Node;
+import com.dse.parser.object.ProjectNode;
 import com.dse.search.Search;
 import com.dse.search.condition.SourcecodeFileNodeCondition;
 import com.dse.logger.AkaLogger;
@@ -33,6 +40,8 @@ public abstract class AbstractDifferenceDetecter {
     public void detectChanges(INode physicalTreeRoot, String elementFolderOfOldVersion) {
         // get changed source code file by analyzing physical tree
         List<INode> modifiedSrcNodes = getModifiedSourcecodeFiles(physicalTreeRoot);
+//        // get added node
+//        List<INode> addedNodeList = getAddedSourcecodeFiles(physicalTreeRoot);
 
         for (INode modifiedSrcNode : modifiedSrcNodes) {
             diff(modifiedSrcNode, elementFolderOfOldVersion);
@@ -60,9 +69,49 @@ public abstract class AbstractDifferenceDetecter {
 
                     castedNode.setLastModifiedDate(newModifiedDate);
                 }
+                else if (oldLastModifiedDate == null && newModifiedDate != null) { // add new file -> have no old modified date, have only new modified date
+                    changedNode.add(node);
+                    logger.debug("File " + castedNode.getAbsolutePath() + " is added since " + newModifiedDate.toString());
+                    modifiedSourcecodeFiles.put(node, newModifiedDate);
+                    addedNodes.add(node);
+                    castedNode.setLastModifiedDate(newModifiedDate);
+                }
             }
 
         return changedNode;
+    }
+
+    public List<INode> getAddedSourcecodeFiles(INode physicalTreeRoot) {
+        // added node return
+        List<INode> addedNodes = new ArrayList<>();
+        // This project node has been loaded by physical tree, which had been saved in the previous time.
+        INode oldProjectNode = physicalTreeRoot;
+        INode newProjectNode = null;
+        String path = "";
+        try {
+            if (physicalTreeRoot instanceof ProjectNode) path = physicalTreeRoot.getAbsolutePath();
+        }
+        catch (NullPointerException nullPointerException) {
+            nullPointerException.printStackTrace();
+            logger.error("Can not find the project's absolute path!");
+        }
+        if (!path.isEmpty()) {
+            VectorCastProjectLoader loader = new VectorCastProjectLoader();
+            loader.setSourcecodeList(Arrays.asList(new File(path)));
+            newProjectNode = loader.constructPhysicalTree();
+        }
+        if (newProjectNode == null) return null;
+        List<Node> childrenOld = oldProjectNode.getChildren();
+        for (Node childNew : newProjectNode.getChildren()) {
+            boolean isIncluded = false;
+            for (Node childOld : childrenOld) {
+                if (childOld.getAbsolutePath().equals(childNew.getAbsolutePath())) {
+                    isIncluded = true;
+                }
+            }
+            if (!isIncluded) addedNodes.add(childNew);
+        }
+        return addedNodes;
     }
 
     public Date getDate(File f) {

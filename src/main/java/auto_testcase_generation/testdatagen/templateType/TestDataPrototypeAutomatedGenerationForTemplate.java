@@ -1,9 +1,6 @@
 package auto_testcase_generation.testdatagen.templateType;
 
-import auto_testcase_generation.cfg.ICFG;
-import auto_testcase_generation.cfg.object.ICfgNode;
 import com.dse.environment.Environment;
-import com.dse.environment.object.EnviroCoverageTypeNode;
 import com.dse.logger.AkaLogger;
 import com.dse.parser.object.*;
 import com.dse.search.Search;
@@ -13,15 +10,19 @@ import com.dse.search.condition.StructNodeCondition;
 import com.dse.testcase_manager.TestCaseManager;
 import com.dse.testcase_manager.TestPrototype;
 import com.dse.testdata.object.*;
-import com.dse.util.*;
-import org.eclipse.cdt.core.dom.ast.*;
+import com.dse.util.SpecialCharacter;
+import com.dse.util.TemplateUtils;
+import com.dse.util.Utils;
+import com.dse.util.VariableTypeUtils;
+import org.eclipse.cdt.core.dom.ast.IASTDeclarationStatement;
+import org.eclipse.cdt.core.dom.ast.IASTNode;
+import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclaration;
 import org.eclipse.cdt.internal.core.dom.parser.ASTNode;
-import org.eclipse.cdt.internal.core.dom.parser.IASTAmbiguousStatement;
-import org.eclipse.cdt.internal.core.dom.parser.cpp.*;
+import org.eclipse.cdt.internal.core.dom.parser.cpp.CPPASTParameterDeclaration;
+import org.eclipse.cdt.internal.core.dom.parser.cpp.CPPASTSimpleDeclaration;
+import org.eclipse.cdt.internal.core.dom.parser.cpp.CPPASTSimpleTypeTemplateParameter;
 
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static com.dse.util.TemplateUtils.deleteTemplateParameters;
 
@@ -223,42 +224,11 @@ public class TestDataPrototypeAutomatedGenerationForTemplate {
 
     private List<TestPrototype> getStructureVsClassNodeByStrategy(ICommonFunctionNode functionNode) {
         List<TestPrototype> prototypeList = new ArrayList<>();
-        Map<String , Map<String, Set<String>>> listFeature= getFeaturesOfFunction((FunctionNode) functionNode);
         List<INode> listStructureNode = findStructureNodeInProject(Environment.getInstance().getProjectNode());
-        List<INode> listAfterReduce = new ArrayList<>();
         //Search.searchNodes(Environment.getInstance().getProjectNode(), new ClassvsStructvsNamespaceCondition())
-        for (int i = 0; i<listStructureNode.size();i++) {
-            INode node = listStructureNode.get(i);
-            boolean valid = false;
-            if(node instanceof StructNode) {
-                valid = true;
-            } else if(node instanceof ClassNode) {
-                if(!((ClassNode) node).isTemplate()) valid=true;
-            }
-//            ClassNode node = (ClassNode) listStructureNode.get(i);
-            if(valid) {
-                for (int j=0; j<node.getChildren().size();j++) {
-                    String str = node.getChildren().get(j).getName();
-                    boolean flag = false;
-                    int idx = str.indexOf("(");
-                    if (idx!=-1) str= str.substring(0,idx);
-                    for(Map.Entry<String, Map<String, Set<String>>> entry: listFeature.entrySet()) {
-                        if(entry.getValue().get("attribute").contains(str)||entry.getValue().get("operator").contains(str)) {
-                            flag = true;
-                        }
-                    }
-                    if(flag) {
-                        listAfterReduce.add(node);
-                        break;
-                    }
-                }
-            }
-        }
         logger.debug("NUMBER OF STRUCT CLASS: " + listStructureNode.size());
-        logger.debug("NUMBER OF STRUCT CLASS: " + listAfterReduce.size());
-
-        for (int i = 0; i < listAfterReduce.size(); i++) {
-            INode node = listAfterReduce.get(i);
+        for (int i = 0; i < listStructureNode.size(); i++) {
+            INode node = listStructureNode.get(i);
             if (node instanceof StructOrClassNode) {
                 StructureDataNode structureDataNode = null;
                 structureDataNode = node instanceof StructNode ? new StructDataNode() : new ClassDataNode();
@@ -345,10 +315,7 @@ public class TestDataPrototypeAutomatedGenerationForTemplate {
 
     private List<INode> findStructureNodeInProject(INode root) {
         List<INode> list = new ArrayList<>();
-        if (root instanceof ClassNode || root instanceof StructNode) {
-            List<Node> children = root.getChildren();
-            list.add(root);
-        }
+        if (root instanceof ClassNode || root instanceof StructNode) list.add(root);
         for (INode child : root.getChildren()) {
             List<INode> listChild = findStructureNodeInProject(child);
             for (INode node : listChild) {
@@ -361,165 +328,12 @@ public class TestDataPrototypeAutomatedGenerationForTemplate {
                         }
                     }
                 }
-                if (isContain == false) {
-                    list.add(node);
-                }
+                if (isContain == false) list.add(node);
             }
 
         }
         return list;
     }
-
-    // extract attribute and method, which parameter using
-    private Map<String , Map<String, Set<String>>> getFeaturesOfFunction (FunctionNode functionNode) {
-        CPPASTFunctionDefinition AST = (CPPASTFunctionDefinition)functionNode.getAST();
-        List<Node> param = functionNode.getChildren();
-        Set<String> variableRelativeToTemplate = new HashSet<>();
-        Map<String , Map<String, Set<String>>> mapping = new HashMap<>();
-        for (IASTNode iastNode: AST.getParent().getChildren()){
-            if (iastNode instanceof  CPPASTSimpleTypeTemplateParameter) {
-                Map<String, Set<String>> element = new HashMap<>();
-                element.put("attribute",new HashSet<>());
-                element.put("operator",new HashSet<>());
-                element.put("variable", new HashSet<>());
-                mapping.put(((CPPASTSimpleTypeTemplateParameter) iastNode).getName().getRawSignature(), element);
-            }}
-        for (Node node: param){
-            if(node instanceof VariableNode) {
-                String type = ((VariableNode) node).getCoreType();
-                if (mapping.containsKey(type) ){
-                    Set<String> set = mapping.get(type).get("variable");
-                    set.add(node.getName());
-                }
-            }
-        }
-
-        ASTVisitor astVisitor = new ASTVisitor() {
-            @Override
-            public int visit(IASTExpression expression) {
-                if(expression instanceof  CPPASTFunctionCallExpression) {
-                    System.out.println(expression.getRawSignature());
-                }
-                if(expression instanceof CPPASTBinaryExpression) {
-                    String statement = expression.getRawSignature().replaceAll("\\s+", " ");
-                    statement = statement.contains(" .")?statement.replace(" .", "."):statement;
-                    System.out.println("Convert to quy chuan:"+statement);
-                    System.out.println();
-
-                    IASTNode[] children = expression.getChildren();
-                    for (int i=0;i<children.length;i++) {
-                        String nameVariable = children[i].getRawSignature();
-                        int indexOfSquareBracket = nameVariable.indexOf("[");
-                        if (indexOfSquareBracket!=-1) nameVariable = nameVariable.substring(0,indexOfSquareBracket);
-                        for (Map.Entry<String, Map<String, Set<String>>> entry: mapping.entrySet()) {
-                            if (entry.getValue().get("variable").contains(nameVariable)) {
-                                entry.getValue().get("operator").add(convertToOperatorZIcon(((CPPASTBinaryExpression) expression).getOperator()));
-                            }
-                        }
-                    }
-                }
-                return super.visit(expression);
-            }
-        };
-
-        ASTVisitor astVisitor1 =new ASTVisitor() {
-            @Override
-            public int visit(IASTDeclaration declaration) {
-                if(declaration instanceof CPPASTSimpleDeclaration) {
-                    System.out.println("This is declar: "+declaration.getRawSignature());
-                    String statement = declaration.getRawSignature().replaceAll("\\s+", " ");
-                    statement = statement.contains(" .")?statement.replace(" .", "."):statement;
-                    System.out.println("Convert to quy chuan:"+statement);
-                    System.out.println();
-                    String type = String.valueOf(((CPPASTSimpleDeclaration) declaration).getDeclSpecifier().getRawSignature());
-
-                    if(mapping.containsKey(type)) {
-                        IASTNode declarator = declaration.getChildren()[1];
-                        if (declarator instanceof CPPASTDeclarator) {
-                            String express1 = String.valueOf(declarator.getChildren()[0].getRawSignature());
-//                            String express2 = declarator.getChildren()[1].getRawSignature();
-                            variableRelativeToTemplate.add(express1);
-                            mapping.get(type).get("variable").add(express1);
-                        }
-                    }
-                }
-                return super.visit(declaration);
-            }
-        };
-        ASTVisitor astVisitor2 = new ASTVisitor() {
-            @Override
-            public int visit(IASTName name) {
-                if(name.getParent() instanceof  CPPASTFieldReference) {
-                    String fOwner = ((CPPASTFieldReference) name.getParent()).getFieldOwner().getRawSignature();
-                    int indexOfSquareBracket = fOwner.indexOf("[");
-                    if (indexOfSquareBracket!=-1) {
-                        fOwner = fOwner.substring(0,indexOfSquareBracket);
-                    }
-                    String fName = ((CPPASTFieldReference) name.getParent()).getFieldName().getRawSignature();
-                    for (Map.Entry<String, Map<String, Set<String>>> entry: mapping.entrySet()) {
-                        if (entry.getValue().get("variable").contains(fOwner)) {
-                            entry.getValue().get("attribute").add(fName);
-                        }
-                    }
-                }
-                return super.visit(name);
-            }
-        };
-        astVisitor.shouldVisitExpressions = true;
-        astVisitor1.shouldVisitDeclarations = true;
-        astVisitor2.shouldVisitNames = true;
-        AST.accept(astVisitor1);
-        AST.accept(astVisitor);
-        AST.accept(astVisitor2);
-
-
-//        try {
-//            ICFG cfg = CFGUtils.createCFG(functionNode, EnviroCoverageTypeNode.STATEMENT);
-//            cfg.setIdforAllNodes();
-//
-//            List<ICfgNode> list = cfg.getAllNodes();
-//            for (ICfgNode node: list){
-//                String statement = String.format("%s",node.getContent());
-//                statement = statement.replaceAll("\\s+", " ");
-//                statement = statement.contains(" .")?statement.replace(" .", "."):statement;
-//                System.out.print("This is statement exported from csv report file: ");
-//                System.out.print(statement+"\n");
-//
-//                String REGEX = "(((\\w+\\[\\w+\\])|(\\w+))\\.\\w+)";
-//
-//
-//
-//                Pattern pattern = Pattern.compile(REGEX);
-//                Matcher matcher = pattern.matcher(statement);
-//                while(matcher.find()) {
-//                    String substring = statement.substring(matcher.start(),matcher.end());
-//                    System.out.println(substring);
-//                    String frontDot = substring.split("\\.")[0];
-//                    System.out.println(frontDot);
-//                    for (Map.Entry<String, Map<String, Set<String>>> entry: mapping.entrySet()) {
-//                        int indexOfSquareBracket = frontDot.indexOf("[");
-//                        if (indexOfSquareBracket!=-1){
-//                            frontDot = frontDot.substring(0, indexOfSquareBracket);
-//                            System.out.print("abc"+statement+"\n");
-//                        }
-//
-//                        if(entry.getValue().get("variable").contains(frontDot)) {
-//                            entry.getValue().get("attribute").add(substring.split("\\.")[1]);
-//                        }
-//                    }
-//                }
-//            }
-////            System.out.println("This is feture final");
-////            System.out.println(Arrays.asList(listFeature));
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-
-        logger.debug("Mapping features:"+Arrays.asList(mapping));
-        return mapping;
-    }
-
-
 
     public IValueDataNode generateData(INode fromNode) {
         IValueDataNode toDataNode = null;
@@ -675,44 +489,7 @@ public class TestDataPrototypeAutomatedGenerationForTemplate {
         }
         return false;
     }
-    public String convertToOperatorZIcon(int operatorNumber) {
-        switch (operatorNumber) {
-            case 1:
-                return "*";
-            case 2:
-                return "/";
-            case 3:
-                return "%";
-            case 4:
-                return "+";
-            case 5:
-                return "-";
-            case 6:
-                return "<<";
-            case 7:
-                return ">>";
-            case 8:
-                return "<";
-            case 9:
-                return ">";
-            case 10:
-                return ">=";
-            case 11:
-                return "<=";
-            case 12:
-                return "&";
-            case 13:
-                return "^";
-            case 14:
-                return "|";
-            case 15:
-                return "&&";
-            case 16:
-                return "||";
-            default:
-                return String.valueOf(operatorNumber);
-        }
-    }
+
 
     public ICommonFunctionNode getFunctionNode() {
         return functionNode;
@@ -745,6 +522,4 @@ public class TestDataPrototypeAutomatedGenerationForTemplate {
     public void setName(String name) {
         this.name = name;
     }
-
-
 }

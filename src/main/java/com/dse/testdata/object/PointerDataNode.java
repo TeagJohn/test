@@ -83,7 +83,7 @@ public abstract class PointerDataNode extends ValueDataNode implements INullable
 	 * @param type       the incomplete built-in data type
 	 * @return the reformatted allocation
 	 */
-	protected String reformatAllocationForIncompleteTypes(String allocation, String type) {
+	private String reformatAllocationForIncompleteTypes(String allocation, String type) {
 		if (type.equals("DIR*")) {
 			allocation = allocation.replaceAll("malloc\\(.*\\)", "opendir(\".\")");
 		}

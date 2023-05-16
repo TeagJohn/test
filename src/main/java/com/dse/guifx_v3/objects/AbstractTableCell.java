@@ -13,7 +13,6 @@ import com.dse.testcase_manager.TestPrototype;
 import com.dse.testdata.InputCellHandler;
 import com.dse.testdata.Iterator;
 import com.dse.testdata.object.*;
-import com.dse.testdata.object.Gmock.*;
 import com.dse.testdata.object.stl.ListBaseDataNode;
 import com.dse.testdata.object.stl.STLArrayDataNode;
 import com.dse.testdata.object.stl.SmartPointerDataNode;
@@ -83,20 +82,11 @@ public abstract class AbstractTableCell extends TreeTableCell<DataNode, String> 
 
     public boolean isPointerStubParameter(DataNode dataNode) {
         DataNode check = dataNode;
-        while (dataNode instanceof ValueDataNode && check.getParent() != null && !(check instanceof UnitUnderTestNode)) {
+        while (dataNode instanceof ValueDataNode && !(check instanceof UnitUnderTestNode)) {
             if (check instanceof PointerDataNode) {
-                return !check.getName().equals("RETURN");
+                return true;
             }
             check = (DataNode) check.getParent();
-        }
-        return false;
-    }
-
-    public boolean isRefStubParameter(DataNode dataNode) {
-        ValueDataNode node = (ValueDataNode) dataNode;
-        String realType = node.getRealType();
-        if (realType.contains("&")) {
-            return true;
         }
         return false;
     }
@@ -129,7 +119,7 @@ public abstract class AbstractTableCell extends TreeTableCell<DataNode, String> 
 //            }
 
 //            if ((isReturnNode && type == CellType.INPUT) || (!isReturnNode && type == CellType.EXPECTED)) {
-            if ((isReturnNode && type == CellType.INPUT) && !isPointerStubParameter(dataNode) && !isRefStubParameter(dataNode)) {
+            if ((isReturnNode && type == CellType.INPUT) && !isPointerStubParameter(dataNode)) {
 //                disable();
                 return;
             }
@@ -139,8 +129,7 @@ public abstract class AbstractTableCell extends TreeTableCell<DataNode, String> 
                     || (dataNode instanceof OneDimensionDataNode && !((OneDimensionDataNode) dataNode).isFixedSize()) // array cua normal data
                     || (dataNode instanceof MultipleDimensionDataNode && !((MultipleDimensionDataNode) dataNode).isFixedSize())
                     || (dataNode instanceof ListBaseDataNode && !(dataNode instanceof STLArrayDataNode))
-                    || dataNode instanceof PointerDataNode || dataNode instanceof NumberOfCallNode
-                    || (dataNode instanceof GMockValueDataNode && !(dataNode instanceof ArgumentNode) && !(dataNode instanceof MatcherMultipleNode))) {
+                    || dataNode instanceof PointerDataNode || dataNode instanceof NumberOfCallNode) {
                 setText(null);
                 setGraphic(textField);
                 textField.setText(getValueForTextField(dataNode));
@@ -153,15 +142,12 @@ public abstract class AbstractTableCell extends TreeTableCell<DataNode, String> 
 
             } else if (dataNode instanceof EnumDataNode // enum
                     || dataNode instanceof ClassDataNode // include SubClassDataNode
-                    || dataNode instanceof StructDataNode
                     || dataNode instanceof UnionDataNode  // union
                     || dataNode instanceof TemplateSubprogramDataNode
                     || dataNode instanceof SmartPointerDataNode
                     || dataNode instanceof VoidPointerDataNode
                     || dataNode instanceof FunctionPointerDataNode
-                    || (dataNode instanceof SubprogramNode && ((SubprogramNode) dataNode).isStubable())
-                    || (dataNode instanceof GmockUnitNode && ((SubprogramNode) dataNode).isGMockSubprogram())
-                    || dataNode instanceof ArgumentNode) {
+                    || (dataNode instanceof SubprogramNode && ((SubprogramNode) dataNode).isStubable())) {
                 // Các node cần có combo-box
                 setGraphic(createComboBox(dataNode));
                 setText(null);
@@ -250,100 +236,46 @@ public abstract class AbstractTableCell extends TreeTableCell<DataNode, String> 
                 comboBox.setValue(((EnumDataNode) dataNode).getValue());
             }
             comboBox.setEditable(true);
-        } else if (dataNode instanceof SubUnionDataNode) {
-            try {
-                List<ICommonFunctionNode> list = ((SubUnionDataNode) dataNode).getConstructorsOnlyInCurrentClass();
-
-                for (ICommonFunctionNode node : list) {
-                    if (!options.contains(node.getName())) {
-                        options.add(node.getName());
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
         }
         // union oke
         else if (dataNode instanceof UnionDataNode) {
-            if (Environment.getInstance().isC()) {
-                INode node = ((UnionDataNode) dataNode).getCorrespondingType();
-                if (node instanceof UnionNode) {
-                    UnionNode unionNode = (UnionNode) node;
-                    List<Node> list = unionNode.getChildren();
-                    for (Node child : list) {
-                        options.add(child.getName());
-                    }
+            INode node = ((UnionDataNode) dataNode).getCorrespondingType();
+            if (node instanceof UnionNode) {
+                UnionNode unionNode = (UnionNode) node;
+                List<Node> list = unionNode.getChildren();
+                for (Node child : list) {
+                    options.add(child.getName());
                 }
-
-                comboBox.setValue("Select attribute");
-                String field = ((UnionDataNode) dataNode).getSelectedField();
-                if (field != null) {
-                    comboBox.setValue(field);
-                }
-            } else {
-                options.add(SpecialCharacter.EMPTY);
-
-                List<INode> list = ((StructDataNode) dataNode).getDerivedClass();
-                for (INode node : list) {
-                    options.add(node.getName());
-                }
-                comboBox.setValue("Select real class");
             }
-        } else if (dataNode instanceof SubStructDataNode) {
-            try {
-                List<ICommonFunctionNode> list = ((SubStructDataNode) dataNode).getConstructorsOnlyInCurrentClass();
 
-                for (ICommonFunctionNode node : list) {
-                    if (!options.contains(node.getName())) {
-                        options.add(node.getName());
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
+            comboBox.setValue("Select attribute");
+            String field = ((UnionDataNode) dataNode).getSelectedField();
+            if (field != null) {
+                comboBox.setValue(field);
             }
         }
         // subclass (cũng là class) oke
         else if (dataNode instanceof SubClassDataNode) {
             try {
-                if (((SubClassDataNode) dataNode).isSingleton()) {
-                    ICommonFunctionNode node = ((SubClassDataNode) dataNode).getInstanceMethodOnlyInCurrentClass();
-                    if (node != null)
-                        options.add(node.getName());
-                } else {
-                    List<ICommonFunctionNode> list = ((SubClassDataNode) dataNode).getConstructorsOnlyInCurrentClass();
+                List<ICommonFunctionNode> list = ((SubClassDataNode) dataNode).getConstructorsOnlyInCurrentClass();
 
-                    for (ICommonFunctionNode node : list) {
-                        if (!options.contains(node.getName())) {
-                            options.add(node.getName());
-                        }
+                for (ICommonFunctionNode node : list) {
+                    if (!options.contains(node.getName())) {
+                        options.add(node.getName());
                     }
                 }
+
                 comboBox.setValue("Select constructor");
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        } else if (dataNode instanceof StructDataNode) {
-            options.add(SpecialCharacter.EMPTY);
-
-            List<INode> list = ((StructDataNode) dataNode).getDerivedClass();
-            for (INode node : list) {
-                options.add(node.getName());
-            }
-            comboBox.setValue("Select real class");
-
         } else if (dataNode instanceof ClassDataNode) {
             // class oke
             options.add(SpecialCharacter.EMPTY);
 
             List<INode> list = ((ClassDataNode) dataNode).getDerivedClass();
-            for (INode node : list) {
-                if (Environment.getInstance().getCompiler().isUseGTest() && ((StructOrClassNode) node).isAbstract()) {
-                    options.add("Mock: " + node.getName());
-                } else {
-                    options.add(node.getName());
-                }
-            }
-
+            for (INode node : list)
+                options.add(node.getName());
 
             comboBox.setValue("Select real class");
         } else if (dataNode instanceof TemplateSubprogramDataNode) {
@@ -379,15 +311,6 @@ public abstract class AbstractTableCell extends TreeTableCell<DataNode, String> 
                     .collect(Collectors.toList());
             options.addAll(matches);
             options.add("NULL");
-        } else if (dataNode instanceof ArgumentNode) {
-            ArgumentNode matcher = (ArgumentNode) dataNode;
-            List<Node> args = ((SubprogramNode) matcher.getParent().getParent().getParent()).getFunctionNode().getChildren();
-            for (Node arg : args) {
-                if (arg instanceof VariableNode) {
-                    options.add(((VariableNode) arg).getName());
-                }
-            }
-            comboBox.setValue("Choose argument");
         }
 
         comboBox.setItems(options);

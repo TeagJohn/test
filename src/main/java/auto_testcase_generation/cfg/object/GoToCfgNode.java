@@ -6,4 +6,7 @@ public class GoToCfgNode extends NormalCfgNode{
     public GoToCfgNode(IASTNode node) {
         super(node);
     }
+
+    public GoToCfgNode() {
+    }
 }

@@ -17,7 +17,6 @@ import org.eclipse.cdt.core.dom.ast.IASTFileLocation;
 
 import java.io.File;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -67,60 +66,18 @@ public class StubManager {
     private static String genIterSubprogramNodeBody(IterationSubprogramNode node) throws Exception {
         StringBuilder body = new StringBuilder();
 
+        List<IDataNode> children = node.getChildren();
 
         String source = "";
-
-        for (IDataNode child : node.getInputToExpectedOutputMap().keySet()) {
-            if (child instanceof ValueDataNode) {
-                ValueDataNode dataNode = (ValueDataNode) child;
-                if (VariableTypeUtils.isReference(dataNode.getRealType())) {
-                    String withDeclaration = dataNode.getInputForGoogleTest(true);
-                    if (!withDeclaration.contains("=")) {
-                        continue;
-                    }
-                    source += dataNode.getName() + "=" + withDeclaration.substring(withDeclaration.indexOf("=") + 1);
-//                    source += dataNode.getRealType() + SpecialCharacter.SPACE_STR + dataNode.getVituralName();
-//                    source += SpecialCharacter.SPACE_STR + SpecialCharacter.EQUAL + SpecialCharacter.SPACE_STR;
-//                    source += dataNode.getName() + SpecialCharacter.END_OF_STATEMENT + SpecialCharacter.LINE_BREAK;
-                    // Remove declaration
-//                    source += withDeclaration.substring(withDeclaration.indexOf(SpecialCharacter.SPACE_STR) + 1);
-                    source += dataNode.getInputForGoogleTest(false);
-                    continue;
-                }
-                source += dataNode.getInputForGoogleTest(true);
-                if (dataNode instanceof PointerDataNode) {
-                    source += dataNode.getVituralName() + SpecialCharacter.EQUAL + dataNode.getName()
-                            + SpecialCharacter.END_OF_STATEMENT + SpecialCharacter.LINE_BREAK;
-                }
-                source += dataNode.getInputForGoogleTest(false);
-                if (!dataNode.getName().equals(RETURN_NAME)) {
-                    source += SpecialCharacter.LINE_BREAK;
-                    source += "#ifdef ASSERT_ENABLE\n";
-                    source += dataNode.getAssertion();
-                    source += "\n#endif\n";
-                } else {
-                    source += String.format("return %s;", dataNode.getVituralName());
-                }
-            }
-        }
-
-        List<IDataNode> children = new ArrayList<>(node.getChildren());
-
-        if (node instanceof IterationSubprogramNode) {
-            Map<ValueDataNode, ValueDataNode> map = node.getInputToExpectedOutputMap();
-
-            for (Map.Entry<ValueDataNode, ValueDataNode> entry : map.entrySet()) {
-                int index = children.indexOf(entry.getKey());
-                if (index >= 0) {
-                    children.set(index, entry.getValue());
-                }
-            }
-        }
 
         for (IDataNode child : children) {
             if (child instanceof ValueDataNode) {
                 ValueDataNode dataNode = (ValueDataNode) child;
                 source += dataNode.getInputForGoogleTest(true);
+                if (dataNode instanceof PointerDataNode) {
+                    source += dataNode.getVituralName() + SpecialCharacter.EQUAL + dataNode.getName()
+                            + SpecialCharacter.END_OF_STATEMENT + SpecialCharacter.LINE_BREAK;
+                }
                 source += dataNode.getInputForGoogleTest(false);
                 if (!dataNode.getName().equals(RETURN_NAME)) {
                     source += SpecialCharacter.LINE_BREAK;

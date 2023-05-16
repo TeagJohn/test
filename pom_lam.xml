@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>uet</groupId>
     <artifactId>akautauto</artifactId>
-    <version>5.8.32-cpp</version>
+    <version>5.8.29</version>
     <packaging>jar</packaging>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

@@ -5,7 +5,10 @@ import com.dse.parser.dependency.*;
 import com.dse.util.*;
 import com.google.gson.annotations.Expose;
 import org.eclipse.cdt.core.dom.ast.*;
-import org.eclipse.cdt.internal.core.dom.parser.cpp.*;
+import org.eclipse.cdt.internal.core.dom.parser.cpp.CPPASTArrayDeclarator;
+import org.eclipse.cdt.internal.core.dom.parser.cpp.CPPASTParameterDeclaration;
+import org.eclipse.cdt.internal.core.dom.parser.cpp.CPPASTPointer;
+import org.eclipse.cdt.internal.core.dom.parser.cpp.CPPASTSimpleDeclaration;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -38,12 +41,12 @@ public class VariableNode extends CustomASTNode<IASTNode> implements IVariableNo
 
     /**
      * Remove storage class, &, *, [] from raw type
-     * <p>
-     * Two cases:
+     *
+     *Two cases:
      * + Case 1: Array, pointer, list, vector, stack, v.v. ---> get raw type of element
      * Ex: "const std::vector<int>" ---> coretype = "int"
      * + Case 2: primitive type ---> primitive type
-     * <p>
+     *
      * For example: "const int* a" ---> raw type  = "int"
      */
     protected String coreType = "";
@@ -51,9 +54,9 @@ public class VariableNode extends CustomASTNode<IASTNode> implements IVariableNo
     /**
      * Remove storage class including static, register, extern, mutable, const from
      * raw type.
-     * <p>
+     *
      * The attribute of the raw type is still kept.
-     * <p>
+     *
      * For example: "int* a" ---> raw type  = "int*"
      */
     protected String reducedRawType = "";
@@ -88,11 +91,11 @@ public class VariableNode extends CustomASTNode<IASTNode> implements IVariableNo
                 if (resolvedNode instanceof StructureNode) {
                     StructureNode tmp = (StructureNode) resolvedNode;
                     attributes.add(
-                            new String[]{getPrefixSpace(level) + n.getNewType(), ((IVariableNode) n).getRawType()});
+                            new String[] { getPrefixSpace(level) + n.getNewType(), ((IVariableNode) n).getRawType() });
                     attributes.addAll(getAllAttributes(tmp, ++level));
                 } else {
                     attributes.add(
-                            new String[]{getPrefixSpace(level) + n.getNewType(), ((IVariableNode) n).getRawType()});
+                            new String[] { getPrefixSpace(level) + n.getNewType(), ((IVariableNode) n).getRawType() });
                 }
                 level--;
 
@@ -134,6 +137,7 @@ public class VariableNode extends CustomASTNode<IASTNode> implements IVariableNo
 
         if (ast instanceof IASTParameterDeclaration)
             return ((IASTParameterDeclaration) ast).getDeclSpecifier();
+
 
 
         return null;
@@ -179,6 +183,7 @@ public class VariableNode extends CustomASTNode<IASTNode> implements IVariableNo
         StringBuilder prefixPath = new StringBuilder();
 
         INode currentVar = resolveCoreType();
+
 
 
         String realType = getCoreType();
@@ -257,12 +262,11 @@ public class VariableNode extends CustomASTNode<IASTNode> implements IVariableNo
 
     /**
      * Get real raw type.
-     * <p>
+     *
      * For example:
-     * <p>
+     *
      * Raw type: "const XXX*", but "typedef Student XXX",
      * real raw type: "Student*"
-     *
      * @return
      */
     @Override
@@ -468,34 +472,15 @@ public class VariableNode extends CustomASTNode<IASTNode> implements IVariableNo
         if (astType instanceof IASTNamedTypeSpecifier) {
             rawType = String.valueOf(((IASTNamedTypeSpecifier) astType).getName().toCharArray());
         } else if (astType instanceof IASTSimpleDeclSpecifier) {
-            if (rawType.equals("auto")) {
-                IASTInitializer initializer = firstDeclarator.getInitializer();
-                if (initializer instanceof IASTEqualsInitializer) {
-                    IASTInitializerClause initializerClause = ((IASTEqualsInitializer) initializer).getInitializerClause();
-                    if (initializerClause instanceof IASTCastExpression) {
-                        IASTDeclSpecifier declSpecifier = ((IASTCastExpression) initializerClause).getTypeId().getDeclSpecifier();
-                        if (declSpecifier instanceof IASTNamedTypeSpecifier) {
-                            rawType = ((IASTNamedTypeSpecifier) declSpecifier).getName().getRawSignature();
-                        }
-                    }
-                }
-            } else {
-                rawType = astType.toString();
-            }
-        } else if (astType instanceof IASTCompositeTypeSpecifier) {
-            rawType = astType.toString();
-        } else if (astType instanceof IASTCompositeTypeSpecifier) {
             rawType = astType.toString();
         }
-
         rawType = rawType
                 + getASTDecName().getRawSignature()
-                    .replaceAll("\\{.*\\}", SpecialCharacter.EMPTY)
                     .replaceFirst("(?s)" + nameRegex + "(?!.*?" +  nameRegex + ")", "");
 //        String rawType = getAST().getRawSignature()
 //                // remove name of variable
 //                .replaceFirst("(?s)" + nameRegex + "(?!.*?" +  nameRegex + ")", "")
-        // "char *" --> "char*"
+                // "char *" --> "char*"
         rawType = rawType
                 .replaceAll("\\s*\\*\\s*", "*")
                 // "int [ 3]" -> "int[3]"
@@ -550,7 +535,7 @@ public class VariableNode extends CustomASTNode<IASTNode> implements IVariableNo
                         // rawtype = "<structure>*"
                         setCoreType(VariableTypeUtils.removeRedundantKeyword(declSpecifier.getRawSignature()));
                     }
-                } else if (declarator instanceof CPPASTArrayDeclarator) {
+                } else if (declarator instanceof CPPASTArrayDeclarator){
                     // rawType = "int[3]", declarator = "a[3], declSpecifier = "int"
                     setCoreType(VariableTypeUtils.removeRedundantKeyword(declSpecifier.getRawSignature()));
                 } else {

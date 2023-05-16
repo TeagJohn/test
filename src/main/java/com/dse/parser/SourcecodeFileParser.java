@@ -1,6 +1,5 @@
 package com.dse.parser;
 
-import auto_testcase_generation.cfg.object.FriendFunctionNode;
 import com.dse.boundary.BoundOfDataTypes;
 import com.dse.boundary.BoundaryManager;
 import com.dse.boundary.DataSizeModel;
@@ -26,7 +25,9 @@ import org.eclipse.cdt.core.dom.ast.gnu.cpp.GPPLanguage;
 import org.eclipse.cdt.core.index.IIndex;
 import org.eclipse.cdt.core.model.ILanguage;
 import org.eclipse.cdt.core.parser.*;
-import org.eclipse.cdt.internal.core.dom.parser.cpp.*;
+import org.eclipse.cdt.internal.core.dom.parser.cpp.CPPASTCompositeTypeSpecifier;
+import org.eclipse.cdt.internal.core.dom.parser.cpp.CPPASTFunctionDeclarator;
+import org.eclipse.cdt.internal.core.dom.parser.cpp.CPPASTSimpleDeclaration;
 
 import java.io.File;
 import java.util.*;
@@ -111,20 +112,11 @@ public class SourcecodeFileParser implements ISourcecodeFileParser {
     }
 
     public INode parseSourcecodeFile(File filePath) throws Exception {
-        long startTime = System.nanoTime();
-        logger.debug("Starts normalizing file " + filePath.getName());
-
-        // long tempTime = System.nanoTime();
+        logger.debug("Normalize file " + filePath.getName());
         normalizeFile(filePath);
-        // logger.debug((System.nanoTime() - tempTime) / 1000000000.0 + "s: Normalized");
 
-        // tempTime = System.nanoTime();
-        translationUnit = getIASTTranslationUnit(
-                Utils.readFileContent(
-                    filePath.getAbsolutePath()
-                ).toCharArray()
-        );
-        // logger.debug((System.nanoTime() - tempTime) / 1000000000.0 + "s: getTranslation");
+        translationUnit = getIASTTranslationUnit(Utils.readFileContent(
+                filePath.getAbsolutePath()).toCharArray());
 
         CustomCppStack stackNodes = new CustomCppStack();
         Node vituralRoot = new TemporaryNode("tmp root Node");
@@ -191,16 +183,7 @@ public class SourcecodeFileParser implements ISourcecodeFileParser {
                     case IS_FUNCTION_DECLARATION:
                         if (declaration instanceof ICPPASTTemplateDeclaration)
                             break;
-                        if (declaration instanceof CPPASTFunctionDefinition) {
-                            if (((CPPASTFunctionDefinition) declaration).getDeclSpecifier() instanceof CPPASTSimpleDeclSpecifier) {
-                                if (((CPPASTSimpleDeclSpecifier) ((CPPASTFunctionDefinition) declaration).getDeclSpecifier()).isFriend()) {
-                                    declarationNode = new FriendFunctionNode();
-                                }
-                            }
-                        }
-                        if (!(declarationNode instanceof FriendFunctionNode)) {
-                            declarationNode = new FunctionNode();
-                        }
+                        declarationNode = new FunctionNode();
                         ((FunctionNode) declarationNode)
                                 .setAST((IASTFunctionDefinition) declaration);
                         break;
@@ -261,12 +244,6 @@ public class SourcecodeFileParser implements ISourcecodeFileParser {
                         ((StructNode) declarationNode)
                                 .setAST((IASTSimpleDeclaration) declaration);
 
-                        if (((IASTSimpleDeclaration) declaration).getDeclarators().length > 0) {
-                            Node variableNode = addVariableNode((IASTSimpleDeclaration) declaration, stackNodes, declarationNode, isPrivate);
-                            stackNodes.push(variableNode);
-                            stackNodes.pop();
-                        }
-
                         isPrivate = false;
                         break;
 
@@ -274,12 +251,6 @@ public class SourcecodeFileParser implements ISourcecodeFileParser {
                         declarationNode = new ClassNode();
                         ((ClassNode) declarationNode)
                                 .setAST((IASTSimpleDeclaration) declaration);
-
-                        if (((IASTSimpleDeclaration) declaration).getDeclarators().length > 0) {
-                            Node variableNode = addVariableNode((IASTSimpleDeclaration) declaration, stackNodes, declarationNode, isPrivate);
-                            stackNodes.push(variableNode);
-                            stackNodes.pop();
-                        }
 
                         isPrivate = true;
                         break;
@@ -416,13 +387,6 @@ public class SourcecodeFileParser implements ISourcecodeFileParser {
                         declarationNode = new UnionNode();
                         ((UnionNode) declarationNode)
                                 .setAST((IASTSimpleDeclaration) declaration);
-
-                        if (((IASTSimpleDeclaration) declaration).getDeclarators().length > 0) {
-                            Node variableNode = addVariableNode((IASTSimpleDeclaration) declaration, stackNodes, declarationNode, isPrivate);
-                            stackNodes.push(variableNode);
-                            stackNodes.pop();
-                        }
-
                         break;
 
                     case IS_UNION_TYPEDEF_DECLARATION:
@@ -434,7 +398,7 @@ public class SourcecodeFileParser implements ISourcecodeFileParser {
                     case IS_UNSPECIFIED_DECLARATION:
                     default: {
                         declarationNode = new UnspecifiedDeclaration();
-                        ((UnspecifiedDeclaration) declarationNode).setAST(declaration);
+                        ((UnspecifiedDeclaration)declarationNode).setAST(declaration);
                         break;
                     }
                 }
@@ -460,22 +424,13 @@ public class SourcecodeFileParser implements ISourcecodeFileParser {
         visitor.shouldVisitDeclarations = true;
         visitor.shouldVisitNamespaces = true;
 
-        // tempTime = System.nanoTime();
         translationUnit.accept(visitor);
-        // logger.debug((System.nanoTime() - tempTime) / 1000000000.0 + "s: acceptVisitor");
 
         INode root = stackNodes.rootOfStack;
 
-        // createSpecialNode(root);
+//        createSpecialNode(root);
         addIncludeHeaderNodes(getHeader(translationUnit), root);
-
         parseMacros(root);
-
-        long endTime = System.nanoTime();
-        logger.debug(
-                "Finished normalizing file " + filePath.getName()
-                        + " in " + (endTime - startTime) / 1000000000.0 + "s");
-
         return root;
     }
 
@@ -947,30 +902,6 @@ public class SourcecodeFileParser implements ISourcecodeFileParser {
                     item.setAbsolutePath(peek().getAbsolutePath() + File.separator + item.getNewType());
                 else
                     item.setAbsolutePath(peek().getAbsolutePath() + item.getNewType());
-
-                if (item instanceof DefinitionFunctionNode && item.getParent() instanceof StructOrClassNode) {
-                    if (((DefinitionFunctionNode) item).getAST() != null){
-                        if (((DefinitionFunctionNode) item).getAST().getDeclSpecifier() instanceof CPPASTBaseDeclSpecifier) {
-                            if (((CPPASTBaseDeclSpecifier) ((DefinitionFunctionNode) item).getAST().getDeclSpecifier()).isVirtual()) {
-                                try {
-                                    IToken token = ((DefinitionFunctionNode) item).getAST().getSyntax();
-                                    if (token != null && token.getNext() != null && token.getNext().getNext() != null) {
-                                        while (token.getNext().getNext().getNext() != null) {
-                                            token = token.getNext();
-                                        }
-
-                                    }
-                                    if (token.getImage().equals("=")
-                                            && token.getNext().getImage().equals("0")
-                                            && token.getNext().getNext().getImage().equals(";")) {
-                                        ((StructOrClassNode) item.getParent()).setAbstract(true);
-                                    }
-                                } catch (ExpansionOverlapsBoundaryException e) {
-                                }
-                            }
-                        }
-                    }
-                }
             }
             return super.push(item);
         }

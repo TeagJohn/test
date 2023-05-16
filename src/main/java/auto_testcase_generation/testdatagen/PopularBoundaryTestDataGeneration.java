@@ -2,7 +2,6 @@ package auto_testcase_generation.testdatagen;
 
 import com.dse.boundary.DataSizeModel;
 import com.dse.boundary.MultiplePrimitiveBound;
-import com.dse.boundary.PointerOrArrayBound;
 import com.dse.boundary.PrimitiveBound;
 import com.dse.config.FunctionConfig;
 import com.dse.config.IFunctionConfig;
@@ -27,7 +26,6 @@ import com.dse.testcase_manager.TestCase;
 import com.dse.testcase_manager.TestCaseManager;
 import com.dse.testdata.object.*;
 import com.dse.util.SourceConstant;
-import com.dse.util.SpecialCharacter;
 import com.dse.util.VariableTypeUtils;
 import javafx.application.Platform;
 
@@ -389,8 +387,14 @@ public class PopularBoundaryTestDataGeneration extends AbstractAutomatedTestdata
         argType = VariableTypeUtils.deleteStorageClasses(argType);
         argType = VariableTypeUtils.deleteReferenceOperator(argType);
 
+        // Boolean
         // todo: boolean type is not supported
-         if (VariableTypeUtils.isChBasic(argType)) {
+        if (VariableTypeUtils.isBoolBasic(argType)) {
+            logger.debug(argType + ": isBoolBasic");
+            return chooseBooleanNormValue(bound);
+        }
+        // Character
+        else if (VariableTypeUtils.isChBasic(argType)) {
             logger.debug(argType + ": isChBasic");
             return chooseCharacterNormValue(bound);
         }
@@ -398,21 +402,6 @@ public class PopularBoundaryTestDataGeneration extends AbstractAutomatedTestdata
         else if (VariableTypeUtils.isNumBasic(argType)) {
             logger.debug(argType + ": isNumBasic");
             return chooseNumberNormValue(argType, bound);
-        } else {
-             return chooseOtherNormValue(bound);
-         }
-    }
-
-    private String chooseOtherNormValue(IFunctionConfigBound bound) {
-        String norm = "NA";
-
-        if (bound instanceof PointerOrArrayBound) {
-            PointerOrArrayBound sizeBound = ((PointerOrArrayBound) bound);
-            String[] index = sizeBound.getIndexes().get(0).split(":");
-            long lower = Long.parseLong(index[0]);
-            long upper = Long.parseLong(index[1]);
-            long normValue = (lower + upper) / 2;
-            norm = String.valueOf(normValue);
         }
 
         return norm;
@@ -538,7 +527,8 @@ public class PopularBoundaryTestDataGeneration extends AbstractAutomatedTestdata
                 break;
         }
 
-        String nameOfTestcase = TestCaseManager.generateContinuousNameOfTestcase(TestCaseManager.getFunctionName(fn) + postFix);
+        String nameOfTestcase = TestCaseManager.generateContinuousNameOfTestcase(
+                fn.getName() + postFix);
         TestCase testCase = TestCaseManager.createTestCase(nameOfTestcase, fn);
         if (testCase != null) {
             // generate Random values for unsupported type (array, class, struct, v.v.)

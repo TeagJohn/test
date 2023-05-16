@@ -260,32 +260,7 @@ public class VariableSearchingSpace implements IVariableSearchingSpace {
 			outputNodes.add(level4);
 		}
 
-		/*
-		 * Now we get types from libraries
-		 */
-		List<Node> libraryTypes = getAllLibraryTypes(n);
-		if (!libraryTypes.isEmpty()) {
-			Level level5 = new Level(libraryTypes);
-			level5.setName("LIBRARY TYPES");
-			outputNodes.add(level5);
-		}
-
 		return outputNodes;
-	}
-
-	private List<Node> getAllLibraryTypes(INode node) {
-		INode projectNode = Utils.getProjectNode(node);
-		List<Node> rt = new ArrayList<>();
-		if (projectNode == null) {
-			return rt;
-		}
-		for (INode temp: projectNode.getChildren()) {
-			if (temp instanceof LibraryTypeRootNode) {
-				rt.add((Node)temp);
-				break;
-			}
-		}
-		return rt;
 	}
 
 	private List<Node> getAllDataUserCodes() {

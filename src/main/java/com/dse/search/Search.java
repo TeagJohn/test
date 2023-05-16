@@ -15,15 +15,11 @@ import org.eclipse.cdt.core.dom.ast.IASTNode;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 public class Search implements ISearch {
     private static final int MAX_ITERATIONS = 20;
-    private static Map<String, List<INode>> cache_result = new LinkedHashMap<>();
-    private static int cache_hit = 0;
 
 //    /**
 //     * Tìm các con có tên xác định của một node
@@ -40,50 +36,12 @@ public class Search implements ISearch {
 //                nameChild = ((FunctionNode) child).getSimpleName();
 //            else
 //                nameChild = child.getNewType();
-
+//
 //            if (nameChild.equals(name))
 //                return child;
 //        }
 //        return null;
 //    }
-
-    public static long getCacheHit() {
-        return cache_hit;
-    }
-
-    public static long getCacheSize() {
-        return cache_result.size();
-    }
-
-    public static List<INode> getCandidateNodesWithTrie(INode rootNode, SearchCondition condition, String searchSuffix) {
-        List<SearchCondition> conditions = new ArrayList<>();
-        conditions.add(condition);
-        return getCandidateNodesWithTrie(rootNode, conditions, searchSuffix);
-    }
-
-    public static List<INode> getCandidateNodesWithTrie(INode rootNode, List<SearchCondition> conditions,
-            String searchSuffix) {
-        List<INode> nodes;
-        String pairKey = (new NodeConditionsPair(rootNode, conditions)).toString();
-
-        if (cache_result.containsKey(pairKey)) {
-            cache_hit++;
-            nodes = cache_result.get(pairKey);
-        } else {
-            nodes = Search.searchNodes(rootNode, conditions);
-            cache_result.put(pairKey, nodes);
-        }
-
-        TrieNodeManager trieNodeManager = TrieNodeManager.getInstance();
-
-        if (!trieNodeManager.checkTrie(pairKey)) {
-            for (INode node : nodes) {
-                trieNodeManager.addToTrie(pairKey, node);
-            }
-        }
-
-        return trieNodeManager.findInTrie(pairKey, searchSuffix);
-    }
 
     /**
      * @param root       Root sub tree
@@ -101,12 +59,11 @@ public class Search implements ISearch {
         for (INode child : root.getChildren()) {
             boolean isSatisfiable = false;
 
-            for (ISearchCondition con : conditions) {
+            for (ISearchCondition con : conditions)
                 if (con.isSatisfiable(child)) {
                     isSatisfiable = true;
                     break;
                 }
-            }
 
             if (isSatisfiable) {
                 try {
@@ -228,8 +185,15 @@ public class Search implements ISearch {
                             sourceItems = child.getAbsolutePath().split(File.separator);
                         }
                         if (targetItems[targetItems.length - 1].equals(sourceItems[sourceItems.length - 1])) {
-                            if (!potentialCorrespondingNodes.contains(child))
+                            if (!potentialCorrespondingNodes.contains(child)) {
                                 potentialCorrespondingNodes.add(child);
+                            } else {
+                                int idx = potentialCorrespondingNodes.indexOf(child);
+                                INode nodeInList = potentialCorrespondingNodes.get(idx);
+                                if (nodeInList instanceof ITypedefDeclaration && !(child instanceof ITypedefDeclaration)) {
+                                    potentialCorrespondingNodes.set(idx, child);
+                                }
+                            }
                         }
                     }
                 }

@@ -16,7 +16,9 @@ import org.eclipse.cdt.core.dom.ast.cpp.*;
 import org.eclipse.cdt.internal.core.dom.parser.cpp.CPPASTIfStatement;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.dse.project_init.ProjectClone.MAIN_REFACTOR_NAME;
@@ -36,8 +38,6 @@ import static com.dse.project_init.ProjectClone.MAIN_REGEX;
 public class FunctionInstrumentationForAllCoverages extends AbstractFunctionInstrumentation {
 
     private static final AkaLogger logger = AkaLogger.get(FunctionInstrumentationForAllCoverages.class);
-
-    String mapStaticToGlobalCode = null;
 
     protected FunctionInstrumentationForAllCoverages() {
         prefix = "aka_static";
@@ -77,7 +77,6 @@ public class FunctionInstrumentationForAllCoverages extends AbstractFunctionInst
     private int scope = 0;
 
     private final VariableList varList = new VariableList();
-    private final Map<String, String> staticVarDeclaration = new HashMap<>();
 
     private final String prefix;
 
@@ -100,39 +99,15 @@ public class FunctionInstrumentationForAllCoverages extends AbstractFunctionInst
         int bodyOffset = astBody.getFileLocation().getNodeOffset();
         String prototype = astFunctionNode.getRawSignature().substring(0, bodyOffset - functionOffset);
         prototype = prototype.replaceAll(MAIN_REGEX, MAIN_REFACTOR_NAME);
-        String markerBeginFunction = String.format("/* << Aka begin of function %s >> */\n", functionNode.getName());
         String body = parseBlock(astBody, null, "");
         String mapStaticToGlobal = mapStaticToGlobal();
-
-        for (String old : staticVarDeclaration.keySet()) {
-            String newDeclaration = staticVarDeclaration.get(old);
-            body = body.replace(old, newDeclaration);
-        }
-
-        // insert marker at the beginning of the function
-
-
-        return mapStaticToGlobal + prototype + markerBeginFunction + body;
-    }
-
-    public String getMapStaticToGlobalCode() {
-        if (mapStaticToGlobalCode == null) {
-            mapStaticToGlobalCode = mapStaticToGlobal();
-        }
-        return mapStaticToGlobalCode;
+        return mapStaticToGlobal + prototype + body;
     }
 
     private String mapStaticToGlobal() {
         StringBuilder b = new StringBuilder();
 
         if (STATIC_REFACTOR) {
-            List<Node> children = functionNode.getParent().getChildren();
-            children = children.stream()
-                    .filter(c -> c instanceof VariableNode || c instanceof MacroDefinitionNode)
-                    .collect(Collectors.toList());
-
-            boolean isOnCppFile = isOnCppFile();
-
             for (StaticVariableNode v : functionNode.getStaticVariables()) {
                 String declaration = v.getAST().getRawSignature();
                 String origin = v.getName();
@@ -140,17 +115,6 @@ public class FunctionInstrumentationForAllCoverages extends AbstractFunctionInst
                 declaration = declaration.replaceAll("\\b\\Q" + origin + "\\E\\b", instrument)
                         .replaceAll("^static\\s+", SpecialCharacter.EMPTY)
                         .replaceAll("\\s+static\\s+", " ");
-
-                if (isOnCppFile && !isAssignedToKnownValueVariable(children, v)) {
-                    String newDeclaration = declaration.replaceAll("\\s*=\\s*.+", "");
-                    //declaration = declaration.replaceAll("\\s*=\\s*[\\S\\s]*", "");
-                    String currentInstrument = String.format("/* instrument variable %s */", v.getAST().getRawSignature());
-                    staticVarDeclaration.put(currentInstrument, declaration.replaceAll("^[^=]*=", instrument + " = "));
-                    declaration = newDeclaration;
-                }
-
-                        //.replaceAll("\\s*=\\s*.+", "");
-                        //.replaceAll("\\s*=\\s*[\\S\\s]*", "");
 
                 if (!declaration.endsWith(SpecialCharacter.END_OF_STATEMENT))
                     declaration += SpecialCharacter.END_OF_STATEMENT;
@@ -160,70 +124,7 @@ public class FunctionInstrumentationForAllCoverages extends AbstractFunctionInst
             }
         }
 
-        this.mapStaticToGlobalCode = b.toString();
         return b.toString();
-    }
-
-    private boolean isOnCppFile() {
-        INode fileHolder = functionNode;
-        while (fileHolder.getParent() != null) {
-            fileHolder = fileHolder.getParent();
-            if (fileHolder instanceof CFileNode) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    /**
-     * Check if an initializer is assigned to a variable that is a known value.
-     * <p>
-     *     Ex: <br/>
-     *     #define ZERO 0 <br/>
-     *     const int zero = 0; <br/>
-     *
-     *     void foo(int d) { <br/>
-     *          static int a = ZERO; // => true <br/>
-     *          static int b = 0;    // => true <br/>
-     *          static int a = d;    // => false; <br/>
-     *     }
-     * </p>
-     *
-     * @param possibleValues list of possible values, such as macro, const variable, ...
-     * @param v static variable
-     * @return true/false.
-     */
-    private boolean isAssignedToKnownValueVariable(List<Node> possibleValues, StaticVariableNode v) {
-        IASTNode ast = v.getAST();
-
-        if (ast instanceof IASTSimpleDeclaration) {
-            IASTDeclarator[] declarators =  ((IASTSimpleDeclaration) v.getAST()).getDeclarators();
-            for (IASTDeclarator declarator : declarators) {
-                IASTEqualsInitializer initializer = (IASTEqualsInitializer) declarator.getInitializer();
-                IASTInitializerClause clause = initializer.getInitializerClause();
-
-                if (clause instanceof IASTLiteralExpression)
-                    return true;
-                else if (clause instanceof IASTIdExpression) {
-                    String name = ((IASTIdExpression) clause).getName().toString();
-                    for (Node possibleValue : possibleValues) {
-                        if (possibleValue instanceof VariableNode) {
-                            VariableNode var = (VariableNode) possibleValue;
-                            if (var.getName().equals(name)) {
-                                return true;
-                            }
-                        }
-                    }
-                } else {
-                    // TODO: handle more cases
-                    // temporary solution: return true
-                    return true;
-                }
-            }
-        }
-
-        return false;
-
     }
 
     private String parseMemberInits(IASTFunctionDefinition astFunctionNode) {
@@ -279,9 +180,6 @@ public class FunctionInstrumentationForAllCoverages extends AbstractFunctionInst
             StringBuilder newContent = new StringBuilder();
             if (stm instanceof IASTProblemHolder) {
                 if (!content.equals(")")) {
-                    if (content.equals("t")) {
-                        continue;
-                    }
                     newContent
                             .append("/* Cant instrument this following code */\n")
                             .append(stm.getRawSignature());
@@ -293,9 +191,8 @@ public class FunctionInstrumentationForAllCoverages extends AbstractFunctionInst
                         .append(SpecialCharacter.LINE_BREAK);
             }
             int index = b.indexOf(content, searchIndex);
-            int endStmIndex = index + content.length();
-            b.replace(index, endStmIndex, newContent.toString());
-            searchIndex = index + newContent.length();
+            searchIndex = index + content.length();
+            b.replace(index, searchIndex, newContent.toString());
         }
 
 //        if (block.getStatements().length > 0 && !b.toString().contains(SpecialCharacter.END_OF_STATEMENT)) {
@@ -373,67 +270,44 @@ public class FunctionInstrumentationForAllCoverages extends AbstractFunctionInst
 
         } else if (stm instanceof IASTIfStatement) {
             IASTIfStatement astIf = (IASTIfStatement) stm;
-            b.append(astIf.getRawSignature());
-            int searchIndex = 0;
             IASTStatement astElse = astIf.getElseClause();
             IASTNode cond = astIf.getConditionExpression();
             IASTNode decla = ((CPPASTIfStatement) stm).getConditionDeclaration();
-            StringBuilder newContent = new StringBuilder();
-            int index = 0;
-            int endStmIndex = 0;
+
             if (cond != null) {
-                index = b.indexOf(cond.getRawSignature(), searchIndex);
-                endStmIndex = index + cond.getRawSignature().length();
-                newContent
+                b.append("if (")
                         .append(putInMark(addContentOfMarkFunction(cond, astFunctionNode, functionPath, true, false), false))
-                        .append(" && (").append(createMarkForSubCondition(cond)).append(")");
+                        .append(" && (").append(createMarkForSubCondition(cond)).append(")) ");
             } else if (decla != null) {
-                index = b.indexOf(decla.getRawSignature(), searchIndex);
-                endStmIndex = index + decla.getRawSignature().length();
-                newContent.append(putInMark(addContentOfMarkFunction(decla, astFunctionNode, functionPath, true, true), false)).append(";");
+                b.append(putInMark(addContentOfMarkFunction(decla, astFunctionNode, functionPath, true, true), false)).append(";");
                 String declaStr = refactorStatic(decla.getRawSignature());
-                newContent.append(declaStr);
+                b.append("if (").append(declaStr).append(")");
             }
-            b.replace(index, endStmIndex, newContent.toString());
-            searchIndex = index + newContent.toString().length();
-            newContent = new StringBuilder();
 
             IASTStatement astThen = astIf.getThenClause();
-            index = b.indexOf(astThen.getRawSignature(), searchIndex);
-            endStmIndex = index + astThen.getRawSignature().length();
-
             // empty body
             if (astThen instanceof IASTCompoundStatement && ((IASTCompoundStatement) astThen).getStatements().length == 0)
-                newContent.append("{")
+                b.append("{")
                         .append(putInMark(addAdditionContent(cond, astFunctionNode, functionPath, "+"), true))
                         .append("}");
             else
-                newContent.append(addExtraCall(astThen, "", margin));
-
-            b.replace(index, endStmIndex, newContent.toString());
-            searchIndex = index + newContent.toString().length();
-            newContent = new StringBuilder();
+                b.append(addExtraCall(astThen, "", margin));
 
             if (astElse != null) {
-                index = b.indexOf(astElse.getRawSignature(), searchIndex);
-                endStmIndex = index + astElse.getRawSignature().length();
-//                b.append(SpecialCharacter.LINE_BREAK).append(margin).append("else ");
+                b.append(SpecialCharacter.LINE_BREAK).append(margin).append("else ");
                 // empty body
                 if (astElse instanceof IASTCompoundStatement && ((IASTCompoundStatement) astElse).getStatements().length == 0)
-                    newContent.append("{")
+                    b.append("{")
                             .append(putInMark(addAdditionContent(cond, astFunctionNode, functionPath, "-"), true))
                             .append("}");
                 else
-                    newContent.append(addExtraCall(astElse, "", margin));
+                    b.append(addExtraCall(astElse, "", margin));
             } else {
-                index = searchIndex;
-                endStmIndex = index;
-                newContent.append(SpecialCharacter.LINE_BREAK).append(margin).append("else ");
-                newContent.append("{")
+                b.append(SpecialCharacter.LINE_BREAK).append(margin).append("else ");
+                b.append("{")
                         .append(putInMark(addAdditionContent(cond, astFunctionNode, functionPath, "-"), true))
                         .append("}");
             }
-            b.replace(index, endStmIndex, newContent.toString());
 
         } else if (stm instanceof IASTForStatement) {
             IASTForStatement astFor = (IASTForStatement) stm;
@@ -600,7 +474,6 @@ public class FunctionInstrumentationForAllCoverages extends AbstractFunctionInst
                 }
             }
 
-            // only run if the stm is declaration and variable is static
             if (isStatic && STATIC_REFACTOR) {
                 raw = String.format("/* instrument variable %s */", raw);
             } else {
@@ -614,7 +487,7 @@ public class FunctionInstrumentationForAllCoverages extends AbstractFunctionInst
         return b.toString();
     }
 
-    public static final boolean STATIC_REFACTOR = true;
+    private final boolean STATIC_REFACTOR = true;
 
     private String refactorStatic(String stm) {
         if (STATIC_REFACTOR) {

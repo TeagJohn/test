@@ -91,4 +91,10 @@ public class PathUtils {
     public static String replaceBackslashWithSlash(String path) {
         return path.replace("\\\\", "/").replace("\\", "/");
     }
+
+    public static boolean isParentFolderContainsChild(String parent, String child) {
+        String nParent = Utils.normalizePath(parent);
+        String nChild = Utils.normalizePath(child);
+        return nChild.startsWith(nParent);
+    }
 }

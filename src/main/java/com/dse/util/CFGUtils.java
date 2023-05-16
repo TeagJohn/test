@@ -1,14 +1,17 @@
 package com.dse.util;
 
-import auto_testcase_generation.cfg.CFGGenerationforBranchvsStatementvsBasispathCoverage;
-import auto_testcase_generation.cfg.CFGGenerationforSubConditionCoverage;
-import auto_testcase_generation.cfg.ICFG;
+import auto_testcase_generation.cfg.*;
+import auto_testcase_generation.cfg.object.CfgNode;
+import auto_testcase_generation.cfg.object.ICfgNode;
+import auto_testcase_generation.cfg.object.NormalCfgNode;
 import auto_testcase_generation.instrument.IFunctionInstrumentationGeneration;
 import auto_testcase_generation.testdata.object.TestpathString_Marker;
 import auto_testcase_generation.testdatagen.coverage.CFGUpdaterv2;
+import com.dse.config.WorkspaceConfig;
 import com.dse.coverage.AbstractCoverageComputation;
 import com.dse.coverage.highlight.AbstractHighlighterForSourcecodeLevel;
 import com.dse.environment.Environment;
+import com.dse.environment.PhysicalTreeExporter;
 import com.dse.environment.object.EnviroCoverageTypeNode;
 import com.dse.environment.object.EnvironmentRootNode;
 import com.dse.parser.ProjectParser;
@@ -17,12 +20,15 @@ import com.dse.parser.object.*;
 import com.dse.search.Search;
 import com.dse.search.condition.AbstractFunctionNodeCondition;
 import com.dse.search.condition.FunctionNodeCondition;
+import com.dse.testcase_manager.AbstractTestCase;
 import com.dse.testcase_manager.TestCase;
 import com.dse.testcase_manager.minimize.TestCaseMinimizer;
+import com.google.gson.*;
 import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 
 import java.io.File;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -247,6 +253,16 @@ public class CFGUtils {
         }
         return cfg;
     }
+
+    public static String createCFGFunctionPath(FunctionNode functionNode) {
+        WorkspaceConfig workspaceConfig = new WorkspaceConfig().fromJson();
+        String pathCFGFolder = PathUtils.toAbsolute(workspaceConfig.getCfgDirectory() + functionNode.getParent().getRelativePathToRoot());
+        new File(pathCFGFolder).mkdirs();
+
+        String fileName = AbstractTestCase.removeSpecialCharacter(functionNode.getName() + "cfg") + ".json";
+        return pathCFGFolder + File.separator + fileName;
+    }
+
 
 //    public static ICFG cloneAndRefactor(IFunctionNode fn, String coverageType, Map<String, String> varsMap) throws Exception {
 //        ICFG cfg = null;

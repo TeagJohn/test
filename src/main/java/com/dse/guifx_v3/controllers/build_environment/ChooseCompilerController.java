@@ -1,27 +1,26 @@
 package com.dse.guifx_v3.controllers.build_environment;
 
-import com.dse.cmake.CMakeBuilder;
 import com.dse.compiler.AvailableCompiler;
-import com.dse.cmake.GeneratorsChecker;
 import com.dse.compiler.Compiler;
 import com.dse.environment.Environment;
 import com.dse.environment.EnvironmentSearch;
-import com.dse.environment.object.EnviroCompilerNode;
-import com.dse.environment.object.EnviroDefinedVariableNode;
-import com.dse.environment.object.EnvironmentRootNode;
-import com.dse.environment.object.IEnvironmentNode;
+import com.dse.environment.object.*;
 import com.dse.guifx_v3.helps.UIController;
 import com.dse.guifx_v3.objects.hint.Hint;
 import com.dse.guifx_v3.objects.hint.HintContent;
 import com.dse.logger.AkaLogger;
+import com.dse.make_build_system.*;
 import com.dse.util.Utils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -35,19 +34,32 @@ public class ChooseCompilerController extends AbstractCustomController implement
     final static AkaLogger logger = AkaLogger.get(ChooseCompilerController.class);
 
     @FXML
-    public TextField tfIncludeFlag, tfDefineFlag, tfDebugCommand, tfOutfileFlag, tfOutfileExtension, tfLinkCommand;
+    private TextField tfIncludeFlag, tfDefineFlag, tfDebugCommand, tfOutfileFlag, tfOutfileExtension, tfLinkCommand,
+            tfMakeTarget;
 
     @FXML
-    private Tab cmakeConfigTab;
+    private Tab makeConfigTab;
 
     @FXML
-    private CheckBox cmakeChecking;
+    private CheckBox chbUseMake;
 
     @FXML
-    private CheckBox gtestChecking;
+    private ComboBox<String> cbBuildSystem;
 
     @FXML
-    public ComboBox<String> cbCMakeGenerators;
+    private StackPane spBuildSystemConfig;
+
+    @FXML
+    private AnchorPane apGnuMake, apCmake, apDefaultStrategy;
+
+    @FXML
+    private ComboBox<String> cbCMakeGenerators;
+
+    @FXML
+    private ComboBox<BuildSystemOpts.GnuMakeStrategyObject> cbBuildStrategy;
+
+    @FXML
+    private Label lCmakeWarning, lCmakeNote, lBuildStrategyDetail;
 
     @FXML
     private ComboBox<String> cbCompilers;
@@ -79,7 +91,7 @@ public class ChooseCompilerController extends AbstractCustomController implement
     public void initialize(URL location, ResourceBundle resources) {
         // get all possible compilers
         for (Class<?> compiler : AvailableCompiler.class.getClasses()) {
-            try {
+            try{
                 String name = compiler.getField("NAME").get(null).toString();
                 cbCompilers.getItems().add(name);
             } catch (Exception ex) {
@@ -87,9 +99,24 @@ public class ChooseCompilerController extends AbstractCustomController implement
             }
         }
 
-        for (String generator : GeneratorsChecker.GeneratorOtps) {
-            cbCMakeGenerators.getItems().add(generator);
+        chbUseMake.setOnMouseClicked(event -> {
+            makeConfigTab.setDisable(!chbUseMake.isSelected());
+        });
+        cbBuildSystem.getItems().addAll(BuildSystemOpts.BuildSystemOpts);
+
+        spBuildSystemConfig.setVisible(false);
+        for (Node child : spBuildSystemConfig.getChildren()) {
+            child.setVisible(false);
         }
+
+        // pre-config for cmake
+        cbCMakeGenerators.getItems().addAll(BuildSystemOpts.CMakeGeneratorOpts);
+
+        lCmakeWarning.setText(BuildSystemOpts.CMAKE_WARNING);
+        lCmakeNote.setText(BuildSystemOpts.CMAKE_NOTE);
+
+        cbBuildStrategy.getItems().addAll(new BuildSystemOpts().GnuMakeStrategyOpts);
+        apDefaultStrategy.setVisible(false);
 
         // set the default compiler
         if (Utils.isWindows())
@@ -117,43 +144,48 @@ public class ChooseCompilerController extends AbstractCustomController implement
             }
         });
 
+        // add Hints to Buttons
         Hint.tooltipNode(newDefinedVariableBtn, HintContent.EnvBuilder.Compiler.NEW_DEFINED_VAR);
-        // Hint.tooltipNode(editDefinedVariableBtn, "Edit an existing variable");
-        // Hint.tooltipNode(deleteDefinedVariableBtn, "Delete a variable");
+//        Hint.tooltipNode(editDefinedVariableBtn, "Edit an existing variable");
+//        Hint.tooltipNode(deleteDefinedVariableBtn, "Delete a variable");
         Hint.tooltipNode(parseCmdBtn, HintContent.EnvBuilder.Compiler.PARSE_COMMAND);
         Hint.tooltipNode(testSettingBtn, HintContent.EnvBuilder.Compiler.TEST_SETTING);
-
-        // pthread is needed for gtest
-        gtestChecking.selectedProperty().addListener((observable, oldValue, newValue) -> {
-            gtestChecking.setSelected(newValue);
-            String original_linkCmd = tfLinkCommand.getText();
-            if (newValue) {
-                if (!original_linkCmd.contains(" -pthread")) {
-                    tfLinkCommand.setText(original_linkCmd + " -pthread");
-                }
-            } else {
-                if (original_linkCmd.contains(" -pthread")) {
-                    tfLinkCommand.setText(original_linkCmd.replace(" -pthread", ""));
-                }
-            }
-        });
     }
 
     @Override
     public void validate() {
+        boolean valid = true;
         // nothing to do
-        if (cmakeChecking.isSelected() && cbCMakeGenerators.getValue().equals("unknown")) {
-            UIController.showErrorDialog("CMake generator is not choosed", "Error", "Choose Complier");
+        if (chbUseMake.isSelected()) {
+            if (cbBuildSystem.getValue() == null) {
+                valid = false;
+                UIController.showErrorDialog("Please select a build system", "Error", "Make Build System");
+            } else {
+                switch (cbBuildSystem.getValue()) {
+                    case "GNU Make":
+                        if (cbBuildStrategy.getValue() == null) {
+                            valid = false;
+                            UIController.showErrorDialog("Please select a build strategy", "Error", "Make Build System");
+                        }
+                        break;
+                    case "CMake":
+                        if (cbCMakeGenerators.getValue() == null) {
+                            valid = false;
+                            UIController.showErrorDialog("Please select a CMake generator", "Error", "Make Build System");
+                        }
+                        break;
+                }
+            }
         }
 
-        setValid(!cmakeChecking.isSelected()
-                || (cmakeChecking.isSelected() && !cbCMakeGenerators.getValue().equals("unknown")));
+        setValid(valid);
     }
 
     @Override
     public void save() {
         updateEnviroCompilerNodeInEnvironmentTree();
         updateDefinedVariableNodeInEnvironmentTree();
+        updateEnviroMakeBuildSystemNodeInEnvironmentTree();
         validate();
     }
 
@@ -185,9 +217,8 @@ public class ChooseCompilerController extends AbstractCustomController implement
         node.setCompileCmd(compileCmd.getText());
         node.setLinkCmd(tfLinkCommand.getText());
         node.setDebugCmd(tfDebugCommand.getText());
-        node.setIsCMakeProject(cmakeChecking.isSelected());
+        node.setIsCMakeProject(chbUseMake.isSelected());
         node.setCMakeGenerator(cbCMakeGenerators.getValue());
-        node.setUseGTest(gtestChecking.isSelected());
 
         System.out.println(cbCMakeGenerators.getValue());
 
@@ -218,7 +249,57 @@ public class ChooseCompilerController extends AbstractCustomController implement
         }
     }
 
+    private void updateEnviroMakeBuildSystemNodeInEnvironmentTree() {
+        List<IEnvironmentNode> nodes = EnvironmentSearch.searchNode(Environment.getInstance().getEnvironmentRootNode(), new EnviroMakeBuildSystemNode());
+
+        if (chbUseMake.isSelected()) {
+            if (nodes.size() == 1) {
+                updateEnviroMakeBuildSystemNode(((EnviroMakeBuildSystemNode) nodes.get(0)));
+                logger.debug("Environment configuration:\n" + Environment.getInstance().getEnvironmentRootNode().exportToFile());
+            } else if (nodes.size() == 0) {
+                EnviroMakeBuildSystemNode makeBuildSystemNode = updateEnviroMakeBuildSystemNode(new EnviroMakeBuildSystemNode());
+                if (makeBuildSystemNode != null) Environment.getInstance().getEnvironmentRootNode().addChild(makeBuildSystemNode);
+                logger.debug("Configuration of the environment:\n" + Environment.getInstance().getEnvironmentRootNode().exportToFile());
+            } else {
+                logger.debug("There are more than two compiler options!");
+            }
+        } else {
+            for (IEnvironmentNode node : nodes) {
+                Environment.getInstance().getEnvironmentRootNode().removeChild(node);
+            }
+            logger.debug("Configuration of the environment:\n" + Environment.getInstance().getEnvironmentRootNode().exportToFile());
+        }
+    }
+
+    private EnviroMakeBuildSystemNode updateEnviroMakeBuildSystemNode(EnviroMakeBuildSystemNode node) {
+        if (cbBuildSystem.getValue() != null) {
+            BuildSystemHandler handler = Environment.getInstance().getMakeBuildSystemManager().getCurrentBSHandler();
+            node.setBuildSystem(cbBuildSystem.getValue());
+            switch (cbBuildSystem.getValue()) {
+                case "CMake":
+                    node.setCMakeGenerator(cbCMakeGenerators.getValue());
+                    ((CMakeHandler) handler).setCmakeGenerator(cbCMakeGenerators.getValue());
+                    break;
+                case "GNU Make":
+                    node.setGnuMakeBuildType((cbBuildStrategy.getValue() != null) ? cbBuildStrategy.getValue().id : -1);
+                    node.setGnuMakeTarget(tfMakeTarget.getText());
+                    ((GNUMakeHandler) handler).setBuildType(node.getGnuMakeBuildType());
+                    ((GNUMakeHandler) handler).setBuildTarget(tfMakeTarget.getText());
+                    break;
+            }
+
+            return node;
+        }
+
+        return null;
+    }
+
     public void loadFromEnvironment() {
+        loadCompilerFromEnvironment();
+        loadMakeBuildSystemFromEnvironment();
+    }
+
+    private void loadCompilerFromEnvironment() {
         logger.debug("Load compiler from current environment");
 
         EnvironmentRootNode root = Environment.getInstance().getEnvironmentRootNode();
@@ -236,17 +317,33 @@ public class ChooseCompilerController extends AbstractCustomController implement
             tfOutfileExtension.setText(enviroCompilerNode.getOutputExt());
             tfLinkCommand.setText(enviroCompilerNode.getLinkCmd());
             tfDebugCommand.setText(enviroCompilerNode.getDebugCmd());
-            cmakeChecking.setSelected(enviroCompilerNode.isCMakeProject());
-            gtestChecking.setSelected(enviroCompilerNode.isUseGTest());
-            cmakeConfigTab.setDisable(!enviroCompilerNode.isCMakeProject());
-            cbCMakeGenerators.setValue(enviroCompilerNode.getCMakeGenerator());
-
 
             // load defined variables from .env file
             List<IEnvironmentNode> definedVariableNodes = getEnviroDefinedVariableNode();
             for (IEnvironmentNode definedVariableNode : definedVariableNodes)
                 if (definedVariableNode instanceof EnviroDefinedVariableNode)
                     lvDefinedVariable.getItems().add((EnviroDefinedVariableNode) definedVariableNode);
+        }
+    }
+
+    private void loadMakeBuildSystemFromEnvironment() {
+        logger.debug("Load make build system from current environment");
+
+        EnvironmentRootNode root = Environment.getInstance().getEnvironmentRootNode();
+        List<IEnvironmentNode> nodes = EnvironmentSearch.searchNode(root, new EnviroMakeBuildSystemNode());
+
+        if (nodes.size() == 1) {
+            // load commands from .env file
+            EnviroMakeBuildSystemNode enviroMakeBuildSystemNode = (EnviroMakeBuildSystemNode) nodes.get(0);
+            chbUseMake.setSelected(true);
+            makeConfigTab.setDisable(false);
+            cbBuildSystem.setValue(enviroMakeBuildSystemNode.getBuildSystem());
+            cbCMakeGenerators.setValue(enviroMakeBuildSystemNode.getCMakeGenerator());
+            cbBuildStrategy.getSelectionModel().select(enviroMakeBuildSystemNode.getGnuMakeBuildType());
+            tfMakeTarget.setText(enviroMakeBuildSystemNode.getGnuMakeTarget());
+        } else {
+            chbUseMake.setSelected(false);
+            makeConfigTab.setDisable(true);
         }
     }
 
@@ -279,10 +376,6 @@ public class ChooseCompilerController extends AbstractCustomController implement
             tfOutfileExtension.setText(compiler.getOutputExtension());
             tfLinkCommand.setText(compiler.getLinkCommand());
             tfDebugCommand.setText(compiler.getDebugCommand());
-            cmakeChecking.setSelected(compiler.isCmakeProject());
-            gtestChecking.setSelected(compiler.isUseGTest());
-            cmakeConfigTab.setDisable(!compiler.isCmakeProject());
-            cbCMakeGenerators.setValue(compiler.getCmakeGenerator());
         }
     }
 
@@ -408,32 +501,60 @@ public class ChooseCompilerController extends AbstractCustomController implement
         }
     }
 
-    public void onCmakeCheckClicked() {
-        final boolean isChecked = cmakeChecking.isSelected();
-        if (isChecked) {
-            if (CMakeBuilder.verifyCMakeExists()) {
-                cmakeChecking.setSelected(true);
-                cmakeConfigTab.setDisable(false);
-                LocateSourceFilesController.getInstance().switchCMakeMode(true);
+    public void onChooseBuildSystem() {
+        final String buildSystem = cbBuildSystem.getValue();
+        if (buildSystem != null) {
+            MakeBuildSystemManager manager = Environment.getInstance().getMakeBuildSystemManager();
+            BuildSystemHandler handler = manager.createNewHandler(buildSystem);
+
+            System.out.println(handler);
+
+            if (handler != null) {
+                if (handler instanceof CMakeHandler) {
+                    spBuildSystemConfig.setVisible(true);
+                    openStackPaneBuildSystemConfigFor("apCmake");
+                } else if (handler instanceof GNUMakeHandler) {
+                    spBuildSystemConfig.setVisible(true);
+                    openStackPaneBuildSystemConfigFor("apGnuMake");
+                } else {
+                    spBuildSystemConfig.setVisible(false);
+                }
             } else {
-                cmakeChecking.setSelected(false);
-                cmakeConfigTab.setDisable(true);
-                LocateSourceFilesController.getInstance().switchCMakeMode(false);
+                spBuildSystemConfig.setVisible(false);
+                openStackPaneBuildSystemConfigFor(null);
+                cbBuildSystem.setValue(null);
             }
-        } else {
-            cmakeConfigTab.setDisable(true);
-            LocateSourceFilesController.getInstance().switchCMakeMode(false);
         }
     }
 
-    public void onGTestCheckClicked() {
-        final boolean isChecked = gtestChecking.isSelected();
-        if (compiler != null) {
-            if (isChecked) {
-                compiler.setUseGTest(true);
+    /**
+     * Open the stack pane for the build system configuration with the given id. <br>
+     * If the id is null, all stack pane will be closed. <br>
+     * Ex: stack pane id = "apCmake" will open the stack pane for CMake configuration.
+     *
+     * @param childId the id of the child to open
+     */
+    private void openStackPaneBuildSystemConfigFor(String childId) {
+        for (Node node : spBuildSystemConfig.getChildren()) {
+            if (childId == null) {
+                node.setDisable(true);
+                node.setVisible(false);
             } else {
-                compiler.setUseGTest(false);
+                if (node.getId().equals(childId)) {
+                    node.setDisable(false);
+                    node.setVisible(true);
+                } else {
+                    node.setDisable(true);
+                    node.setVisible(false);
+                }
             }
+        }
+    }
+
+    public void onChooseGnuMakeBuildStrategy() {
+        if (cbBuildStrategy.getValue() != null) {
+            lBuildStrategyDetail.setText(cbBuildStrategy.getValue().detail);
+            apDefaultStrategy.setVisible(cbBuildStrategy.getValue().id == 0);
         }
     }
 }

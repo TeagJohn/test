@@ -351,7 +351,6 @@ public class DebugController implements Initializable {
             path = Utils.normalizePath(path);
             path = path.toUpperCase();
         }
-
         logger.debug("Finding tab by path: " + path);
         for (Tab tab : this.codeViewer.getTabs()) {
             DebugTab debugTab = (DebugTab) tab;

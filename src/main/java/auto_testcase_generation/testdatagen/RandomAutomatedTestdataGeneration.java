@@ -91,10 +91,8 @@ public class RandomAutomatedTestdataGeneration extends AbstractAutomatedTestdata
 
         // view coverage of generated set of test cases
         if (!shouldRunParallel) {
-            if (UILogger.getLogMode().equals(UILogger.MODE_GUI)) {
-                onGenerateSuccess(showReport);
-                LoadingPopupController.getInstance().close();
-            }
+            onGenerateSuccess(showReport);
+            LoadingPopupController.getInstance().close();
         }
     }
 
@@ -129,7 +127,12 @@ public class RandomAutomatedTestdataGeneration extends AbstractAutomatedTestdata
                 e.printStackTrace();
             }
         }
-        TestCasesNavigatorController.getInstance().refreshNavigatorTreeFromAnotherThread();
+        try {
+            TestCasesNavigatorController.getInstance().refreshNavigatorTreeFromAnotherThread();
+        } catch (Exception e) {
+            // do nothing
+            e.printStackTrace();
+        }
         execute(outputs, showReport, execTasks, shouldRunParallel, functionExecThread);
         logger.debug("Done automated test data generation");
 
@@ -183,14 +186,19 @@ public class RandomAutomatedTestdataGeneration extends AbstractAutomatedTestdata
 
         generatedTestcases.add(newTestCaseInStr);
         try {
-//            logger.debug(new SimpleTreeDisplayer().toString(root));
+            logger.debug(new SimpleTreeDisplayer().toString(root));
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         // add to navigator tree
-        testCase.updateToTestCasesNavigatorTree();
-        Platform.runLater(() -> TestCasesNavigatorController.getInstance().refreshNavigatorTree());
+        try {
+            testCase.updateToTestCasesNavigatorTree();
+            Platform.runLater(() -> TestCasesNavigatorController.getInstance().refreshNavigatorTree());
+        } catch (Exception e) {
+            // do nothing
+//            e.printStackTrace();
+        }
 
         //
         String additionalHeadersAll = "";

@@ -16,9 +16,4 @@ public class PersistentDirectoryChooser {
         }
         return instance;
     }
-
-    public static DirectoryChooser getNewInstance() {
-        instance = new DirectoryChooser();
-        return instance;
-    }
 }

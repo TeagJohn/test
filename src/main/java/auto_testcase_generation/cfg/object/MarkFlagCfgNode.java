@@ -6,6 +6,9 @@ public class MarkFlagCfgNode extends CfgNode {
 
 	private boolean shouldInSameLine = shouldInBlock();
 
+	public MarkFlagCfgNode() {
+	}
+
 	public MarkFlagCfgNode(String content) {
 		super(content);
 	}

@@ -73,7 +73,6 @@ public interface HintContent {
         interface SrcLocation {
             String ADD = "Add a directory";
             String ADD_RECURSIVE = "Add a directory and its sub-directories";
-            String ADD_SUB_DIR = "Only add sub-directories";
             String DELETE = "Remove the selected directory";
             String VIEW_RELATED = "View the selected source code files as relative/absolute paths";
             String BROWSE = "Browse and select CMake project directory";

@@ -35,7 +35,6 @@ public class CompoundTestcaseExecution extends AbstractTestcaseExecution {
             initializeConfigurationOfTestcase(element);
         initializeConfigurationOfTestcase(testCase);
         
-
         testDriverGen = generateTestDriver(testCase);
 
         if (testDriverGen != null) {

@@ -25,7 +25,6 @@ import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTTemplateDeclaration;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTVisibilityLabel;
 import org.eclipse.cdt.internal.core.dom.parser.cpp.CPPASTBinaryExpression;
 import org.eclipse.cdt.internal.core.dom.parser.cpp.CPPASTFunctionDeclarator;
-import org.eclipse.cdt.internal.core.dom.parser.cpp.CPPASTOperatorName;
 import org.eclipse.cdt.internal.core.dom.parser.cpp.CPPASTPointer;
 
 import javax.swing.*;
@@ -181,7 +180,7 @@ public abstract class AbstractFunctionNode extends CustomASTNode<IASTFunctionDef
 
 	@Override
 	public INode getRealParent() {
-		for (Dependency d:this.onlyGetDependencies())
+		for (Dependency d:this.getDependencies())
 			if (d instanceof RealParentDependency && d.getStartArrow().equals(this))
 			{
 				return d.getEndArrow();
@@ -829,10 +828,6 @@ public abstract class AbstractFunctionNode extends CustomASTNode<IASTFunctionDef
 							String functionName = declarator.getName().getLastName().getRawSignature();
 							int parameters = ((ICPPASTFunctionDeclarator) declarator).getParameters().length;
 
-							if (declarator.getName() instanceof CPPASTOperatorName) {
-								functionName = functionName.replaceAll(" ", "");
-							}
-
 							if (functionName.equals(name) && getArguments().size() == parameters)
 								return visibility;
 						}
@@ -848,6 +843,15 @@ public abstract class AbstractFunctionNode extends CustomASTNode<IASTFunctionDef
 
 	@Override
 	public IFunctionConfig getFunctionConfig() {
+		/**
+		 * Initialize function config if the function does not have any.
+		 */
+		if (functionConfig == null) {
+			functionConfig = new WorkspaceConfig().fromJson().getDefaultFunctionConfig();
+			functionConfig.setFunctionNode(this);
+			this.setFunctionConfig(functionConfig);
+			functionConfig.createBoundOfArgument(functionConfig, this);
+		}
 		return functionConfig;
 	}
 
@@ -1083,10 +1087,5 @@ public abstract class AbstractFunctionNode extends CustomASTNode<IASTFunctionDef
 				return true;
 			}
 		return false;
-	}
-
-	@Override
-	public List<Dependency> getDependencies() {
-		return super.getDependencies();
 	}
 }

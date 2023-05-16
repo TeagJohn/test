@@ -1,7 +1,6 @@
 package com.dse.parser.dependency.finder;
 
 import com.dse.environment.Environment;
-import com.dse.logger.AkaLogger;
 import com.dse.parser.object.*;
 import com.dse.resolver.NewTypeResolver;
 import com.dse.search.Search;
@@ -22,8 +21,6 @@ import java.util.List;
  * @author DucAnh
  */
 public class MethodFinder {
-    final static AkaLogger logger = AkaLogger.get(MethodFinder.class);
-
     public boolean ignoreArgsLength = false;
     public boolean ignoreArgsType = false;
 
@@ -212,9 +209,8 @@ public class MethodFinder {
             INode typeNode = null;
             if (!possibleTypeNode.isEmpty()) {
                 typeNode = possibleTypeNode.get(0);
-                if (possibleTypeNode.size() > 1) {
-                   logger.debug("Multiple structure node found " + type);
-                }
+                if (possibleTypeNode.size() > 1)
+                    System.out.println("Multiple structure node found " + type);
             }
 
             if (typeNode instanceof StructureNode) {
@@ -238,10 +234,6 @@ public class MethodFinder {
 
         if (funcName != null)
             funcName = TemplateUtils.deleteTemplateParameters(funcName);
-
-        if (funcName.startsWith("::")) {
-            funcName = funcName.substring(2);
-        }
 
         return funcName;
     }
@@ -380,7 +372,6 @@ public class MethodFinder {
         if (!(param instanceof IASTExpression))
             return null;
 
-        iterator = 0;
         NewTypeResolver typeResolver = new NewTypeResolver(context, iterator);
         typeResolver.shouldSolveByParent = false;
         String paramType = typeResolver.exec(param);
@@ -400,9 +391,9 @@ public class MethodFinder {
         type = VariableTypeUtils.deleteStorageClasses(type);
         type = VariableTypeUtils.deleteSizeFromArray(type);
         type = VariableTypeUtils.deleteVirtualAndInlineKeyword(type);
-        type = VariableTypeUtils.deleteReferenceOperator(type);
         type = type.replaceAll(" \\*", "*")
-                .replaceAll(" \\[]", "*").replaceAll("\\[]", "*");
+                .replaceAll(" \\[]", "*").replaceAll("\\[]", "*")
+                .replaceAll("&", "");
 
         return type;
     }

@@ -1,15 +1,12 @@
 package com.dse.testdata.object;
 
-import com.dse.environment.Environment;
 import com.dse.parser.object.*;
 import com.dse.project_init.ProjectClone;
 import com.dse.search.Search2;
 import com.dse.stub_manager.SystemLibrary;
 import com.dse.testcase_execution.DriverConstant;
-import com.dse.testcase_execution.ITestcaseExecution;
 import com.dse.testdata.Iterator;
 import com.dse.testdata.comparable.*;
-import com.dse.testdata.comparable.gtest.*;
 import com.dse.testdata.object.stl.ListBaseDataNode;
 import com.dse.testdata.object.stl.PairDataNode;
 import com.dse.testdata.object.stl.STLArrayDataNode;
@@ -23,7 +20,6 @@ import com.dse.util.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Represent a variable node in the <b>variable tree</b>, example: class,
@@ -31,7 +27,7 @@ import java.util.Map;
  *
  * @author DucAnh
  */
-public abstract class ValueDataNode extends DataNode implements IValueDataNode, IUserCodeNode, IGeneralizedAssertion {
+public abstract class ValueDataNode extends DataNode implements IValueDataNode, IUserCodeNode {
 
     protected AbstractUserCode userCode = null;
     protected boolean useUserCode = false;
@@ -181,11 +177,6 @@ public abstract class ValueDataNode extends DataNode implements IValueDataNode, 
     @Override
     public String getAssertion() {
         StringBuilder assertion = new StringBuilder();
-        if (getAssertMethod() != null) {
-            if (Environment.getInstance().getCompiler().isUseGTest()) {
-                assertion.append(getAssertStm() + "\n");
-            }
-        }
 
         for (IDataNode child : this.getChildren()) {
             if (child instanceof ValueDataNode) {
@@ -197,33 +188,7 @@ public abstract class ValueDataNode extends DataNode implements IValueDataNode, 
         return assertion.toString();
     }
 
-    @Override
-    public String getAssertStm() {
-        String assertMethod = getAssertMethod();
-        if (assertMethod != null) {
-            if (Environment.getInstance().getCompiler().isUseGTest()) {
-                assertMethod = assertMethod.split(": ", 2)[0];
-                if (IGeneralizedAssertion.assertMethods.contains(assertMethod)) {
-                    return this.getGeneralizedAssertion();
-                } else if (IExceptionAssertions.assertMethods.contains(assertMethod)) {
-                    String functionCall = SourceConstant.ACTUAL_OUTPUT + "=" + Utils.getFullFunctionCall((ICommonFunctionNode) ((SubprogramNode) this).getFunctionNode());
-                    functionCall = functionCall.replaceAll(ProjectClone.MAIN_REGEX, ProjectClone.MAIN_REFACTOR_NAME);
-                    return ((SubprogramNode) this).getExceptionAssertion(functionCall);
-                } else if (IPredicateAssertions.assertMethods.contains(assertMethod)) {
-                    String functionCall = Utils.getFullFunctionCall((ICommonFunctionNode) ((SubprogramNode) this).getFunctionNode());
-                    functionCall = functionCall.replaceAll(ProjectClone.MAIN_REGEX, ProjectClone.MAIN_REFACTOR_NAME);
-                    return ((SubprogramNode) this).getPredicateAssertion(functionCall);
-                } else if (IDeathAssertions.assertMethods.contains(assertMethod)) {
-                    String functionCall = SourceConstant.ACTUAL_OUTPUT + "=" + Utils.getFullFunctionCall((ICommonFunctionNode) ((SubprogramNode) this).getFunctionNode());
-                    functionCall = functionCall.replaceAll(ProjectClone.MAIN_REGEX, ProjectClone.MAIN_REFACTOR_NAME);
-                    return ((SubprogramNode) this).getDeathAssertion(functionCall);
-                }
-            }
-        }
-        return SpecialCharacter.EMPTY;
-    }
-
-    public String getActualName() {
+    protected String getActualName() {
         String actualName = getVituralName();
 
         String expectedOutputRegex = "\\Q" + SourceConstant.EXPECTED_OUTPUT + "\\E";
@@ -237,13 +202,6 @@ public abstract class ValueDataNode extends DataNode implements IValueDataNode, 
 
         String globalRegex = "\\Q" + SourceConstant.GLOBAL_PREFIX + "\\E";
         actualName = actualName.replaceFirst(globalRegex, SpecialCharacter.EMPTY);
-
-        // fix the test driver error when sub class has public attributes
-        // or private, protected, public attributes in whitebox mode
-        if (getParent() instanceof ISubStructOrClassDataNode && !(getParent().getParent().getParent() instanceof SubprogramNode) && this instanceof NormalDataNode && !getParent().getName().contains("[")) {
-            String dotRegex = "\\Q" + SpecialCharacter.DOT + "\\E";
-            actualName = actualName.replaceFirst(dotRegex, SpecialCharacter.POINT_TO);
-        }
 
         return actualName;
     }
@@ -368,10 +326,6 @@ public abstract class ValueDataNode extends DataNode implements IValueDataNode, 
         if (this instanceof SubClassDataNode && parent instanceof ClassDataNode)
             return ((ClassDataNode) parent).isArrayElement();
 
-        if (this instanceof SubStructDataNode && parent instanceof StructDataNode) {
-            return ((StructDataNode) parent).isArrayElement();
-        }
-
         return false;
     }
 
@@ -395,7 +349,7 @@ public abstract class ValueDataNode extends DataNode implements IValueDataNode, 
 
     @Override
     public boolean isAttribute() {
-        if (this instanceof SubClassDataNode || this instanceof SubStructDataNode || this instanceof SubUnionDataNode) {
+        if (this instanceof SubClassDataNode) {
             return getParent().getParent() instanceof StructureDataNode || getParent().getParent() instanceof PairDataNode;
         } else if (this instanceof SubprogramNode) {
             if (this instanceof ConstructorDataNode)
@@ -432,9 +386,7 @@ public abstract class ValueDataNode extends DataNode implements IValueDataNode, 
 //            if (grandParent instanceof RootDataNode)
 //                return !isReturnVar;
             if (parent instanceof IterationSubprogramNode) {
-                IterationSubprogramNode isNode = (IterationSubprogramNode) parent;
-                Map<ValueDataNode, ValueDataNode> map = isNode.getInputToExpectedOutputMap();
-                return !isReturnVar && map.containsValue(this);
+                return !isReturnVar;
             }
             if (grandParent instanceof UnitNode) {
                 boolean isStubUnit = grandParent instanceof StubUnitNode;
@@ -497,16 +449,12 @@ public abstract class ValueDataNode extends DataNode implements IValueDataNode, 
         if (isGlobalExpectedValue())
             return false;
 
-        if (this instanceof ClassDataNode || this instanceof StructDataNode || this instanceof UnionDataNode)
+        if (this instanceof ClassDataNode || this instanceof StructDataNode)
             if (correspondingVar instanceof InstanceVariableNode)
                 return true;
 
         if (this instanceof SubClassDataNode) {
             return ((ClassDataNode) getParent()).isInstance();
-        } else if (this instanceof SubStructDataNode) {
-            return ((StructDataNode) getParent()).isInstance();
-        } else if (this instanceof SubUnionDataNode) {
-            return ((UnionDataNode) getParent()).isInstance();
         }
 
         return false;
@@ -583,9 +531,10 @@ public abstract class ValueDataNode extends DataNode implements IValueDataNode, 
             virtualName = parent.getVituralName();
         }
         // subclass data node
-        else if (this instanceof SubClassDataNode || this instanceof SubStructDataNode || this instanceof SubUnionDataNode) {
+        else if (this instanceof SubClassDataNode) {
             virtualName = parent.getVituralName();
-        } else if (this instanceof NumberOfCallNode) {
+        }
+        else if (this instanceof NumberOfCallNode) {
             virtualName = "NONE_VALUE";
         }
         // virtual name depend on parent's virtual name
@@ -594,37 +543,16 @@ public abstract class ValueDataNode extends DataNode implements IValueDataNode, 
 
             String parentVirtualName = parent.getVituralName();
 
-            if (parent instanceof ValueDataNode && ((ValueDataNode) parent).isArrayElement()) {
-                int startIdx = elementIndex.lastIndexOf(SpecialCharacter.OPEN_SQUARE_BRACE);
-                int endIdx = elementIndex.lastIndexOf(SpecialCharacter.CLOSE_SQUARE_BRACE);
-                elementIndex = elementIndex.substring(startIdx, endIdx + 1);
-            }
+            if (parent instanceof ValueDataNode && ((ValueDataNode) parent).isArrayElement())
+                parentVirtualName = parentVirtualName
+                        .substring(0, parentVirtualName.lastIndexOf(SpecialCharacter.OPEN_SQUARE_BRACE));
 
             virtualName = parentVirtualName + elementIndex;
-//            String elementIndex = VariableTypeUtils.getElementIndex(getName());
-//
-//            String parentVirtualName = parent.getVituralName();
-//
-//            if (parent instanceof ValueDataNode && ((ValueDataNode) parent).isArrayElement())
-//                parentVirtualName = parentVirtualName
-//                        .substring(0, parentVirtualName.lastIndexOf(SpecialCharacter.OPEN_SQUARE_BRACE));
-//
-//            virtualName = parentVirtualName + elementIndex;
         } else if (isAttribute()) {
             virtualName = parent.getVituralName() + SpecialCharacter.DOT + getName();
 
             if (parent.getVituralName().startsWith(SourceConstant.INSTANCE_VARIABLE))
                 virtualName = parent.getVituralName() + SpecialCharacter.POINT_TO + getName();
-
-            if (parent instanceof ISubStructOrClassDataNode
-                    && !(parent.getParent().getParent() instanceof GlobalRootDataNode)) {
-                String parentType = ((ISubStructOrClassDataNode) parent).getRawType();
-                parentType = parentType.replaceFirst(SpecialCharacter.STRUCTURE_OR_NAMESPACE_ACCESS, "");
-
-                if (!parentType.contains(SpecialCharacter.POINTER)) {
-                    virtualName = parent.getVituralName() + SpecialCharacter.DOT + getName();
-                }
-            }
         }
 //		else if (getParent() instanceof VoidPointerDataNode) {
 //            String parentPrefix = parent.getVituralName();
@@ -654,11 +582,7 @@ public abstract class ValueDataNode extends DataNode implements IValueDataNode, 
         if (isStubArgument()) {
 //            String normalizeSubprogramName = parent.getDisplayNameInParameterTree()
 //                    .replaceAll("[^\\w]", SpecialCharacter.UNDERSCORE);
-            if (isExpected()) {
-                virtualName = SourceConstant.EXPECTED_PREFIX + SourceConstant.STUB_PREFIX + virtualName;
-            } else {
-                virtualName = SourceConstant.STUB_PREFIX + virtualName;
-            }
+            virtualName = SourceConstant.STUB_PREFIX /*+ normalizeSubprogramName*/ + virtualName;
         }
 
         if (isSutExpectedArgument()) {
@@ -711,13 +635,13 @@ public abstract class ValueDataNode extends DataNode implements IValueDataNode, 
 //            return false;
 //
 //        if (parent instanceof SubprogramNode) {
-        if (getTestCaseRoot() == null) return false;
-        SubprogramNode sut = Search2.findSubprogramUnderTest(getTestCaseRoot());
+            if (getTestCaseRoot() == null) return false;
+            SubprogramNode sut = Search2.findSubprogramUnderTest(getTestCaseRoot());
 //
-        if (sut != null) {
-            if (sut.getParamExpectedOuputs().contains(this))
-                return true;
-        }
+            if (sut != null) {
+                if (sut.getParamExpectedOuputs().contains(this))
+                    return true;
+            }
 //        }
 
         return false;
@@ -785,52 +709,24 @@ public abstract class ValueDataNode extends DataNode implements IValueDataNode, 
     public String[] getAllSupportedAssertMethod() {
         List<String> supportedMethod = new ArrayList<>();
         supportedMethod.add(SpecialCharacter.EMPTY);
-        if (Environment.getInstance().getCompiler().isUseGTest()) {
-            if (this instanceof IGeneralizedAssertion) {
-                supportedMethod.addAll(IGeneralizedAssertion.assertMethods);
-            }
-            if (this instanceof IBooleanConditions) {
-                supportedMethod.addAll(IBooleanConditions.assertMethods);
-            }
-            if (this instanceof IBinaryComparison) {
-                supportedMethod.addAll(IBinaryComparison.assertMethods);
-            }
-            if (this instanceof IStringComparison) {
-                supportedMethod.addAll(IStringComparison.assertMethods);
-            }
-            if (this instanceof IFloatingPointComparison) {
-                supportedMethod.addAll(IFloatingPointComparison.assertMethods);
-            }
-            if (this instanceof IExceptionAssertions) {
-                supportedMethod.addAll(IExceptionAssertions.assertMethods);
-            }
-            if (this instanceof IPredicateAssertions) {
-                supportedMethod.addAll(IPredicateAssertions.assertMethods);
-            }
-            if (this instanceof IDeathAssertions) {
-                supportedMethod.addAll(IDeathAssertions.assertMethods);
-            }
-        } else {
-            if (this instanceof IEqualityComparable) {
-                supportedMethod.add(AssertMethod.ASSERT_EQUAL);
-                supportedMethod.add(AssertMethod.ASSERT_NOT_EQUAL);
-            }
-            if (this instanceof IValueComparable) {
-                supportedMethod.add(AssertMethod.ASSERT_LOWER);
-                supportedMethod.add(AssertMethod.ASSERT_GREATER);
-                supportedMethod.add(AssertMethod.ASSERT_LOWER_OR_EQUAL);
-                supportedMethod.add(AssertMethod.ASSERT_GREATER_OR_EQUAL);
-            }
-            if (this instanceof IBooleanComparable) {
-                supportedMethod.add(AssertMethod.ASSERT_TRUE);
-                supportedMethod.add(AssertMethod.ASSERT_FALSE);
-            }
-            if (this instanceof INullableComparable) {
-                supportedMethod.add(AssertMethod.ASSERT_NULL);
-                supportedMethod.add(AssertMethod.ASSERT_NOT_NULL);
-            }
+        if (this instanceof IEqualityComparable) {
+            supportedMethod.add(AssertMethod.ASSERT_EQUAL);
+            supportedMethod.add(AssertMethod.ASSERT_NOT_EQUAL);
         }
-
+        if (this instanceof IValueComparable) {
+            supportedMethod.add(AssertMethod.ASSERT_LOWER);
+            supportedMethod.add(AssertMethod.ASSERT_GREATER);
+            supportedMethod.add(AssertMethod.ASSERT_LOWER_OR_EQUAL);
+            supportedMethod.add(AssertMethod.ASSERT_GREATER_OR_EQUAL);
+        }
+        if (this instanceof IBooleanComparable) {
+            supportedMethod.add(AssertMethod.ASSERT_TRUE);
+            supportedMethod.add(AssertMethod.ASSERT_FALSE);
+        }
+        if (this instanceof INullableComparable) {
+            supportedMethod.add(AssertMethod.ASSERT_NULL);
+            supportedMethod.add(AssertMethod.ASSERT_NOT_NULL);
+        }
 
         supportedMethod.add(AssertMethod.USER_CODE);
 
@@ -969,9 +865,4 @@ public abstract class ValueDataNode extends DataNode implements IValueDataNode, 
         return "";
     }
     // tmp implement IUserCodeNode
-
-    public String getGeneralizedAssertion() {
-        return new GeneralizedAssertionStatementGenerator(this).getGeneralizedAssertion();
-    }
-
 }

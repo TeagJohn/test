@@ -95,9 +95,6 @@ public class FrameController implements Initializable {
         logger.debug("Start updating frames");
         DebugController debugController = DebugController.getDebugController();
         ArrayList<GDBFrame> listFrame = debugController.getGdb().getFrames();
-        if (listFrame == null) {
-            return;
-        }
         this.frameList.clear();
         this.frameList.addAll(listFrame);
         if (listFrame.size() > 0) {

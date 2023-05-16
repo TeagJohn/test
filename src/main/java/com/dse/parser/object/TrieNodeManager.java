@@ -1,25 +1,18 @@
 package com.dse.parser.object;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.dse.util.Utils;
-
 public class TrieNodeManager {
     static TrieNodeManager instance;
-    Map<String, TrieNode> allTries = new LinkedHashMap<>();
+    Map<String, TrieNode> allTries = new HashMap<>();
 
     public static TrieNodeManager getInstance() {
         if (instance == null) {
             instance = new TrieNodeManager();
         }
-        return instance;
-    }
-
-    public static TrieNodeManager newInstance() {
-        instance = new TrieNodeManager();
         return instance;
     }
 
@@ -38,13 +31,8 @@ public class TrieNodeManager {
     }
 
     public void addToTrie(String name, INode node) {
-        if (node == null) {
-            return;
-        }
-
         TrieNode trie = getTrie(name);
         String path = node.getAbsolutePath();
-        path = Utils.normalizePath(path).trim();
         for (int i = path.length() - 1; i > -1; i--) {
             char c = path.charAt(i);
             if (trie.getChildren().containsKey(c)) {
@@ -62,7 +50,6 @@ public class TrieNodeManager {
     }
 
     public List<INode> findInTrie(String name, String path) {
-        path = Utils.normalizePath(path).trim();
         TrieNode trie = getTrie(name);
         for (int i = path.length() - 1; i > -1; i--) {
             char c = path.charAt(i);

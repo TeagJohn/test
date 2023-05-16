@@ -8,8 +8,6 @@ import com.dse.testcase_manager.TestCase;
 import com.dse.testdata.object.*;
 import com.dse.util.NodeType;
 import com.dse.util.TemplateUtils;
-import com.dse.util.VariableTypeUtils;
-import java.util.ArrayList;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -220,19 +218,7 @@ public class TestCaseTreeTableController implements Initializable {
         if (!isVisible(node))
             return;
 
-        List<IDataNode> children = new ArrayList<>(node.getChildren());
-
-        if (node instanceof IterationSubprogramNode) {
-            IterationSubprogramNode subprogramNode = (IterationSubprogramNode) node;
-            subprogramNode.getInputToExpectedOutputMap().forEach((k, v) -> {
-                int index = children.indexOf(v);
-                if (index >= 0) {
-                    children.set(index, k);
-                }
-            });
-        }
-
-        for (IDataNode child : children) {
+        for (IDataNode child : node.getChildren()) {
             loadChild(testCase, treeItem, (DataNode) child, defaultType);
         }
     }
@@ -284,12 +270,6 @@ public class TestCaseTreeTableController implements Initializable {
         return columnType;
     }
 
-    public static boolean isRefStubParameter(DataNode dataNode) {
-        ValueDataNode node = (ValueDataNode) dataNode;
-        String realType = node.getRealType();
-        return realType.contains("&");
-    }
-
     private static void loadChild(IDataTestItem testCase, TreeItem<DataNode> treeItem,
                                   DataNode child, TestDataTreeItem.ColumnType defaultType) {
         if (!isVisible(child))
@@ -324,20 +304,19 @@ public class TestCaseTreeTableController implements Initializable {
                 item = new TestDataStubParamTreeItem(valueNode);
         }
 
-//        if (treeItem.getValue() instanceof IterationSubprogramNode
-//                && (isRefStubParameter(item.getValue()) || item.getValue() instanceof PointerDataNode)
-//                && !(item.getValue().getName().equals("RETURN"))) {
-//
-//            IterationSubprogramNode iterationSubprogramNode = (IterationSubprogramNode) treeItem.getValue();
-//
-//            for ( ValueDataNode key : iterationSubprogramNode.getInputToExpectedOutputMap().keySet()) {
-//                if(key.getName().equals(child.getName()) && item instanceof TestDataStubParamTreeItem) {
-//                    ((TestDataStubParamTreeItem) item).setInputDataNode(key);
-//                    ((TestDataStubParamTreeItem) item).setExpectedOutputDataNode(iterationSubprogramNode.getInputToExpectedOutputMap().get(key));
-//                    break;
-//                }
-//            }
-//        }
+        if (treeItem.getValue() instanceof IterationSubprogramNode && treeItem.getValue().getChildren() != null && treeItem.getValue().getChildren().get(0) instanceof PointerDataNode && !(item.getValue().getName().equals("RETURN"))) {
+            DataNode iterationSubprogramNode = treeItem.getValue();
+            if (((HashMap) ((IterationSubprogramNode) iterationSubprogramNode).getInputToExpectedOutputMap()).isEmpty()) {
+                ((IterationSubprogramNode) treeItem.getValue()).initInputToExpectedOutputMap();
+            }
+            for ( Object key : ((HashMap) ((IterationSubprogramNode) iterationSubprogramNode).getInputToExpectedOutputMap()).keySet() ) {
+                if(((PointerDataNode) key).getName().equals(child.getName())) {
+                    ((TestDataStubParamTreeItem) item).setInputDataNode((ValueDataNode) key);
+                }
+            }
+            ((TestDataStubParamTreeItem) item).setExpectedOutputDataNode(((IterationSubprogramNode) iterationSubprogramNode).getInputToExpectedOutputMap().get(child));
+
+        }
         treeItem.getChildren().add(item);
 
         if (child.getChildren() != null) {
@@ -346,15 +325,9 @@ public class TestCaseTreeTableController implements Initializable {
     }
 
     public static boolean isStubParameter(ValueDataNode dataNode) {
-        if (dataNode == null)
-            return false;
-
-        if (dataNode.getParent() instanceof IterationSubprogramNode
-            && dataNode.getParent().getParent() instanceof NumberOfCallNode) {
-            return (dataNode instanceof PointerDataNode
-                || VariableTypeUtils.isReference(dataNode.getRealType()));
+        if (dataNode instanceof PointerDataNode && dataNode.getParent() instanceof IterationSubprogramNode && dataNode.getParent().getParent() instanceof NumberOfCallNode) {
+            return true;
         }
-
         return false;
     }
 

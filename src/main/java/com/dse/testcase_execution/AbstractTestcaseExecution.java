@@ -13,19 +13,13 @@ import com.dse.coverage.highlight.SourcecodeHighlighterForCoverage;
 import com.dse.environment.Environment;
 import com.dse.guifx_v3.helps.TCExecutionDetailLogger;
 import com.dse.guifx_v3.helps.UIController;
-import com.dse.parser.object.ClassNode;
+import com.dse.make_build_system.BuildSystemHandler;
 import com.dse.parser.object.ISourcecodeFileNode;
 import com.dse.project_init.ProjectClone;
-import com.dse.search.Search2;
 import com.dse.testcase_execution.testdriver.TestDriverGeneration;
 import com.dse.testcase_manager.ITestCase;
 import com.dse.testcase_manager.TestCase;
 import com.dse.testcase_manager.TestCaseManager;
-import com.dse.testdata.comparable.gmock.GmockUtils;
-import com.dse.testdata.comparable.gmock.IGmockSpecialWords;
-import com.dse.testdata.object.Gmock.GmockObjectNode;
-import com.dse.testdata.object.IDataNode;
-import com.dse.testdata.object.SubprogramNode;
 import com.dse.util.*;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
@@ -33,7 +27,9 @@ import javafx.scene.control.Alert;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public abstract class AbstractTestcaseExecution implements ITestcaseExecution {
@@ -46,7 +42,6 @@ public abstract class AbstractTestcaseExecution implements ITestcaseExecution {
     }
 
     public void setMode(int mode) {
-//        this.mode = IN_EXECUTION_WITH_FRAMEWORK_TESTING_MODE;
         this.mode = mode;
     }
 
@@ -73,30 +68,11 @@ public abstract class AbstractTestcaseExecution implements ITestcaseExecution {
         logger.debug("Compiling source code files");
         for (String filePath : compilationCommands.keySet()) {
             String compilationCommand = compilationCommands.get(filePath);
-            if (getMode() == IN_EXECUTION_WITH_FRAMEWORK_TESTING_MODE) {
-                compilationCommand = compilationCommand.replaceFirst("^g\\+\\+", "gcc");
-            }
 
             logger.debug("Compile test driver:\nExecuting " + compilationCommand);
 
-            String[] scr = CompilerUtils.prepareForTerminal(compiler, compilationCommand);
-            int n = scr.length;
+            String[] script = CompilerUtils.prepareForTerminal(compiler, compilationCommand);
 
-            HashSet<ClassNode> classNodeSet = GmockUtils.getMockClassSet(testCase);
-
-            String[] script = new String[n + 2 + classNodeSet.size()];
-            for (int i = 0; i < n; i++) {
-                script[i] = scr[i];
-            }
-            script[n] = "-lgtest";
-            script[n+1] = "-lgmock";
-
-
-            int i = 1;
-            for (ClassNode node : classNodeSet) {
-                script[n+1+i] = "-D" + IGmockSpecialWords.AKA_GMOCK + node.getName();
-                i++;
-            }
             String response = new Terminal(script, directory).get();
 
             compileMsg.append(response).append("\n");
@@ -106,11 +82,8 @@ public abstract class AbstractTestcaseExecution implements ITestcaseExecution {
 
         logger.debug("Re compile all akaignore files");
         ProjectClone.compileIgnoreFiles(directory, testCase);
+
         String linkCommand = customCommandConfig.getLinkingCommand();
-        if (getMode() == IN_EXECUTION_WITH_FRAMEWORK_TESTING_MODE) {
-            linkCommand = linkCommand.replaceFirst("^gcc", "g++");
-            linkCommand = linkCommand + " -lgtest -lgmock";
-        }
         logger.debug("Linking test driver: " + linkCommand);
 
         String[] linkScript = CompilerUtils.prepareForTerminal(compiler, linkCommand);
@@ -121,33 +94,26 @@ public abstract class AbstractTestcaseExecution implements ITestcaseExecution {
     }
 
     /**
-     * Link test driver with CMake project and use CMake Bulder to create executable file.
+     * Link test driver with Make project and use MakeBuildHandler to create executable file.
      * Then, that executable file will give the test path.
      *
      * @return link, build message.
      */
-    public IDriverGenMessage compileAndLinkByCMake(String testDriverPath) throws IOException {
+    public IDriverGenMessage compileAndLinkByMakeBuildSystem(String testDriverPath) throws IOException {
         DriverGenMessage genMessage = new DriverGenMessage();
 
-        // Create a clone CMakeLists.txt to avoid modifying the original one.
-        String instrumentDir = new WorkspaceConfig().fromJson().getInstrumentDirectory();
-        String cmakelistCopyPath = instrumentDir + File.separator + CMakeBuilder.AKAIGNORE_CMAKE_LIST;
-        String cmakelistClonePath = instrumentDir + File.separator + CMakeBuilder.DEFAULT_CMAKE_LIST;
+        String instrumentDirectory = new WorkspaceConfig().fromJson().getInstrumentDirectory();
+        BuildSystemHandler handler = Environment.getInstance().getMakeBuildSystemManager().getCurrentBSHandler();
 
-        Utils.copy(new File(cmakelistCopyPath), new File(cmakelistClonePath));
-
-        genMessage.setLinkMessage(CMakeBuilder.linkTestDriverToEachCMakeListsFile(instrumentDir, testDriverPath));
-
+        String linkMessage = handler.linkTestDriverToMakeBuildFile(testDriverPath);
         genMessage.setCompileMessage("");
-        if (!CMakeBuilder.buildProject(instrumentDir, true))
-            genMessage.setCompileMessage("Error: CMake build failed");
-        else {
-            if (!CMakeBuilder.generateExecutableFile())
-                genMessage.setCompileMessage("Error: CMake generate executable file failed");
-            else
-                genMessage.setCompileMessage("");
-        }
+        genMessage.setLinkMessage(linkMessage);
+        logger.debug("Link message: " + linkMessage);
 
+        String compileMessage = handler.buildProject(true, instrumentDirectory);
+        compileMessage += "\n" +  handler.generateExecutableFile();
+        genMessage.setCompileMessage(compileMessage);
+        logger.debug("Compile message: " + compileMessage);
         return genMessage;
     }
 
@@ -229,19 +195,11 @@ public abstract class AbstractTestcaseExecution implements ITestcaseExecution {
         if (new File(path).exists()) {
             String oldContent = Utils.readFileContent(path);
             String newContent = oldContent.trim();
-            newContent = newContent.replace("\\", "\\\\");
-            if (Environment.getInstance().getCompiler().isUseGTest()) {
-                if (newContent.contains("Failure") && !newContent.endsWith(END_TAG)) {
-                    newContent = newContent + SpecialCharacter.DOUBLE_QUOTES + SpecialCharacter.LINE_BREAK
-                            + SpecialCharacter.CLOSE_BRACE + END_TAG;
-                }
-            }
             if (newContent.endsWith(END_TAG)) {
                 newContent = SpecialCharacter.OPEN_SQUARE_BRACE
                         + newContent.substring(0, newContent.length() - END_TAG.length())
                         + SpecialCharacter.CLOSE_SQUARE_BRACE;
             }
-
             Utils.writeContentToFile(newContent, path);
             return newContent;
         }
@@ -369,9 +327,10 @@ public abstract class AbstractTestcaseExecution implements ITestcaseExecution {
         logger.debug("The test path file of test case " + testCase.getName() + ": " + testCase.getTestPathFile());
 
         // executable file
-        if (Environment.getInstance().getCompiler().isCmakeProject())
-            testCase.setExecutableFile(CMakeBuilder.getExecutableFilePath());
-        else
+        if (Environment.getInstance().isUsingMakeBuildSystem()) {
+            BuildSystemHandler handler = Environment.getInstance().getMakeBuildSystemManager().getCurrentBSHandler();
+            testCase.setExecutableFile(handler.getExecutableFilePath());
+        } else
             testCase.setExecutableFileDefault();
         logger.debug("Executable file of test case " + testCase.getName() + ": " + testCase.getExecutableFile());
 
@@ -432,11 +391,7 @@ public abstract class AbstractTestcaseExecution implements ITestcaseExecution {
 //            terminal = new Terminal(executeCommand, directory);
 //
 //        } else
-        if (Utils.isUnix() && directory.contains(" ")) {
-            terminal = new Terminal(new String[]{executableFilePath}, directory, true);
-        } else {
-            terminal = new Terminal(executableFilePath, directory);
-        }
+        terminal = new Terminal(executableFilePath, directory);
 
         Process p = terminal.getProcess();
         p.waitFor(10, TimeUnit.SECONDS); // give it a chance to stop

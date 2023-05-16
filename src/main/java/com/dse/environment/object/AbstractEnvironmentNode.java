@@ -15,6 +15,13 @@ public abstract class AbstractEnvironmentNode implements IEnvironmentNode, IComm
         }
     }
 
+    public void removeChild(IEnvironmentNode node) {
+        if (children.contains(node)) {
+            children.remove(node);
+            node.setParent(null);
+        }
+    }
+
     @Override
     public List<IEnvironmentNode> getChildren() {
         return children;

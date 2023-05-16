@@ -115,7 +115,7 @@ public abstract class AbstractTestCaseExecutionTest {
 
         CompoundTestcaseExecution executor = new CompoundTestcaseExecution();
         executor.setTestCase(testCase);
-        executor.setMode(mode);
+        executor.setMode(ITestcaseExecution.IN_EXECUTION_WITH_FRAMEWORK_TESTING_MODE);
         executor.execute();
     }
 

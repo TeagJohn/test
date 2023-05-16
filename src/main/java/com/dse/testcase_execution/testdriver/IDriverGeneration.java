@@ -11,10 +11,6 @@ public interface IDriverGeneration {
     String C_TEST_DRIVER_PATH = "/test-driver-templates/testdriver.c";
     String CPP_TEST_DRIVER_PATH = "/test-driver-templates/testdriver.cpp";
 
-    String C_GTEST_DRIVER_PATH = "/test-driver-templates/gtestdriver.c";
-
-    String CPP_GTEST_DRIVER_PATH = "/test-driver-templates/gtestdriver.cpp";
-
     void generate() throws Exception;
 
     String getTestDriver();

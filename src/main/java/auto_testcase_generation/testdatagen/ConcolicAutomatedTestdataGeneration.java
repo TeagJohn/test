@@ -157,12 +157,12 @@ public abstract class ConcolicAutomatedTestdataGeneration extends SymbolicExecut
                     testCases.remove(i);
                 }
 
-//            List<TestCase> newTestCases = testCases.stream()
-//                    .filter(tc -> tc.getPath() != null && new File(tc.getPath()).exists())
-//                    .collect(Collectors.toList());
+            List<TestCase> newTestCases = testCases.stream()
+                    .filter(tc -> tc.getPath() != null && new File(tc.getPath()).exists())
+                    .collect(Collectors.toList());
 
-//            ITestCaseMinimizer minimizer = new GreedyMinimizer();
-//            minimizer.clean(newTestCases, Scope.SOURCE);
+            ITestCaseMinimizer minimizer = new GreedyMinimizer();
+            minimizer.clean(newTestCases, Scope.SOURCE);
 
             onGenerateSuccess(showReport);
 
@@ -181,7 +181,7 @@ public abstract class ConcolicAutomatedTestdataGeneration extends SymbolicExecut
      * @param analyzedTestpathMd5 md5 of analyzed test paths
      * @return status of test case generation
      */
-    protected int generateDirectly(List<TestCase> testCases, ICommonFunctionNode functionNode, String cov,
+    public int generateDirectly(List<TestCase> testCases, ICommonFunctionNode functionNode, String cov,
                                    List<String> generatedTestcases,
                                    List<String> analyzedTestpathMd5) {
         // compute coverage & update CFG
@@ -189,7 +189,6 @@ public abstract class ConcolicAutomatedTestdataGeneration extends SymbolicExecut
 
         if (currentCFG != null) {
             List<ICfgNode> testPath = getTestPathByCoverage(currentCFG, cov);
-            logger.debug("Test path:"+testPath);
 
             if (testPath.isEmpty())
                 return AUTOGEN_STATUS.NO_SHORTEST_PATH;

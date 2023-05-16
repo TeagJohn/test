@@ -8,6 +8,9 @@ public class ContinueCfgNode extends NormalCfgNode {
 		super(node);
 	}
 
+	public ContinueCfgNode() {
+	}
+
 	@Override
 	public Object clone() throws CloneNotSupportedException {
 		ContinueCfgNode cloneNode = (ContinueCfgNode) super.clone();

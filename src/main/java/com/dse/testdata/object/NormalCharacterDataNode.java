@@ -1,15 +1,13 @@
 package com.dse.testdata.object;
 
 import com.dse.logger.AkaLogger;
-import com.dse.testdata.comparable.gtest.FloatingPointComparisonStatementGenerator;
-import com.dse.testdata.comparable.gtest.IFloatingPointComparison;
 import com.dse.util.SpecialCharacter;
 import com.dse.util.VariableTypeUtils;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class NormalCharacterDataNode extends NormalDataNode implements IFloatingPointComparison {
+public class NormalCharacterDataNode extends NormalDataNode {
     public static String VISIBLE_CHARACTER_PREFIX = "'";
 
     private final static AkaLogger logger = AkaLogger.get(NormalCharacterDataNode.class);
@@ -129,10 +127,5 @@ public class NormalCharacterDataNode extends NormalDataNode implements IFloating
             return mapping.get(character);
         } else
             return Long.parseLong(character) + "";
-    }
-
-    @Override
-    public String getFloatingPointComparisonAssertion() {
-        return new FloatingPointComparisonStatementGenerator(this).getFloatingPointComparisonAssertion();
     }
 }

@@ -1,12 +1,6 @@
 package com.dse.guifx_v3.helps;
 
-import auto_testcase_generation.cte.UI.Controller.CTEWindowController;
 import auto_testcase_generation.cte.UI.Controller.CteController;
-import auto_testcase_generation.cte.UI.CteClassificationTree.CteView;
-import auto_testcase_generation.cte.UI.OptionTable.CteOptionTable;
-import auto_testcase_generation.cte.UI.TestcaseTable.CteTestcaseTable;
-import auto_testcase_generation.cte.core.ClassificationTreeManager;
-
 import com.dse.compiler.message.ICompileMessage;
 import com.dse.config.AkaConfig;
 import com.dse.config.IProjectType;
@@ -34,7 +28,6 @@ import com.dse.project_init.ProjectCloneMap;
 import com.dse.regression.RegressionScriptManager;
 import com.dse.search.LambdaFunctionNodeCondition;
 import com.dse.search.Search;
-import com.dse.search.SearchCondition;
 import com.dse.search.condition.AbstractFunctionNodeCondition;
 import com.dse.search.condition.DefinitionFunctionNodeCondition;
 import com.dse.search.condition.MacroFunctionNodeCondition;
@@ -55,6 +48,20 @@ import com.dse.util.CompilerUtils;
 import com.dse.util.PathUtils;
 import com.dse.util.SpecialCharacter;
 import com.dse.util.Utils;
+import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
+import javafx.geometry.Insets;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.text.Text;
+import javafx.stage.FileChooser;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import org.apache.commons.io.FilenameUtils;
+import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTVisibilityLabel;
 
 import java.io.File;
 import java.io.IOException;
@@ -62,28 +69,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
-import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.event.EventType;
-import javafx.geometry.Insets;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.*;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Region;
-import javafx.scene.text.Text;
-import javafx.stage.FileChooser;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
-
-import org.apache.commons.io.FilenameUtils;
-import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTVisibilityLabel;
 
 public class UIController {
     public final static String MODE_VIEW = "MODE_VIEW";
@@ -212,36 +197,20 @@ public class UIController {
 
     public static ICommonFunctionNode searchFunctionNodeByPathInBackupEnvironment(String path) throws FunctionNodeNotFoundException {
         ICommonFunctionNode matchedFunctionNode;
+
+        // create conditions to search (both complete function & prototype function).
         List<INode> functionNodes = new ArrayList<>();
+        functionNodes.addAll(Search.searchNodes(Environment.getBackupEnvironment().getProjectNode(), new AbstractFunctionNodeCondition()));
+        functionNodes.addAll(Search.searchNodes(Environment.getBackupEnvironment().getProjectNode(), new DefinitionFunctionNodeCondition()));
+        functionNodes.addAll(Search.searchNodes(Environment.getBackupEnvironment().getProjectNode(), new MacroFunctionNodeCondition()));
 
-        // create conditions to search (both complete function & prototype function)
-        List<SearchCondition> conditions = new ArrayList<>();
-        conditions.add(new AbstractFunctionNodeCondition());
-        conditions.add(new DefinitionFunctionNodeCondition());
-        conditions.add(new MacroFunctionNodeCondition());
+        SystemLibraryRoot libraryRoot = Environment.getBackupEnvironment().getSystemLibraryRoot();
+        if (libraryRoot != null)
+            functionNodes.addAll(Search.searchNodes(libraryRoot, new AbstractFunctionNodeCondition()));
 
-        // Below is the old code
-        // functionNodes.addAll(Search.searchNodes(Environment.getBackupEnvironment().getProjectNode(), new AbstractFunctionNodeCondition()));
-        // functionNodes.addAll(Search.searchNodes(Environment.getBackupEnvironment().getProjectNode(), new DefinitionFunctionNodeCondition()));
-        // functionNodes.addAll(Search.searchNodes(Environment.getBackupEnvironment().getProjectNode(), new MacroFunctionNodeCondition()));
-
-        // SystemLibraryRoot libraryRoot = Environment.getBackupEnvironment().getSystemLibraryRoot();
-        // if (libraryRoot != null)
-        //     functionNodes.addAll(Search.searchNodes(libraryRoot, new AbstractFunctionNodeCondition()));
-
-        // INode dataRoot = Environment.getBackupEnvironment().getUserCodeRoot();
-        // if (dataRoot != null)
-        //     functionNodes.addAll(Search.searchNodes(dataRoot, new AbstractFunctionNodeCondition()));
-
-        functionNodes.addAll(
-                Search.getCandidateNodesWithTrie(Environment.getBackupEnvironment().getProjectNode(), conditions,
-                        path));
-        functionNodes.addAll(Search.getCandidateNodesWithTrie(Environment.getBackupEnvironment().getSystemLibraryRoot(),
-                new AbstractFunctionNodeCondition(), path));
-        functionNodes.addAll(Search.getCandidateNodesWithTrie(Environment.getBackupEnvironment().getUserCodeRoot(),
-                new AbstractFunctionNodeCondition(), path));
-
-        logger.debug("Found " + functionNodes.size() + " function nodes");
+        INode dataRoot = Environment.getBackupEnvironment().getUserCodeRoot();
+        if (dataRoot != null)
+            functionNodes.addAll(Search.searchNodes(dataRoot, new AbstractFunctionNodeCondition()));
 
         for (INode functionNode : functionNodes) {
             if (functionNode instanceof ICommonFunctionNode) {
@@ -257,37 +226,21 @@ public class UIController {
 
     public static ICommonFunctionNode searchFunctionNodeByPath(String path) throws FunctionNodeNotFoundException {
         ICommonFunctionNode matchedFunctionNode;
+
+        // create conditions to search (both complete function & prototype function).
         List<INode> functionNodes = new ArrayList<>();
+        functionNodes.addAll(Search.searchNodes(Environment.getInstance().getProjectNode(), new AbstractFunctionNodeCondition()));
+        functionNodes.addAll(Search.searchNodes(Environment.getInstance().getProjectNode(), new DefinitionFunctionNodeCondition()));
+        functionNodes.addAll(Search.searchNodes(Environment.getInstance().getProjectNode(), new MacroFunctionNodeCondition()));
+        functionNodes.addAll(Search.searchNodes(Environment.getInstance().getProjectNode(), new LambdaFunctionNodeCondition()));
 
-        // create conditions to search (both complete function & prototype function)
-        List<SearchCondition> conditions = new ArrayList<>();
-        conditions.add(new AbstractFunctionNodeCondition());
-        conditions.add(new DefinitionFunctionNodeCondition());
-        conditions.add(new MacroFunctionNodeCondition());
-        conditions.add(new LambdaFunctionNodeCondition());
-        
-        // Below is the old code
-        // functionNodes.addAll(Search.searchNodes(Environment.getInstance().getProjectNode(), new AbstractFunctionNodeCondition()));
-        // functionNodes.addAll(Search.searchNodes(Environment.getInstance().getProjectNode(), new DefinitionFunctionNodeCondition()));
-        // functionNodes.addAll(Search.searchNodes(Environment.getInstance().getProjectNode(), new MacroFunctionNodeCondition()));
-        // functionNodes.addAll(Search.searchNodes(Environment.getInstance().getProjectNode(), new LambdaFunctionNodeCondition()));
+        SystemLibraryRoot libraryRoot = Environment.getInstance().getSystemLibraryRoot();
+        if (libraryRoot != null)
+            functionNodes.addAll(Search.searchNodes(libraryRoot, new AbstractFunctionNodeCondition()));
 
-        // SystemLibraryRoot libraryRoot = Environment.getInstance().getSystemLibraryRoot();
-        // if (libraryRoot != null)
-        //     functionNodes.addAll(Search.searchNodes(libraryRoot, new AbstractFunctionNodeCondition()));
-
-        // INode dataRoot = Environment.getInstance().getUserCodeRoot();
-        // if (dataRoot != null)
-        //     functionNodes.addAll(Search.searchNodes(dataRoot, new AbstractFunctionNodeCondition()));
-
-        functionNodes.addAll(
-                Search.getCandidateNodesWithTrie(Environment.getInstance().getProjectNode(), conditions, path));
-        functionNodes.addAll(Search.getCandidateNodesWithTrie(Environment.getInstance().getSystemLibraryRoot(),
-                new AbstractFunctionNodeCondition(), path));
-        functionNodes.addAll(Search.getCandidateNodesWithTrie(Environment.getInstance().getUserCodeRoot(),
-                new AbstractFunctionNodeCondition(), path));
-
-//        logger.debug("Found " + functionNodes.size() + " function nodes" + " for path " + path);
+        INode dataRoot = Environment.getInstance().getUserCodeRoot();
+        if (dataRoot != null)
+            functionNodes.addAll(Search.searchNodes(dataRoot, new AbstractFunctionNodeCondition()));
 
         for (INode functionNode : functionNodes) {
             if (functionNode instanceof ICommonFunctionNode) {
@@ -539,7 +492,6 @@ public class UIController {
             alert.setTitle(title);
             alert.setHeaderText(headText);
             alert.initOwner(getPrimaryStage());
-            alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
             alert.showAndWait();
         });
     }

@@ -5,10 +5,13 @@ import com.dse.environment.PhysicalTreeImporter;
 import com.dse.environment.WorkspaceLoader;
 import com.dse.environment.Environment;
 import com.dse.guifx_v3.helps.UIController;
+import com.dse.parser.VectorCastProjectLoader;
+import com.dse.parser.object.FolderNode;
 import com.dse.parser.object.INode;
 import com.dse.parser.object.Node;
 import com.dse.parser.object.ProjectNode;
 import com.dse.regression.ChangesBetweenSourcecodeFiles;
+import com.dse.regression.cia.WaveCIA;
 import com.dse.thread.AbstractAkaTask;
 import com.dse.user_code.envir.EnvironmentUserCode;
 import com.dse.logger.AkaLogger;
@@ -17,6 +20,9 @@ import com.dse.util.Utils;
 import javafx.scene.control.Alert;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public abstract class AbstractEnvironmentLoadTask extends AbstractAkaTask<Void> {
 
@@ -30,6 +36,40 @@ public abstract class AbstractEnvironmentLoadTask extends AbstractAkaTask<Void> 
 
         Node root = new PhysicalTreeImporter().importTree(physicalTreeFile);
         Environment.getInstance().setProjectNode((ProjectNode) root);
+
+        // parse the source code file lists
+        VectorCastProjectLoader load = new VectorCastProjectLoader();
+
+        File fileRoot = new File(root.getAbsolutePath());
+        List<File> sourceCodeListFolder = Utils.getAllFolderAndSubfolder(fileRoot);
+
+//        load.setSourcecodeList(Arrays.asList(new File(root.getAbsolutePath())));
+        load.setSourcecodeList(sourceCodeListFolder);
+        INode projectRootNode = load.constructPhysicalTree();
+
+//        for (Node node : projectRootNode.getChildren()) {
+//            boolean isChild = false;
+//            for (INode child : root.getChildren()) {
+//                if (child.getAbsolutePath().equals(node.getAbsolutePath())) {
+//                    isChild = true;
+//                    break;
+//                }
+//            }
+//            if (!isChild) {
+//                root.getChildren().add(node);
+//                node.setParent(root);
+//                ChangesBetweenSourcecodeFiles.addedNodes.add(node);
+//                logger.debug("Added new file " + node.getAbsolutePath());
+//
+//                for (Node nodeChild : node.getChildren()) {
+//                    if (!ChangesBetweenSourcecodeFiles.addedNodes.contains(nodeChild)) {
+//                        ChangesBetweenSourcecodeFiles.addedNodes.add(nodeChild);
+//                        logger.debug("Added new file " + nodeChild.getAbsolutePath());
+//                    }
+//                }
+//            }
+//        }
+        addNewFileAndNewSubs(root, projectRootNode);
         logger.debug("Load project physical tree successful");
 
         WorkspaceLoader loader = new WorkspaceLoader(root);
@@ -38,6 +78,29 @@ public abstract class AbstractEnvironmentLoadTask extends AbstractAkaTask<Void> 
         loader.setElementFolderOfOldVersion(new WorkspaceConfig().fromJson().getElementDirectory());
 
         return loader;
+    }
+
+    public void addNewFileAndNewSubs(INode rootNode, INode newNode) {
+        if (!rootNode.getAbsolutePath().equals(newNode.getAbsolutePath())) {
+            return;
+        }
+        for (Node newChild : newNode.getChildren()) {
+            boolean isChild = false;
+            Node child = null;
+            for (Node rootChild : rootNode.getChildren()) {
+                if (rootChild.getAbsolutePath().equals(newChild.getAbsolutePath())) {
+                    isChild = true;
+                    child = rootChild;
+                    break;
+                }
+            }
+            if (!isChild) {
+                rootNode.getChildren().add(newChild);
+                newChild.setParent(rootNode);
+                logger.debug("Add new file " + newChild.getAbsolutePath());
+            }
+            else addNewFileAndNewSubs(child, newChild);
+        }
     }
 
     @Override
@@ -78,6 +141,12 @@ public abstract class AbstractEnvironmentLoadTask extends AbstractAkaTask<Void> 
             if (Environment.getInstance() == null) Environment.createNewEnvironment();
             return null;
         }
+
+        for (INode addedNodeDetected : ChangesBetweenSourcecodeFiles.addedNodes) {
+            WaveCIA.getWaveCIA().addAddedNode(addedNodeDetected);
+        }
+        ChangesBetweenSourcecodeFiles.addedNodes.clear();
+        ChangesBetweenSourcecodeFiles.addedNodes.addAll(WaveCIA.getWaveCIA().getAddedNodes());
 
         INode root = loader.getRoot();
         updateProgress(6, MAX_PROGRESS);

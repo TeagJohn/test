@@ -128,11 +128,6 @@ public class DefinitionFunctionNode extends CustomASTNode<CPPASTSimpleDeclaratio
     }
 
     @Override
-    public CPPASTSimpleDeclaration getAST() {
-        return super.getAST();
-    }
-
-    @Override
     public boolean isTemplate() {
         return AST.getParent() instanceof ICPPASTTemplateDeclaration;
     }
@@ -162,9 +157,6 @@ public class DefinitionFunctionNode extends CustomASTNode<CPPASTSimpleDeclaratio
                     if (declaration instanceof ICPPASTVisibilityLabel)
                         visibility = ((ICPPASTVisibilityLabel) declaration).getVisibility();
                     else if (declaration instanceof IASTSimpleDeclaration) {
-                        if (((IASTSimpleDeclaration) declaration).getDeclarators().length == 0)
-                            continue;
-
                         IASTDeclarator declarator = ((IASTSimpleDeclaration) declaration).getDeclarators()[0];
 
                         if (declarator instanceof ICPPASTFunctionDeclarator) {

@@ -1,11 +1,9 @@
 package com.dse.thread.task;
 
-import com.dse.boundary.BoundaryManager;
 import com.dse.config.WorkspaceConfig;
 import com.dse.environment.EnvironmentSearch;
 import com.dse.environment.object.*;
 import com.dse.environment.Environment;
-import com.dse.guifx_v3.helps.UILogger;
 import com.dse.parser.SourcecodeFileParser;
 import com.dse.parser.dependency.Dependency;
 import com.dse.parser.dependency.TypeDependency;
@@ -33,9 +31,7 @@ import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 import java.io.File;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -58,92 +54,6 @@ public class ProjectTreeExpandTask extends AbstractAkaTask<INode> {
         this.doRemaining = doRemaining;
     }
 
-    private static String tempFileSuffix = "_AKA_LIB.cpp";
-    private static String tempPrepSuffix = "_AKA_PREP.h";
-
-    private static void getNeededTypes(INode node, Set<String> typeList, List<String> toRemove, Set<String> libs) {
-        if (node instanceof InternalVariableNode) {
-            String coreType = ((InternalVariableNode) node).getCoreType();
-            typeList.add(coreType);
-        } else if (node instanceof StructureNode) {
-            toRemove.add(node.getName());
-        } else if (node instanceof IncludeHeaderNode) {
-            String lib = ((IncludeHeaderNode) node).getAST().getRawSignature().trim();
-            if (lib.endsWith(">")) {
-                libs.add(lib);
-            }
-        }
-        for (INode child : node.getChildren()) {
-            getNeededTypes(child, typeList, toRemove, libs);
-        }
-    }
-
-    private static String getTempLibSrc(Set<String> libs) {
-        StringBuilder sb = new StringBuilder();
-        for (String lib : libs) {
-            sb.append(lib + "\n");
-        }
-        return sb.toString();
-    }
-
-    private static void extractLibTypeNodes(INode node, Set<String> typeList, List<StructureNode> libTypeNodes) {
-        if (node instanceof StructureNode && typeList.contains(node.getName())) {
-            libTypeNodes.add((StructureNode) node);
-        }
-        for (INode child : node.getChildren()) {
-            extractLibTypeNodes(child, typeList, libTypeNodes);
-        }
-    }
-
-    public static void getTypes(INode root, List<INode> sources) {
-        logger.debug("Getting library types ...");
-
-        Set<String> typeList = new HashSet<>();
-        List<String> toRemove = new ArrayList<>();
-        Set<String> libs = new HashSet<>();
-        List<StructureNode> libTypeNodes = new ArrayList<>();
-        INode tempRoot;
-        File projectDir = ((ProjectNode) (root.getRoot())).getFile().getParentFile().getAbsoluteFile();
-        String tempFile = projectDir + File.separator + WorkspaceConfig.WORKING_SPACE_NAME + File.separator
-                + root.getName() + tempFileSuffix;
-        String prepTemp = projectDir + File.separator + WorkspaceConfig.WORKING_SPACE_NAME + File.separator
-                + root.getName() + tempPrepSuffix;
-
-        logger.debug("Begin get needed types ....");
-        getNeededTypes(root, typeList, toRemove, libs);
-        logger.debug("Done!");
-
-        logger.debug("Begin preprocessing ....");
-        Utils.writeContentToFile(getTempLibSrc(libs), tempFile);
-        Environment.getInstance().getCompiler().preprocess(tempFile, prepTemp);
-        logger.debug("Done!");
-
-        try {
-            tempRoot = new SourcecodeFileParser().parseSourcecodeFile(new File(prepTemp));
-            logger.debug("Begin adding lib types ....");
-            typeList.removeAll(toRemove);
-            extractLibTypeNodes(tempRoot, typeList, libTypeNodes);
-
-            LibraryTypeRootNode libTypeRoot = new LibraryTypeRootNode();
-            root.getChildren().add(libTypeRoot);
-            libTypeRoot.setParent(root);
-
-            for (Node t : libTypeNodes) {
-                t.setParent(libTypeRoot);
-                libTypeRoot.getChildren().add(t);
-            }
-
-            logger.debug("Done!");
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-        }
-
-        logger.debug("Begin removing temp files ....");
-        Utils.deleteFileOrFolder(new File(tempFile));
-        Utils.deleteFileOrFolder(new File(prepTemp));
-        logger.debug("Done!");
-    }
-
     @Override
     protected INode call() throws InterruptedException {
         expand();
@@ -157,7 +67,7 @@ public class ProjectTreeExpandTask extends AbstractAkaTask<INode> {
         sources = Search.searchNodes(root, new SourcecodeFileNodeCondition());
         int lastIndex = sources.size() - 1;
 
-        ExecutorService es = Executors.newFixedThreadPool(Environment.getInstance().getMaxThreadCount());
+        ExecutorService es = Executors.newFixedThreadPool(5);
         List<Callable<INode>> tasks = new ArrayList<>();
 
         for (int idx = lastIndex; idx >= 0; idx--) {
@@ -169,7 +79,6 @@ public class ProjectTreeExpandTask extends AbstractAkaTask<INode> {
         }
 
         es.invokeAll(tasks);
-        getTypes(root, sources);
 
         logger.debug("Finish expanding the initial tree down to method level");
 
@@ -177,8 +86,7 @@ public class ProjectTreeExpandTask extends AbstractAkaTask<INode> {
             /*
              * Load stub library physical tree
              */
-            // LoadingPopupController.getInstance().setText("Loading system libraries
-            // data");
+//        LoadingPopupController.getInstance().setText("Loading system libraries data");
             SystemLibraryRoot sysLibRoot = SystemLibrary.parseFromFile();
             Environment.getInstance().setSystemLibraryRoot(sysLibRoot);
             logger.debug("Load stub library from file");
@@ -186,7 +94,7 @@ public class ProjectTreeExpandTask extends AbstractAkaTask<INode> {
             /*
              * Load data user code physical tree
              */
-            // LoadingPopupController.getInstance().setText("Loading user code data");
+//        LoadingPopupController.getInstance().setText("Loading user code data");
             INode userCodeRoot = EnvironmentUserCode.getInstance().parseTree();
             Environment.getInstance().setUserCodeRoot(userCodeRoot);
             logger.debug("Load data user code physical tree");
@@ -198,8 +106,7 @@ public class ProjectTreeExpandTask extends AbstractAkaTask<INode> {
             loadDependenciesFromAllFiles(root, sysLibRoot, userCodeRoot);
 
             logger.debug("Load dependencies from file successfully");
-            // LoadingPopupController.getInstance().setText("Analysis source code file
-            // changes");
+//        LoadingPopupController.getInstance().setText("Analysis source code file changes");
             String elementFolderOfOldVersion = new WorkspaceConfig().fromJson().getElementDirectory();
             detectChangeInSourcecodeFilesWhenOpeningEnv(root, elementFolderOfOldVersion);
 
@@ -207,12 +114,6 @@ public class ProjectTreeExpandTask extends AbstractAkaTask<INode> {
             loadUnitTestableState();
 
             exportVersionComparisonToFile();
-
-            if (UILogger.getLogMode().equals(UILogger.MODE_CLI)) {
-                // load boundary of variable types
-                BoundaryManager.getInstance().clear();
-                BoundaryManager.getInstance().loadExistedBoundaries();
-            }
         }
 
         logger.debug("Expand task finish!!");
@@ -267,8 +168,7 @@ public class ProjectTreeExpandTask extends AbstractAkaTask<INode> {
         List<IEnvironmentNode> ignores = EnvironmentSearch.searchNode(envRoot, new EnviroIgnoreNode());
         for (IEnvironmentNode ignore : ignores) {
             for (INode source : sources) {
-                if (PathUtils.equals(((EnviroIgnoreNode) ignore).getName(),
-                        PathUtils.toRelative(source.getAbsolutePath()))) {
+                if (PathUtils.equals(((EnviroIgnoreNode) ignore).getName(), PathUtils.toRelative(source.getAbsolutePath()))) {
                     ((EnviroIgnoreNode) ignore).setUnit(source);
                     break;
                 }
@@ -284,8 +184,7 @@ public class ProjectTreeExpandTask extends AbstractAkaTask<INode> {
     private void exportVersionComparisonToFile() {
         // export the report of difference to files
         {
-            String changeFile = new WorkspaceConfig().fromJson()
-                    .getFileContainingUnresolvedDependenciesWhenComparingSourcecode();
+            String changeFile = new WorkspaceConfig().fromJson().getFileContainingUnresolvedDependenciesWhenComparingSourcecode();
             Utils.deleteFileOrFolder(new File(changeFile));
             Utils.writeContentToFile(ChangesBetweenSourcecodeFiles.getUnresolvedDepdendenciesInString(), changeFile);
         }
@@ -299,8 +198,7 @@ public class ProjectTreeExpandTask extends AbstractAkaTask<INode> {
 
         // export the report of changed source code to file
         {
-            String changeFile = new WorkspaceConfig().fromJson()
-                    .getFileContainingChangedSourcecodeFileWhenComparingSourcecode();
+            String changeFile = new WorkspaceConfig().fromJson().getFileContainingChangedSourcecodeFileWhenComparingSourcecode();
             Utils.deleteFileOrFolder(new File(changeFile));
             Utils.writeContentToFile(ChangesBetweenSourcecodeFiles.getModifiedSourcecodeFilesInString(), changeFile);
         }
@@ -331,20 +229,20 @@ public class ProjectTreeExpandTask extends AbstractAkaTask<INode> {
                 allNodes.addAll(Search.searchNodes(libRoot, new NodeCondition()));
                 allNodes.addAll(Search.searchNodes(userCodeRoot, new NodeCondition()));
 
-//                ExecutorService es = Executors.newFixedThreadPool(Environment.getInstance().getMaxThreadCount());
+//                ExecutorService es = Executors.newFixedThreadPool(5);
 //                List<Callable<Void>> tasks = new ArrayList<>();
 
                 for (String filePath : Utils.getAllFiles(dependenciesFolder.getAbsolutePath())) {
                     if (filePath.endsWith(WorkspaceConfig.AKA_EXTENSION)) {
                         LoadDependencyTask task = new LoadDependencyTask(filePath, allNodes);
-                        // tasks.add(task);
+//                        tasks.add(task);
                         task.call();
                     } else {
                         logger.debug("Ignore " + filePath + " because it is not dependency file (.aka)");
                     }
                 }
 
-                // es.invokeAll(tasks);
+//                es.invokeAll(tasks);
             }
         }
     }
@@ -411,7 +309,7 @@ public class ProjectTreeExpandTask extends AbstractAkaTask<INode> {
                             UnresolvedDependency unresolvedDependency = new UnresolvedDependency(start, end, type);
                             if (!ChangesBetweenSourcecodeFiles.unresolvedDependencies.contains(unresolvedDependency))
                                 ChangesBetweenSourcecodeFiles.unresolvedDependencies.add(unresolvedDependency);
-                        } else {
+                        } else{
                             logger.debug("Match successfully [" + type + "] " + start + " -> " + end);
                         }
                     } else {
@@ -429,13 +327,11 @@ public class ProjectTreeExpandTask extends AbstractAkaTask<INode> {
          * @param type      the type of the dependency
          * @param start     the absolute path of the start node
          * @param end       the absolute path of the end node
-         * @param start_md5 the md5 of the content corresponding to the start node (if
-         *                  it has)
-         * @param end_md5   the md5 of the content corresponding to the end node (if it
-         *                  has)
+         * @param start_md5 the md5 of the content corresponding to the start node (if it has)
+         * @param end_md5   the md5 of the content corresponding to the end node (if it has)
          */
         private boolean findMatching(String type, String start, String end,
-                String start_md5, String end_md5) {
+                                     String start_md5, String end_md5) {
             String typeID = "com.dse.parser.dependency." + type;
 
             if (start.length() == 0 || end.length() == 0 || allNodes.size() == 0)
@@ -532,8 +428,7 @@ public class ProjectTreeExpandTask extends AbstractAkaTask<INode> {
             String filePath = sourceNode.getAbsolutePath();
 
             try {
-                // LoadingPopupController.getInstance().setText("Expand " + sourceNode.getName()
-                // + " upto method level");
+//                LoadingPopupController.getInstance().setText("Expand " + sourceNode.getName() + " upto method level");
                 SourcecodeFileParser parser = new SourcecodeFileParser();
                 INode newRoot = parser.parseSourcecodeFile(new File(filePath));
                 IASTTranslationUnit ast = parser.getTranslationUnit();
@@ -549,7 +444,7 @@ public class ProjectTreeExpandTask extends AbstractAkaTask<INode> {
                     child.setParent(sourceNode);
                     sourceNode.getChildren().add(child);
                 }
-
+                
                 logger.debug("Found " + sourceNode.getChildren().size() + " children in " + sourceNode.getName());
 
             } catch (Exception e) {

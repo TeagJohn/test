@@ -43,10 +43,6 @@ public interface ICompiler {
 
     String getOutputFlag();
 
-    boolean isUseGTest();
-
-    void setUseGTest(boolean isUseGTest);
-
     String getDebugFlag();
 
     String INCLUDE_FILE_FLAG = "-include";

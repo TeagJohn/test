@@ -28,10 +28,10 @@ import static com.dse.cli.command.ICommand.RUN;
 
 /**
  * This command is used to execute a specific testcase (ok)
- * or multiples testcases with specific names (ok)
- * or testcases of a subprogram (not yet)
- * or testcases of a unit undertest (not yet)
- * or all testcases in whole environment (not yet)
+ *  or multiples testcases with specific names (ok)
+ *  or testcases of a subprogram (not yet)
+ *  or testcases of a unit undertest (not yet)
+ *  or all testcases in whole environment (not yet)
  */
 
 @Command(name = RUN,
@@ -86,18 +86,18 @@ public class Run extends AbstractCommand<String[]> {
         logger.info(String.format("Expected: (%d/%d) PASS", expected.getPass(), expected.getTotal()));
 
         if (testCase instanceof TestCase) {
-            switch (typeOfCoverage) {
+            switch (typeOfCoverage){
                 case EnviroCoverageTypeNode.STATEMENT:
                 case EnviroCoverageTypeNode.BRANCH:
                 case EnviroCoverageTypeNode.BASIS_PATH:
-                case EnviroCoverageTypeNode.MCDC: {
+                case EnviroCoverageTypeNode.MCDC:{
                     String visitedPerTotal = CoverageManager.getDetailProgressCoverage((TestCase) testCase, typeOfCoverage);
                     float progress = CoverageManager.getProgress((TestCase) testCase, typeOfCoverage);
                     logger.info(String.format(typeOfCoverage + " coverage: %.2f%% (%s)", progress, visitedPerTotal));
                     break;
                 }
 
-                case EnviroCoverageTypeNode.STATEMENT_AND_BRANCH: {
+                case EnviroCoverageTypeNode.STATEMENT_AND_BRANCH:{
                     String visitedPerTotal = CoverageManager.getDetailProgressCoverage((TestCase) testCase, EnviroCoverageTypeNode.STATEMENT);
                     float progress = CoverageManager.getProgress((TestCase) testCase, typeOfCoverage);
                     logger.info(String.format("Stm Coverage: %.2f%% (%s)", progress, visitedPerTotal));
@@ -108,7 +108,7 @@ public class Run extends AbstractCommand<String[]> {
                     break;
                 }
 
-                case EnviroCoverageTypeNode.STATEMENT_AND_MCDC: {
+                case EnviroCoverageTypeNode.STATEMENT_AND_MCDC:{
                     String visitedPerTotal = CoverageManager.getDetailProgressCoverage((TestCase) testCase, EnviroCoverageTypeNode.STATEMENT);
                     float progress = CoverageManager.getProgress((TestCase) testCase, typeOfCoverage);
                     logger.info(String.format("Stm Coverage: %.2f%% (%s)", progress, visitedPerTotal));
@@ -191,7 +191,7 @@ public class Run extends AbstractCommand<String[]> {
             testCase.setFunctionNode(function);
         executor.setTestCase(testCase);
 
-        executor.setMode(Environment.getInstance().getCompiler().isUseGTest() ? ITestcaseExecution.IN_EXECUTION_WITH_FRAMEWORK_TESTING_MODE : ITestcaseExecution.IN_AUTOMATED_TESTDATA_GENERATION_MODE);
+        executor.setMode(ITestcaseExecution.IN_EXECUTION_WITH_FRAMEWORK_TESTING_MODE);
 
         return executor;
     }
@@ -200,7 +200,7 @@ public class Run extends AbstractCommand<String[]> {
         CompoundTestcaseExecution executor = new CompoundTestcaseExecution();
         executor.setTestCase(testCase);
 
-        executor.setMode(Environment.getInstance().getCompiler().isUseGTest() ? ITestcaseExecution.IN_EXECUTION_WITH_FRAMEWORK_TESTING_MODE : ITestcaseExecution.IN_AUTOMATED_TESTDATA_GENERATION_MODE);
+        executor.setMode(ITestcaseExecution.IN_EXECUTION_WITH_FRAMEWORK_TESTING_MODE);
 
         return executor;
     }

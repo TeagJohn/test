@@ -7,7 +7,7 @@ import com.dse.util.Utils;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Calendar;
 import java.util.Date;
@@ -35,56 +35,52 @@ public class RunZ3OnCMD {
 
         Date startTime = Calendar.getInstance().getTime();
 
-        ProcessBuilder pb = null;
-
+        Process p = null;
         if (Utils.isWindows()) {
-            pb = new ProcessBuilder(new String[] { Utils.doubleNormalizePath(Z3Path), "-smt2", smtLibPath });
+            p = Runtime.getRuntime().exec(
+                    new String[]{Utils.doubleNormalizePath(Z3Path), "-smt2", smtLibPath}
+//                    , new String[]{},
+//                    new File(Z3Path).getParentFile()
+            );
         } else if (Utils.isUnix()) {
-            pb = new ProcessBuilder(new String[] { Z3Path, "-smt2", smtLibPath });
+            p = Runtime.getRuntime().exec(
+                    new String[]{"./" + new File(Z3Path).getName(), "-smt2", smtLibPath}
+                    , new String[]{},
+                    new File(Z3Path).getParentFile());
         } else if (Utils.isMac()) {
-            pb = new ProcessBuilder(new String[] { Z3Path, "-smt2", smtLibPath });
+            p = Runtime.getRuntime().exec(new String[]{Z3Path, "-smt2", smtLibPath});
         }
 
-        File stdoutFile = new File("log.txt");
-        File stderrFile = new File("error.txt");
-        pb.redirectOutput(stdoutFile);
-        pb.redirectError(stderrFile);
+        InputStream terminal_eer = p.getErrorStream();
+        InputStream terminal_out = p.getInputStream();
 
-        assert pb != null;
-
-        Process p = pb.start();
+        assert p != null;
         p.waitFor(1, TimeUnit.MINUTES);
-        // p.waitFor();
+//        p.waitFor();
 
         AbstractAutomatedTestdataGeneration.numOfSolverCalls++;
         Date end = Calendar.getInstance().getTime();
         AbstractAutomatedTestdataGeneration.solverRunningTime += end.getTime() - startTime.getTime();
 
-        BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(stdoutFile)));
-        String line = null;
+        BufferedReader in = new BufferedReader(new InputStreamReader(terminal_out));
         StringBuilder builder = new StringBuilder();
-        while ((line = in.readLine()) != null) {
+        String line;
+        while ((line = in.readLine()) != null)
             builder.append(line).append(SpecialCharacter.LINE_BREAK);
-        }
         result = builder.toString();
-        in.close();
 
         // Display errors if exists
-        BufferedReader err = new BufferedReader(new InputStreamReader(new FileInputStream(stderrFile)));
-        String errLine = null;
-        boolean hasError = false;
-        while ((errLine = err.readLine()) != null) {
-            logger.error(errLine);
-            hasError = true;
+        if (terminal_eer != null) {
+            BufferedReader error = new BufferedReader(new InputStreamReader(terminal_eer));
+            String err;
+            boolean hasError = false;
+            while ((err = error.readLine()) != null) {
+                logger.error(err);
+                hasError = true;
+            }
+            if (hasError)
+                AbstractAutomatedTestdataGeneration.numOfSolverCallsbutCannotSolve++;
         }
-        if (hasError) {
-            AbstractAutomatedTestdataGeneration.numOfSolverCallsbutCannotSolve++;
-        }
-        err.close();
-
-        // Clear temp files
-        stdoutFile.delete();
-        stderrFile.delete();
 
         logger.debug("RunZ3OnCMD end");
     }

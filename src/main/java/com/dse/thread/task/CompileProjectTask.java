@@ -5,11 +5,13 @@ import com.dse.compiler.Compiler;
 import com.dse.compiler.message.CompileMessage;
 import com.dse.compiler.message.ICompileMessage;
 import com.dse.config.CommandConfig;
+import com.dse.config.WorkspaceConfig;
 import com.dse.config.compile.LinkEntry;
 import com.dse.environment.Environment;
 import com.dse.environment.EnvironmentSearch;
 import com.dse.environment.object.EnviroCMakeProjDirectoryNode;
 import com.dse.environment.object.EnvironmentRootNode;
+import com.dse.make_build_system.BuildSystemHandler;
 import com.dse.parser.SourcecodeFileParser;
 import com.dse.parser.dependency.IncludeHeaderDependency;
 import com.dse.parser.object.HeaderNode;
@@ -55,7 +57,7 @@ public class CompileProjectTask extends AbstractAkaTask<BuildEnvironmentResult> 
     private final List<IncludeHeaderDependency> includeDependencies = new ArrayList<>();
 
     @Override
-    protected BuildEnvironmentResult call() {
+    public BuildEnvironmentResult call() {
         BuildEnvironmentResult result = new BuildEnvironmentResult();
 
         if (root != null) {
@@ -151,22 +153,26 @@ public class CompileProjectTask extends AbstractAkaTask<BuildEnvironmentResult> 
     private ICompileMessage findErrorSourcecodeFile() {
         ICompileMessage message = null;
 
-        if (compiler.isCmakeProject()) {
-            EnvironmentRootNode root = Environment.getInstance().getEnvironmentRootNode();
-            EnviroCMakeProjDirectoryNode projDirNode =
-                    (EnviroCMakeProjDirectoryNode) EnvironmentSearch.searchNode(root, new EnviroCMakeProjDirectoryNode()).get(0);
-            if (CMakeBuilder.buildProject(projDirNode.getDirectoryPath())) {
-                if (CMakeBuilder.generateExecutableFile()) {
-                    message = new CompileMessage("CMake build success", projDirNode.getDirectoryPath());
-                    new CommandConfig().fromJson().exportToJson();
+        if (Environment.getInstance().isUsingMakeBuildSystem()) {
+            BuildSystemHandler handler = Environment.getInstance().getMakeBuildSystemManager().getCurrentBSHandler();
+            if (handler != null) {
+                String buildMessage = handler.buildProject(false, new WorkspaceConfig().fromJson().getInstrumentDirectory());
+                message = new CompileMessage(buildMessage, handler.getProjectDirectory());
+                if (message.getType() == ICompileMessage.MessageType.ERROR) {
+                    message.setCompilationCommand(buildMessage);
                 } else {
-                    message = new CompileMessage(" Error: CMake generate executable file failed", projDirNode.getDirectoryPath());
-                    message.setLinkingCommand(" Error: CMake generate executable file failed");
+                    buildMessage = handler.generateExecutableFile();
+                    message = new CompileMessage(buildMessage, handler.getProjectDirectory());
+                    if (message.getType() == ICompileMessage.MessageType.ERROR) {
+                        message.setLinkingCommand(buildMessage);
+                    } else {
+                        new CommandConfig().fromJson().exportToJson();
+                    }
                 }
             } else {
-                message = new CompileMessage(" Error: CMake build failed", projDirNode.getDirectoryPath());
-                message.setCompilationCommand(" Error: CMake build failed");
+                message = new CompileMessage(" Error: Make build system handler is unknown", "");
             }
+
             return message;
         }
 

@@ -72,10 +72,10 @@ public class MissingFunctionFinder implements IMissingFinder {
                 if (functionNode != null) {
                     // Generate function call dependency
 //                    FunctionCallDependency d = new FunctionCallDependency(owner, functionNode);
-//                    if (!owner.onlyGetDependencies().contains(d)
-//                            && !functionNode.onlyGetDependencies().contains(d)) {
-//                        owner.onlyGetDependencies().add(d);
-//                        functionNode.onlyGetDependencies().add(d);
+//                    if (!owner.getDependencies().contains(d)
+//                            && !functionNode.getDependencies().contains(d)) {
+//                        owner.getDependencies().add(d);
+//                        functionNode.getDependencies().add(d);
 //                    }
                     resolvedFunctions.add(functionNode);
                     logger.debug("resolve function " + functionNode);

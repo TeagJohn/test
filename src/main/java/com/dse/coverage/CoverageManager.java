@@ -250,29 +250,15 @@ public class CoverageManager {
     public static float getFunctionProgress(TestCase testCase, String coverageType) {
         ICommonFunctionNode functionNode = testCase.getFunctionNode();
         ISourcecodeFileNode sourcecodeNode = Utils.getSourcecodeFile(functionNode);
-        String testpathContent = "";
-        try {
-            testpathContent = Utils.readFileContent(testCase.getTestPathFile());
-        } catch (Exception e) {
-            try {
-                Thread.sleep(2000);
-            } catch (InterruptedException e1) {
-                e1.printStackTrace();
-            }
-            try {
-                testpathContent = Utils.readFileContent(testCase.getTestPathFile());
-            } catch (Exception e1) {
-                e1.printStackTrace();
-            }
-            logger.debug("The test path file doesn't exist: " + testCase.getTestPathFile());
-            testpathContent = "";
-        }
+        String testpathContent = Utils.readFileContent(testCase.getTestPathFile());
+
         FunctionCoverageComputation covComputation = new FunctionCoverageComputation();
         covComputation.setFunctionNode(functionNode);
         covComputation.setCoverage(coverageType);
         covComputation.setConsideredSourcecodeNode(sourcecodeNode);
         covComputation.setTestpathContent(testpathContent);
         covComputation.compute();
+
         return covComputation.getNumberOfVisitedInstructions() * 1.0f / covComputation.getNumberOfInstructions();
     }
 

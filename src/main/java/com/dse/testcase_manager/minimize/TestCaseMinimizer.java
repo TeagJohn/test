@@ -48,10 +48,10 @@ public abstract class TestCaseMinimizer implements ITestCaseMinimizer {
                     long executedTime = after - before;
                     logger.debug("Executed Time: " + executedTime);
 
-                    optimizeSize -= unnecessary.size();
-
+                    optimizeSize -= unnecessary.size();                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
                     deleteTestCase(unnecessary);
-                }
+                }                                                                                                                                                                                                                                                                                                                                                                                                                                       
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -64,34 +64,22 @@ public abstract class TestCaseMinimizer implements ITestCaseMinimizer {
         TreeItem<ITestcaseNode> tiRoot = TestCasesNavigatorController
                 .getInstance().getTestCasesNavigator().getRoot();
 
-        ITestcaseNode tcRoot = null;
-        if (tiRoot != null) {
-            tcRoot = tiRoot.getValue();
-            for (TestCase testCase : unnecessary) {
-                String name = testCase.getName();
+        ITestcaseNode tcRoot = tiRoot.getValue();
 
-                TestNewNode node = TestcaseSearch.getFirstTestNewNodeByName(tcRoot, name);
+        for (TestCase testCase : unnecessary) {
+            String name = testCase.getName();
 
-                if (node != null) {
-                    if (tiRoot != null) {
+            TestNewNode node = TestcaseSearch.getFirstTestNewNodeByName(tcRoot, name);
 
-                    }
-                    TestCasesTreeItem treeItem = TestcaseSearch
-                            .searchTestCaseTreeItem((TestCasesTreeItem) tiRoot, node);
+            if (node != null) {
+                TestCasesTreeItem treeItem = TestcaseSearch
+                        .searchTestCaseTreeItem((TestCasesTreeItem) tiRoot, node);
 
-                    TestCasesNavigatorController.getInstance().deleteTestCase(node, treeItem);
-                }
-
-                TestCaseManager.removeBasicTestCase(name);
+                TestCasesNavigatorController.getInstance().deleteTestCase(node, treeItem);
             }
-        } else {
-            unnecessary.forEach(tc -> {
-                tc.getTestNewNode().getParent().getChildren().remove(tc.getTestNewNode());
-                TestCaseManager.removeBasicTestCase(tc.getName());
-            });
+
+            TestCaseManager.removeBasicTestCase(name);
         }
-
-
     }
 
     // Grouping test case by subprogram under test

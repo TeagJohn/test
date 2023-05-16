@@ -1674,19 +1674,7 @@ public class MenuBarController implements Initializable {
 
         // FILE
 //        cmiImportTestcases.setDisable(openedProject);
-        AkaConfig config = new AkaConfig().fromJson();
-        if (config == null) {
-            try {
-                // Wait for the config file to be finished being written
-                Thread.sleep(500);
-                config = new AkaConfig().fromJson();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        if (config != null) {
-            miRecentEnvironments.setDisable(config.getRecentEnvironments().size() == 0);
-        }
+        miRecentEnvironments.setDisable(new AkaConfig().fromJson().getRecentEnvironments().size() == 0);
 
         // ENVIRONMENT
 //        if (mEnvironment.isDisable())

@@ -29,12 +29,7 @@ public class ConditionParser extends StatementParser {
     public void parse(IASTNode ast, VariableNodeTable table, FunctionCallTable callTable) throws Exception {
         ast = Utils.shortenAstNode(ast);
         newConstraint = ExpressionRewriterUtils.rewrite(table, ast.getRawSignature());
-        newConstraint = newConstraint.replace("&&", "#$%")
-            .replace("&", "==")
-            .replace("#$%", "&&");
-        newConstraint = newConstraint.replace("||", "#%$")
-            .replace("|", "!=")
-            .replace("#%$", "||");
+
 //        //replace enum with normal index of array
 //        List<String[]> enumItemList = new ArrayList<>();
 //        //find all enum related to containing file

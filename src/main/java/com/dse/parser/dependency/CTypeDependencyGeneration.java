@@ -17,8 +17,8 @@ import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTParameterDeclaration;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -68,13 +68,12 @@ public class CTypeDependencyGeneration extends AbstractDependencyGeneration{
                     correspondingNode = performPrimitiveSearch(name, realType);
 
                     List<Level> spaces = new ArrayList<>();
-
-                    // TODO: there is a bug here where sometimes the type dependency is not found
                     if (correspondingNode == null) {
                         logger.debug("Is not primitive type. Initialize variable searching space.");
                         spaces = new VariableSearchingSpace(resolvedVarNode.getParent()).generateExtendSpaces();
                         correspondingNode = performStructureSearch(spaces, resolvedVarNode);
                     }
+
                     if (correspondingNode == null) {
                         spaces = generateSpace(resolvedVarNode);
                         correspondingNode = performStructureSearch(spaces, resolvedVarNode);
@@ -117,13 +116,13 @@ public class CTypeDependencyGeneration extends AbstractDependencyGeneration{
             if (correspondingNode == null) {
                 logger.debug("Can not resolve type \"" + realType + "\"");
 
-            } else if (correspondingNode instanceof PredefinedTypeNode) {
+            } else if (correspondingNode instanceof PredefinedTypeNode)
                 logger.debug("The definition of variable is primitive type: "
                         + ((PredefinedTypeNode) correspondingNode).getType());
-            } else {
+            else
                 logger.debug("The definition of variable is defined in " + correspondingNode.getAbsolutePath());
-            }
-        } catch (Exception e) {
+
+        } catch (Exception e){
             e.printStackTrace();
         }
     }
@@ -145,8 +144,6 @@ public class CTypeDependencyGeneration extends AbstractDependencyGeneration{
     }
 
     private INode performStructureSearch(List<Level> spaces, IVariableNode resolvedVarNode) throws Exception {
-        logger.debug("Performing structure search of type: " + resolvedVarNode.getRawType());
-
         INode correspondingNode = performSimpleSearch(spaces, resolvedVarNode);
 
         if (correspondingNode == null)
@@ -156,7 +153,7 @@ public class CTypeDependencyGeneration extends AbstractDependencyGeneration{
             correspondingNode = performComplexSearch(spaces, resolvedVarNode);
 
         if (correspondingNode == null)
-            correspondingNode = performScopeSearchWithLog(spaces, resolvedVarNode);
+            correspondingNode = performScopeSearch(spaces, resolvedVarNode);
 
         if (correspondingNode == null)
             correspondingNode = performSystemSearch(resolvedVarNode);
@@ -164,7 +161,7 @@ public class CTypeDependencyGeneration extends AbstractDependencyGeneration{
         if (correspondingNode == null && TemplateUtils.isTemplate(resolvedVarNode.getRealType()))
             correspondingNode = performTemplateSearch(spaces, resolvedVarNode);
 
-        logger.debug("Current cache hit: " + Search.getCacheHit() + "/" + Search.getCacheSize());
+        logger.debug("Current cache hit: " + cache_hit + "/" + cache_result.size());
 
         return correspondingNode;
     }
@@ -209,7 +206,7 @@ public class CTypeDependencyGeneration extends AbstractDependencyGeneration{
         //         .stream()
         //         .filter(n -> n.getName().equals(coreType) && !(n.getParent() instanceof StructureNode))
         //         .collect(Collectors.toList());
-        List<INode> matches = Search.getCandidateNodesWithTrie(systemRoot, conditions, coreType);
+        List<INode> matches = getCandidateNodesWithTrie(systemRoot, conditions, coreType);
 
         if (!matches.isEmpty()) {
             INode first = matches.get(0);
@@ -300,13 +297,10 @@ public class CTypeDependencyGeneration extends AbstractDependencyGeneration{
 
             // Find structure nodes
             List<INode> correspondingNodes = searchStructureNodeInSpace(allNodesInSpace, searchedPath);
-            logger.debug("Num of corr nodes = " + correspondingNodes.size());
 
             List<INode> nonEmptyCorrespondingNodes = correspondingNodes.stream()
                     .filter(s -> !(s instanceof IEmptyStructureNode))
                     .collect(Collectors.toList());
-            logger.debug("Num of non empty corr nodes = " + correspondingNodes.size());
-
             if (nonEmptyCorrespondingNodes.size() == 1)
                 return nonEmptyCorrespondingNodes.get(0);
 
@@ -317,8 +311,35 @@ public class CTypeDependencyGeneration extends AbstractDependencyGeneration{
         return correspondingNode;
     }
 
+    private static Map<String, List<INode>> cache_result = new HashMap<>();
+    private static int cache_hit = 0;
+
+    private List<INode> getCandidateNodesWithTrie(INode rootNode, List<SearchCondition> conditions,
+            String searchSuffix) {
+        List<INode> nodes;
+        String pairKey = (new NodeConditionsPair(rootNode, conditions)).toString();
+
+        if (cache_result.containsKey(pairKey)) {
+            cache_hit++;
+            nodes = cache_result.get(pairKey);
+        } else {
+            nodes = Search.searchNodes(rootNode, conditions);
+            cache_result.put(pairKey, nodes);
+        }
+
+        TrieNodeManager trieNodeManager = TrieNodeManager.getInstance();
+
+        if (!trieNodeManager.checkTrie(pairKey)) {
+            for (INode node : nodes) {
+                trieNodeManager.addToTrie(pairKey, node);
+            }
+        }
+
+        return trieNodeManager.findInTrie(pairKey, searchSuffix);
+    }
+
     private List<INode> getCandidatesNodesInSpaces(List<Level> spaces, List<SearchCondition> conditions, String searchSuffix) {
-        Set<INode> allNodesInSearchingSpace = new LinkedHashSet<>();
+        Set<INode> allNodesInSearchingSpace = new HashSet<>();
 
         if (conditions == null) {
             conditions = new ArrayList<>();
@@ -333,7 +354,7 @@ public class CTypeDependencyGeneration extends AbstractDependencyGeneration{
         for (Level l : spaces) {
             for (INode n : l) {
                 if (n != null) {
-                    allNodesInSearchingSpace.addAll(Search.getCandidateNodesWithTrie(n, conditions, searchSuffix));
+                    allNodesInSearchingSpace.addAll(getCandidateNodesWithTrie(n, conditions, searchSuffix));
                 }
             }
         }
@@ -547,7 +568,7 @@ public class CTypeDependencyGeneration extends AbstractDependencyGeneration{
             for (INode n : l) {
                 // EXPERIMENTAL
                 // List<INode> possibles = Search.searchNodes(n, conditions.get(0));
-                List<INode> possibles = Search.getCandidateNodesWithTrie(n, conditions, "");
+                List<INode> possibles = getCandidateNodesWithTrie(n, conditions, "");
 
                 for (INode classNode : possibles) {
                     // Case Template Class
@@ -585,15 +606,11 @@ public class CTypeDependencyGeneration extends AbstractDependencyGeneration{
         return s.toString();
     }
 
-    private INode performScopeSearchWithLog(List<Level> spaces, IVariableNode resolvedVarNode) {
-        logger.debug("performScopeSearch");
-        return performScopeSearch(spaces, resolvedVarNode);
-    }
-
     /**
      * Structure declare in scope but define in another location
      */
     private INode performScopeSearch(List<Level> spaces, IVariableNode resolvedVarNode) {
+        logger.debug("performScopeSearch");
         String type = resolvedVarNode.getCoreType();
         type = VariableTypeUtils.removeRedundantKeyword(type);
 

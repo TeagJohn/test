@@ -183,8 +183,8 @@ public class OldWhiteboxBoundaryTestDataGeneration extends AbstractAutomatedTest
             try {
                 long val = Long.parseLong(valStr);
                 parameter.getBounds().add(valStr);
-                parameter.getBounds().add(String.valueOf(val - 1));
-                parameter.getBounds().add(String.valueOf(val + 1));
+                parameter.getBounds().add(String.valueOf(val-1));
+                parameter.getBounds().add(String.valueOf(val+1));
             } catch (NumberFormatException e) {
 
             }
@@ -197,8 +197,8 @@ public class OldWhiteboxBoundaryTestDataGeneration extends AbstractAutomatedTest
             try {
                 double val = Double.parseDouble(valStr);
                 parameter.getBounds().add(valStr);
-                parameter.getBounds().add(String.valueOf(val - delta));
-                parameter.getBounds().add(String.valueOf(val + delta));
+                parameter.getBounds().add(String.valueOf(val-delta));
+                parameter.getBounds().add(String.valueOf(val+delta));
             } catch (NumberFormatException e) {
 
             }
@@ -210,14 +210,14 @@ public class OldWhiteboxBoundaryTestDataGeneration extends AbstractAutomatedTest
             try {
                 long val = Long.parseLong(valStr);
                 parameter.getBounds().add(valStr);
-                parameter.getBounds().add(String.valueOf(val - 1));
-                parameter.getBounds().add(String.valueOf(val + 1));
+                parameter.getBounds().add(String.valueOf(val-1));
+                parameter.getBounds().add(String.valueOf(val+1));
             } catch (NumberFormatException e) {
                 if (valStr.length() == 1) {
                     int val = valStr.charAt(0);
                     parameter.getBounds().add(String.valueOf(val));
-                    parameter.getBounds().add(String.valueOf(val - 1));
-                    parameter.getBounds().add(String.valueOf(val + 1));
+                    parameter.getBounds().add(String.valueOf(val-1));
+                    parameter.getBounds().add(String.valueOf(val+1));
                 }
             }
         }
@@ -368,7 +368,8 @@ public class OldWhiteboxBoundaryTestDataGeneration extends AbstractAutomatedTest
         // create test case
         String postFix = ".cbound";
 
-        String nameOfTestcase = TestCaseManager.generateContinuousNameOfTestcase(TestCaseManager.getFunctionName(fn) + postFix);
+        String nameOfTestcase = TestCaseManager.generateContinuousNameOfTestcase(
+                fn.getName() + postFix);
         TestCase testCase = TestCaseManager.createTestCase(nameOfTestcase, fn);
         if (testCase != null) {
             // generate Random values for unsupported type (array, class, struct, v.v.)

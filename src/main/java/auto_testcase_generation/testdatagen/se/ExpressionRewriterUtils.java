@@ -368,17 +368,6 @@ public class ExpressionRewriterUtils {
 	 * @throws Exception
 	 */
 	public static String rewrite(IVariableNodeTable table, String expression) throws Exception {
-        for (ISymbolicVariable symbolicVariable : table.getVariables()) {
-            if (symbolicVariable instanceof PointerSymbolicVariable) {
-                ISymbolicVariable psv = ((PointerSymbolicVariable) symbolicVariable).getPointTo();
-                if (psv != null) {
-                    String oldExpr = psv.getName();
-                    String newExpr = "*" + symbolicVariable.getName();
-                    expression = expression.replaceAll("\\b" + oldExpr + "\\b", "(" + newExpr + ")");
-                }
-            }
-        }
-
 		expression = ExpressionRewriterUtils.removeBracketedPrimary(expression);
 		expression = ExpressionRewriterUtils.transformFloatPositiveE(expression);
 		expression = ExpressionRewriterUtils.transformFloatNegativeE(expression);
@@ -456,9 +445,6 @@ public class ExpressionRewriterUtils {
         expression = rewriteLiteral(expression);
         expression = rewriteComplexArrayIndex(table, expression);
         expression = convertFieldToNormalizedField(Utils.convertToIAST(expression));
-
-        // TODO: check
-        expression = expression.replaceAll("\\(([\\w\\d\\[\\]\\.]+)\\)", "$1");
 
         return expression;
     }
@@ -583,7 +569,6 @@ public class ExpressionRewriterUtils {
         List<String[]> enumItemList = new ArrayList<>();
         //find all enum related to containing file
         List<INode> uutList = Environment.getInstance().getUUTs();
-        uutList.addAll(Environment.getInstance().getSBFs());
         List<Level> dependentFileLevel = new ArrayList<>();
         for (INode iNode : uutList) {
             dependentFileLevel.addAll(new VariableSearchingSpace(iNode).getSpaces());
@@ -788,8 +773,7 @@ public class ExpressionRewriterUtils {
             expression = expression.replaceAll(oldItemName + IRegex.SPACES + IRegex.OPENING_BRACKET,
                     var.getReference().getBlock().getName() + "[" + var.getReference().getStartIndex() + "+");
 
-            expression = expression.replaceAll(oldItemName, var.getReference().getBlock().getName())
-                    .replaceAll("\\b0\\+0\\b", "0");
+            expression = expression.replaceAll(oldItemName, var.getReference().getBlock().getName());
         } else {
             /*
              * In this case, the pointer does not point to any location. We only replace the

@@ -40,19 +40,4 @@ public class ConstructorNode extends AbstractFunctionNode {
         }
         return this.arguments;
     }
-
-    public boolean isInAbstractClass() {
-        if (this.getParent() instanceof StructOrClassNode) {
-            if (((StructOrClassNode) this.getParent()).isAbstract()) {
-                return true;
-            }
-            return false;
-        } else if (this.getRealParent() instanceof StructOrClassNode) {
-            if (((StructOrClassNode) this.getRealParent()).isAbstract()) {
-                return true;
-            }
-            return false;
-        }
-        return false;
-    }
 }

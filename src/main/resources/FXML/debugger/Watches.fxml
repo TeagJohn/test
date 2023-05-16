@@ -21,7 +21,7 @@
         </padding>
         <VBox fx:id="column" minHeight="0.0" minWidth="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <ToolBar fx:id="supportTools" disable="true">
-                <Button fx:id="addBtn" mnemonicParsing="false" onAction="#showTextFieldForAddBtn">
+                <Button fx:id="addBtn" mnemonicParsing="false" onAction="#showTextField">
                     <tooltip>
                         <Tooltip text="Add new watch point"/>
                     </tooltip>
@@ -68,16 +68,6 @@
                     <graphic>
                         <ImageView fitHeight="16" fitWidth="16" pickOnBounds="true" preserveRatio="true">
                             <Image url="@../../icons/debug/dup.png"/>
-                        </ImageView>
-                    </graphic>
-                </Button>
-                <Button fx:id="editBtn" mnemonicParsing="false" onAction="#showTextFieldForEditBtn">
-                    <tooltip>
-                        <Tooltip text="Edit watch point"/>
-                    </tooltip>
-                    <graphic>
-                        <ImageView fitHeight="16" fitWidth="16" pickOnBounds="true" preserveRatio="true">
-                            <Image url="@../../icons/debug/edit.png"/>
                         </ImageView>
                     </graphic>
                 </Button>

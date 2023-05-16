@@ -19,7 +19,7 @@ public class AkaConfig {
 
     private final static AkaLogger logger = AkaLogger.get(AkaConfig.class);
 
-    public static final String VERSION = "5.8.33";
+    public static final String VERSION = "5.8.29";
 
     public static final boolean IS_SUPPORT_SWITCH_CASE = true;
 
@@ -52,28 +52,17 @@ public class AkaConfig {
     }
 
     synchronized public AkaConfig fromJson() {
-        AkaConfig config = null;
-
         if (SETTING_PROPERTIES_PATH.exists()) {
-            try {
-                GsonBuilder builder = new GsonBuilder();
-                builder.excludeFieldsWithoutExposeAnnotation();
-                Gson gson = builder.setPrettyPrinting().create();
-                String content = Utils.readFileContent(SETTING_PROPERTIES_PATH);
-                config = gson.fromJson(content, AkaConfig.class);
-            } catch (Exception e) {
-                logger.error("The " + SETTING_PROPERTIES_PATH.getAbsolutePath() + " is deprecated!");
-            }
+            GsonBuilder builder = new GsonBuilder();
+            builder.excludeFieldsWithoutExposeAnnotation();
+            Gson gson = builder.setPrettyPrinting().create();
+            return gson.fromJson(Utils.readFileContent(SETTING_PROPERTIES_PATH), AkaConfig.class);
         } else {
             logger.error("The " + SETTING_PROPERTIES_PATH.getAbsolutePath() + " does not exist!");
-        }
-
-        if (config == null) {
-            config = new AkaConfig();
+            AkaConfig config = new AkaConfig();
             config.exportToJson();
+            return config;
         }
-
-        return config;
     }
 
     synchronized public void exportToJson() {

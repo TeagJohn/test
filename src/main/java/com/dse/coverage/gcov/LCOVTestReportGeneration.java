@@ -21,12 +21,10 @@ import com.dse.testcase_manager.*;
 import com.dse.thread.AbstractAkaTask;
 import com.dse.util.*;
 import javafx.scene.control.Alert;
-import org.apache.poi.ss.formula.functions.T;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static com.dse.coverage.gcov.GcovInfo.changeReportContent;
@@ -41,6 +39,7 @@ public class LCOVTestReportGeneration extends AbstractAkaTask<GcovInfo> {
     private static final String ERROR_TAG = " ERROR: ";
     private final ITestCase testCase;
     private GcovInfo gcovInfo;
+
     public LCOVTestReportGeneration(ITestCase _testCase) {
         this.testCase = _testCase;
     }
@@ -201,14 +200,8 @@ public class LCOVTestReportGeneration extends AbstractAkaTask<GcovInfo> {
         String res = SpecialCharacter.EMPTY;
 
         // STEP 1: GCOV
-        String[] gcovCommand = new String[]{gcovInfo.getGcovCommand(), gcovInfo.getLcovCPath()};
-        if (Utils.isWindows()) {
-            gcovCommand = new String[]{gcovInfo.getGcovCommand() + SpecialCharacter.SPACE
-                    + SpecialCharacter.DOUBLE_QUOTES + gcovInfo.getLcovCPath() + SpecialCharacter.DOUBLE_QUOTES};
-        } else {
-            gcovCommand = new String[]{gcovInfo.getGcovCommand(), gcovInfo.getLcovCPath()};
-        }
-        logger.debug("Gcov Request: " + Arrays.toString(gcovCommand));
+        String gcovCommand = gcovInfo.getGcovCommand() + SpecialCharacter.SPACE + SpecialCharacter.DOUBLE_QUOTES + gcovInfo.getLcovCPath() + SpecialCharacter.DOUBLE_QUOTES;
+        logger.debug("Gcov Request: " + gcovCommand);
         try {
             Terminal terGcov = new Terminal(gcovCommand, directory);
             logger.debug("Gcov Response: " + terGcov.get());
@@ -221,38 +214,15 @@ public class LCOVTestReportGeneration extends AbstractAkaTask<GcovInfo> {
         String infoFilePath = gcovInfo.getDirectory() + File.separator + testCase.getName() + INFO_FILE_EXT;
 
         //"lcov --rc lcov_branch_coverage=1 --capture --directory " + " --output-file"
-        String[] lcovCommand;
-        if (Utils.isWindows()) {
-            lcovCommand = new String[]{gcovInfo.getLcovCommand() + SpecialCharacter.SPACE
-                    + gcovInfo.getLcovBranch() + SpecialCharacter.SPACE
-                    + gcovInfo.getLcovInputDirFlag() + SpecialCharacter.SPACE
-                    + SpecialCharacter.DOUBLE_QUOTES + gcovInfo.getDirectory() + SpecialCharacter.DOUBLE_QUOTES + SpecialCharacter.SPACE
-                    + gcovInfo.getLcovOutputDirFlag() + SpecialCharacter.SPACE
-                    + SpecialCharacter.DOUBLE_QUOTES + infoFilePath + SpecialCharacter.DOUBLE_QUOTES};
-        } else {
-            if (gcovInfo.getLcovBranch().equals("")) {
-                lcovCommand = new String[]{gcovInfo.getLcovCommand(),
-                        gcovInfo.getLcovInputDirFlag().split(" ")[0],
-                        gcovInfo.getLcovInputDirFlag().split(" ")[1],
-                        gcovInfo.getDirectory(),
-                        gcovInfo.getLcovOutputDirFlag(),
-                        infoFilePath};
-            } else {
-                lcovCommand = new String[]{gcovInfo.getLcovCommand(),
-                        gcovInfo.getLcovBranch().split(" ")[0],
-                        gcovInfo.getLcovBranch().split(" ")[1],
-                        gcovInfo.getLcovInputDirFlag().split(" ")[0],
-                        gcovInfo.getLcovInputDirFlag().split(" ")[1],
-                        gcovInfo.getDirectory(),
-                        gcovInfo.getLcovOutputDirFlag(),
-                        infoFilePath};
-            }
-        }
-
-        logger.debug("lcov Request: " + Arrays.toString(lcovCommand));
+        String lcovCommand = gcovInfo.getLcovCommand() + SpecialCharacter.SPACE
+                + gcovInfo.getLcovBranch() + SpecialCharacter.SPACE
+                + gcovInfo.getLcovInputDirFlag() + SpecialCharacter.SPACE
+                + SpecialCharacter.DOUBLE_QUOTES + gcovInfo.getDirectory() + SpecialCharacter.DOUBLE_QUOTES + SpecialCharacter.SPACE
+                + gcovInfo.getLcovOutputDirFlag() + SpecialCharacter.SPACE
+                + SpecialCharacter.DOUBLE_QUOTES + infoFilePath + SpecialCharacter.DOUBLE_QUOTES;
+        logger.debug("lcov Request: " + lcovCommand);
         try {
-            Terminal terLcov;
-            terLcov = new Terminal(lcovCommand);
+            Terminal terLcov = new Terminal(lcovCommand);
             logger.debug("lcov Response: " + terLcov.get());
             res += terLcov.get() + SpecialCharacter.LINE_BREAK;
         } catch (IOException | InterruptedException e) {
@@ -261,30 +231,12 @@ public class LCOVTestReportGeneration extends AbstractAkaTask<GcovInfo> {
 
         // STEP 3: Gen html report
         //"genhtml --branch-coverage "  " --output-directory "
-        String[] genhtmlCommand;
-        if (Utils.isWindows()) {
-            genhtmlCommand = new String[]{gcovInfo.getGenerateCommand() + SpecialCharacter.SPACE
-                    + gcovInfo.getGenerateBranchFlag() + SpecialCharacter.SPACE
-                    + SpecialCharacter.DOUBLE_QUOTES + infoFilePath + SpecialCharacter.DOUBLE_QUOTES + SpecialCharacter.SPACE
-                    + gcovInfo.getGenerateOutputDirFlag() + SpecialCharacter.SPACE
-                    + SpecialCharacter.DOUBLE_QUOTES
-                    + gcovInfo.getDirectory() + File.separator + testCase.getName()
-                    + SpecialCharacter.DOUBLE_QUOTES};
-        } else {
-            if (gcovInfo.getGenerateBranchFlag().equals("")) {
-                genhtmlCommand = new String[]{gcovInfo.getGenerateCommand(),
-                        infoFilePath,
-                        gcovInfo.getGenerateOutputDirFlag(),
-                        gcovInfo.getDirectory() + File.separator + testCase.getName()};
-            } else {
-                genhtmlCommand = new String[]{gcovInfo.getGenerateCommand(),
-                        gcovInfo.getGenerateBranchFlag(),
-                        infoFilePath,
-                        gcovInfo.getGenerateOutputDirFlag(),
-                        gcovInfo.getDirectory() + File.separator + testCase.getName()};
-            }
-        }
-        logger.debug("GenHtml Request: " + Arrays.toString(genhtmlCommand));
+        String genhtmlCommand = gcovInfo.getGenerateCommand() + SpecialCharacter.SPACE
+                + gcovInfo.getGenerateBranchFlag() + SpecialCharacter.SPACE
+                + SpecialCharacter.DOUBLE_QUOTES + infoFilePath + SpecialCharacter.DOUBLE_QUOTES + SpecialCharacter.SPACE
+                + gcovInfo.getGenerateOutputDirFlag() + SpecialCharacter.SPACE
+                + SpecialCharacter.DOUBLE_QUOTES + gcovInfo.getDirectory() + File.separator + testCase.getName() + SpecialCharacter.DOUBLE_QUOTES;
+        logger.debug("GenHtml Request: " + genhtmlCommand);
         try {
             Terminal terGenHtml = new Terminal(genhtmlCommand);
             logger.debug("GenHtml Response: " + terGenHtml.get());

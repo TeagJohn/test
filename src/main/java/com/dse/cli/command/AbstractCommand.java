@@ -1,14 +1,11 @@
 package com.dse.cli.command;
 
-import com.dse.guifx_v3.controllers.main_view.MenuBarController;
-import com.dse.logger.AkaLogger;
 import com.dse.logger.CliLogger;
 import com.dse.util.SpecialCharacter;
 import picocli.CommandLine;
 
 public abstract class AbstractCommand<V> implements ICommand<V> {
     protected CliLogger logger;
-    final static AkaLogger akaLogger = AkaLogger.get(AbstractCommand.class);
 
     protected String[] args = new String[0];
 

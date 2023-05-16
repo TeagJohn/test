@@ -1,6 +1,5 @@
 package com.dse.parser.funcdetail;
 
-import auto_testcase_generation.cfg.object.FriendFunctionNode;
 import com.dse.environment.Environment;
 import com.dse.logger.AkaLogger;
 import com.dse.parser.SourcecodeFileParser;
@@ -11,7 +10,10 @@ import com.dse.parser.dependency.TypeDependency;
 import com.dse.parser.object.*;
 import com.dse.search.Search;
 import com.dse.search.SearchCondition;
-import com.dse.search.condition.*;
+import com.dse.search.condition.ClassNodeCondition;
+import com.dse.search.condition.GlobalVariableNodeCondition;
+import com.dse.search.condition.SourcecodeFileNodeCondition;
+import com.dse.search.condition.StructNodeCondition;
 import com.dse.util.*;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTVisibilityLabel;
 
@@ -124,11 +126,11 @@ public class FuncDetailTreeGeneration implements IFuncDetailTreeGeneration {
         /*
          * Them instance trong truong hop test method cua class
          */
-        if (!Environment.getInstance().isC() && !(fn instanceof FriendFunctionNode)) {
+        if (!Environment.getInstance().isC()) {
             List<INode> instances = searchAllInstances(unit);
             if (fn instanceof IFunctionNode) {
                 INode realParent = ((IFunctionNode) fn).getRealParent();
-                if ((realParent instanceof StructOrClassNode || realParent instanceof UnionNode) && !instances.contains(realParent)) {
+                if (realParent instanceof StructOrClassNode && !instances.contains(realParent)) {
                     instances.add(realParent);
                 }
             }
@@ -162,7 +164,6 @@ public class FuncDetailTreeGeneration implements IFuncDetailTreeGeneration {
                 type = type.replace(", >", ">");
             }
         }
-
         instance.setCoreType(type);
         instance.setRawType(type);
         instance.setReducedRawType(type);
@@ -183,7 +184,6 @@ public class FuncDetailTreeGeneration implements IFuncDetailTreeGeneration {
         List<SearchCondition> conditions = new ArrayList<>();
         conditions.add(new StructNodeCondition());
         conditions.add(new ClassNodeCondition());
-        conditions.add(new UnionNodeCondition());
         instances = Search.searchNodes(unit, conditions);
 
         instances.removeIf(instance -> {

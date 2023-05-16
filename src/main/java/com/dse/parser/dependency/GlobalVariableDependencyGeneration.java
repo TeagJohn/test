@@ -48,18 +48,18 @@ public class GlobalVariableDependencyGeneration extends AbstractDependencyGenera
                             String variableName = expression.getRawSignature();
                             VariableFinder finder = new VariableFinder(owner);
                             try {
-                                INode referredNode = finder.find(variableName);
-                                if (referredNode != null) {
-                                    GlobalVariableDependency d = new GlobalVariableDependency(owner, referredNode);
+                                INode refferedNode = finder.find(variableName);
+                                if (refferedNode != null) {
+                                    GlobalVariableDependency d = new GlobalVariableDependency(owner, refferedNode);
                                     if (owner.getAbsolutePath().contains("quickSortRecur(struct Node*,struct Node*)")){
                                         int a = 0;
                                     }
-                                    if (!owner.onlyGetDependencies().contains(d)
-                                            && !referredNode.onlyGetDependencies().contains(d)) {
-                                        owner.onlyGetDependencies().add(d);
-                                        referredNode.onlyGetDependencies().add(d);
+                                    if (!owner.getDependencies().contains(d)
+                                            && !refferedNode.getDependencies().contains(d)) {
+                                        owner.getDependencies().add(d);
+                                        refferedNode.getDependencies().add(d);
 
-                                        // logger.debug("Found a global dependency: " + d.toString());
+                                        logger.debug("Found a global dependency: " + d.toString());
                                     }
                                 }
                             } catch (Exception e) {
@@ -73,7 +73,7 @@ public class GlobalVariableDependencyGeneration extends AbstractDependencyGenera
                 fnAst.accept(visitor);
                 owner.setGlobalVariableDependencyState(true);
             } else {
-                // logger.debug(owner.getAbsolutePath() + " is analyzed global dependency before");
+                logger.debug(owner.getAbsolutePath() + " is analyzed global dependency before");
             }
 
         }

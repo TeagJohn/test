@@ -42,9 +42,6 @@ public interface ICommand<V> extends Callable<V> {
     String DELETE_ENV = "delete env";
     String DELETE_TC = "delete tc";
     String RUN = "run";
-
-    String CONFIG = "config";
-    String AUTOGEN = "autogen";
     String EXECUTE = "execute";
     String REGRESS = "regress";
     String REPORT = "report";

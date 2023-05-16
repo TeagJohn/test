@@ -16,8 +16,6 @@ public class EnviroCompilerNode extends AbstractEnvironmentNode {
     private String debugFlag;
     private String outputExt;
 
-    private boolean useGTest;
-
     @Override
     public String toString() {
         return super.toString() + ": compiler = " + name;
@@ -39,7 +37,6 @@ public class EnviroCompilerNode extends AbstractEnvironmentNode {
         output += ENVIRO_COMPILER_OUTPUT_FLAG + " " + outputFlag + SpecialCharacter.LINE_BREAK;
         output += ENVIRO_COMPILER_DEBUG_FLAG + " " + debugFlag + SpecialCharacter.LINE_BREAK;
         output += ENVIRO_COMPILER_OUTPUT_EXT + " " + outputExt + SpecialCharacter.LINE_BREAK;
-        output += ENVIRO_COMPILER_IS_USE_GTEST + " " + useGTest + SpecialCharacter.LINE_BREAK;
 
         output += ENVIRO_COMPILER_END;
 
@@ -140,13 +137,5 @@ public class EnviroCompilerNode extends AbstractEnvironmentNode {
 
     public void setOutputExt(String outputExt) {
         this.outputExt = outputExt;
-    }
-
-    public boolean isUseGTest() {
-        return useGTest;
-    }
-
-    public void setUseGTest(boolean useGTest) {
-        this.useGTest = useGTest;
     }
 }

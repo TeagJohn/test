@@ -6,4 +6,7 @@ public class CaseCfgNode extends NormalCfgNode{
     public CaseCfgNode(IASTNode node) {
         super(node);
     }
+
+    public CaseCfgNode() {
+    }
 }

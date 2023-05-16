@@ -2,23 +2,24 @@ package com.dse.testdata;
 
 import com.dse.boundary.PrimitiveBound;
 import auto_testcase_generation.testdatagen.RandomInputGeneration;
+import com.dse.config.AkaConfig;
+import com.dse.config.IFunctionConfigBound;
 import com.dse.guifx_v3.controllers.ChooseRealTypeController;
 import com.dse.environment.Environment;
 import com.dse.guifx_v3.helps.UIController;
 import com.dse.guifx_v3.objects.AbstractTableCell;
-import com.dse.parser.object.*;
+import com.dse.parser.object.ICommonFunctionNode;
+import com.dse.parser.object.INode;
+import com.dse.parser.object.NumberOfCallNode;
 import com.dse.project_init.ProjectClone;
-import com.dse.search.Search;
 import com.dse.testcase_manager.IDataTestItem;
 import com.dse.testdata.gen.module.TreeExpander;
 import com.dse.testdata.object.*;
-import com.dse.testdata.object.Gmock.*;
 import com.dse.testdata.object.stl.ListBaseDataNode;
 import com.dse.testdata.object.stl.STLArrayDataNode;
 import com.dse.testdata.object.stl.SmartPointerDataNode;
 import com.dse.testdata.object.stl.StdFunctionDataNode;
 import com.dse.logger.AkaLogger;
-import com.dse.util.SpecialCharacter;
 import com.dse.util.Utils;
 import com.dse.util.VariableTypeUtils;
 import com.dse.boundary.DataSizeModel;
@@ -29,7 +30,6 @@ import javafx.stage.Stage;
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class InputCellHandler implements IInputCellHandler {
@@ -58,18 +58,6 @@ public class InputCellHandler implements IInputCellHandler {
             cell.setEditable(true);
             cell.setText(((NumberOfCallNode) dataNode).getValue());
 
-        } else if (dataNode instanceof GMockValueDataNode) {
-            cell.setEditable(true);
-            if (dataNode instanceof ArgumentNode){
-                cell.setText("Choose argument");
-                if (((ArgumentNode) dataNode).getValue() != null)
-                    cell.setText(((ArgumentNode) dataNode).getValue());
-            } else if (dataNode instanceof MatcherMultipleNode) {
-                cell.setEditable(false);
-                cell.setText(null);
-            } else {
-                cell.setText(((GMockValueDataNode) dataNode).getValue());
-            }
         } else if (dataNode instanceof NormalNumberDataNode) {
             // int
             cell.setEditable(true);
@@ -85,6 +73,7 @@ public class InputCellHandler implements IInputCellHandler {
             cell.setEditable(true);
             cell.setText("<<Size: " + dataNode.getChildren().size() + ">>");
 
+
         } else if (dataNode instanceof EnumDataNode) {
             // enum
             cell.setText("Select value");
@@ -92,52 +81,21 @@ public class InputCellHandler implements IInputCellHandler {
                 cell.setText(((EnumDataNode) dataNode).getValue());
             }
 
-        } else if (dataNode instanceof SubUnionDataNode) {
-            cell.setEditable(true);
-            SubUnionDataNode subUnionDataNode = (SubUnionDataNode) dataNode;
-            cell.setText("Select constructor");
-            if (subUnionDataNode.getSelectedConstructor() != null) {
-                cell.setText(subUnionDataNode.getSelectedConstructor().getName());
-            }
         } else if (dataNode instanceof UnionDataNode) {
-            if (Environment.getInstance().isC()) {
-                // union
-                cell.setText("Select attribute");
-                String field = ((UnionDataNode) dataNode).getSelectedField();
-                if (field != null) {
-                    cell.setText(field);
-                }
-
-            } else {
-                cell.setEditable(true);
-                UnionDataNode unionDataNode = (UnionDataNode) dataNode;
-                cell.setText("Select real class");
-                if (unionDataNode.getSubUnion() != null) {
-                    cell.setText(unionDataNode.getSubUnion().getRawType());
-                }
+            // union
+            cell.setText("Select attribute");
+            String field = ((UnionDataNode) dataNode).getSelectedField();
+            if (field != null) {
+                cell.setText(field);
             }
 
-        } else if (dataNode instanceof SubStructDataNode) {
-            cell.setEditable(true);
-            SubStructDataNode subStructDataNode = (SubStructDataNode) dataNode;
-            cell.setText("Select constructor");
-            if (subStructDataNode.getSelectedConstructor() != null) {
-                cell.setText(subStructDataNode.getSelectedConstructor().getName());
-            }
-        } else if (dataNode instanceof StructDataNode) {
-            cell.setEditable(true);
-            StructDataNode structDataNode = (StructDataNode) dataNode;
-            cell.setText("Select real class");
-            if (structDataNode.isSetSubStructure()) {
-                cell.setText(structDataNode.getSubStructure().getRawType());
-            }
         } else if (dataNode instanceof SubClassDataNode) {
             // subclass
             cell.setEditable(true);
             SubClassDataNode subClassDataNode = (SubClassDataNode) dataNode;
             cell.setText("Select constructor");
             if (subClassDataNode.getSelectedConstructor() != null) {
-                // Show constructor class name
+                // Hiển thị tên constuctor class
                 cell.setText(subClassDataNode.getSelectedConstructor().getName());
             }
 
@@ -146,14 +104,9 @@ public class InputCellHandler implements IInputCellHandler {
             cell.setEditable(true);
             ClassDataNode classDataNode = (ClassDataNode) dataNode;
             cell.setText("Select real class");
-            if (classDataNode.getSubStructure() != null) {
-                if (Environment.getInstance().getCompiler().isUseGTest() &&
-                        ((ClassNode) (((StructOrClassDataNode) classDataNode.getSubStructure()).getCorrespondingVar().getCorrespondingNode())).isAbstract()) {
-                    cell.setText("Mock: " + classDataNode.getSubStructure().getRawType());
-                } else {
-                    // Show class name
-                    cell.setText(classDataNode.getSubStructure().getRawType());
-                }
+            if (classDataNode.getSubClass() != null) {
+                // Hiển thị tên class
+                cell.setText(classDataNode.getSubClass().getRawType());
             }
 
         } else if (dataNode instanceof OneDimensionDataNode) {
@@ -247,74 +200,16 @@ public class InputCellHandler implements IInputCellHandler {
         }
     }
 
-    public void commitEdit(StructureDataNode subClassDataNode) throws Exception {
-
-        boolean is_realCommit = true;
-//        String type = subClassDataNode.getRealType();
-//        type = VariableTypeUtils.removeRedundantKeyword(type);
-        if (subClassDataNode instanceof SubClassDataNode) {
-            ((SubClassDataNode) subClassDataNode).chooseConstructor();
-        } else if (subClassDataNode instanceof SubStructDataNode) {
-            ((SubStructDataNode) subClassDataNode).chooseConstructor();
-        } else if (subClassDataNode instanceof SubUnionDataNode) {
-            ((SubUnionDataNode) subClassDataNode).chooseConstructor();
-        }
-        new TreeExpander().expandTree(subClassDataNode);
-
-        if (is_realCommit) {
-            subClassDataNode.setUseUserCode(false);
-        }
-    }
-
     @Override
     public void commitEdit(ValueDataNode dataNode, String newValue) throws Exception {
         boolean is_realCommit = true;
 
-        String type = dataNode.getRealType();
-        type = VariableTypeUtils.removeRedundantKeyword(type);
+        if (dataNode instanceof NormalNumberDataNode || dataNode instanceof NumberOfCallNode) {
+            String type = dataNode.getRealType();
+            type = VariableTypeUtils.removeRedundantKeyword(type);
+            String normalizedValue = Utils.preprocessorLiteral(newValue);
 
-        if (dataNode instanceof GMockValueDataNode) {
-            if (dataNode instanceof ArgumentNode) {
-                ((ArgumentNode) dataNode).setValue(newValue);
-            } else {
-                String normalizedValue = Utils.preprocessorLiteral(newValue);
-                try {
-                    long value = Long.parseLong(normalizedValue);
-                    PrimitiveBound bound = Environment.getBoundOfDataTypes().getBounds().get("int");
-                    if (bound != null) {
-                        if (value >= Long.parseLong(bound.getLower())
-                                && value <= Long.parseLong(bound.getUpper())) {
-                            ((GMockValueDataNode) dataNode).setValue(newValue);
-                            TreeExpander expander = new TreeExpander();
-                            expander.setRealTypeMapping(this.realTypeMapping);
-                            expander.expandTree(dataNode);
-                        } else {
-                            ((NormalNumberDataNode) dataNode).setValue(newValue);
-                        }
-                    } else {
-                        // nothing to do
-                        if (isInAutoGenMode())
-                            logger.error("Value " + value + " out of scope " + bound);
-                        else
-                            UIController.showErrorDialog("Value " + value + " out of scope " + bound,
-                                    "Test data entering", "Invalid value");
-                    }
-                } catch (Exception e1) {
-                    if (isInAutoGenMode())
-                        logger.error(
-                                "Wrong input for " + dataNode.getName() + "; unit = " + dataNode.getUnit().getName(),
-                                e1);
-                    else
-                        UIController.showErrorDialog(
-                                "Wrong input for " + dataNode.getName() + "; unit = " + dataNode.getUnit().getName(),
-                                "Test data entering", "Invalid value");
-                }
-            }
-        } else if (dataNode instanceof NormalNumberDataNode || dataNode instanceof NumberOfCallNode
-                /*|| dataNode instanceof TimesNode || dataNode instanceof WithNode*/) {
-             String normalizedValue = Utils.preprocessorLiteral(newValue);
-
-             if (type.equals("unsigned long long int") || type.equals("unsigned long long")
+            if (type.equals("unsigned long long int") || type.equals("unsigned long long")
                     || type.equals("uint64_t") || type.equals("uint_least64_t") || type.equals("uint_fast64_t")) {
                 try {
                     // test convert to numberous value
@@ -340,7 +235,7 @@ public class InputCellHandler implements IInputCellHandler {
                                 logger.error("Value " + value + " out of scope " + bound);
                             else
                                 UIController.showErrorDialog("Value " + value + " out of scope " + bound,
-                                        "Test data entering", "Invalid value");
+                                    "Test data entering", "Invalid value");
                         }
                     }
                 } catch (Exception e) {
@@ -380,14 +275,13 @@ public class InputCellHandler implements IInputCellHandler {
                                 logger.error("Value " + value + " out of scope " + bound);
                             else
                                 UIController.showErrorDialog("Value " + value + " out of scope " + bound,
-                                        "Test data entering", "Invalid value");
+                                    "Test data entering", "Invalid value");
                         }
                     } catch (Exception e) {
                         if (isInAutoGenMode())
                             logger.error("Invalid value of " + type, e);
                         else
-                            UIController.showErrorDialog("Invalid value of " + type, "Test data entering",
-                                    "Invalid value");
+                            UIController.showErrorDialog("Invalid value of " + type, "Test data entering", "Invalid value");
                     }
                 }
             } else {
@@ -402,11 +296,6 @@ public class InputCellHandler implements IInputCellHandler {
                                 TreeExpander expander = new TreeExpander();
                                 expander.setRealTypeMapping(this.realTypeMapping);
                                 expander.expandTree(dataNode);
-                            } else if (dataNode instanceof GMockValueDataNode) {
-                                ((GMockValueDataNode) dataNode).setValue(newValue);
-                                TreeExpander expander = new TreeExpander();
-                                expander.setRealTypeMapping(this.realTypeMapping);
-                                expander.expandTree(dataNode);
                             } else {
                                 ((NormalNumberDataNode) dataNode).setValue(newValue);
                             }
@@ -416,18 +305,14 @@ public class InputCellHandler implements IInputCellHandler {
                                 logger.error("Value " + value + " out of scope " + bound);
                             else
                                 UIController.showErrorDialog("Value " + value + " out of scope " + bound,
-                                        "Test data entering", "Invalid value");
+                                    "Test data entering", "Invalid value");
                         }
                     }
                 } catch (Exception e) {
                     if (isInAutoGenMode())
-                        logger.error(
-                                "Wrong input for " + dataNode.getName() + "; unit = " + dataNode.getUnit().getName(),
-                                e);
+                        logger.error("Wrong input for " + dataNode.getName() + "; unit = " + dataNode.getUnit().getName(), e);
                     else
-                        UIController.showErrorDialog(
-                                "Wrong input for " + dataNode.getName() + "; unit = " + dataNode.getUnit().getName(),
-                                "Test data entering", "Invalid value");
+                        UIController.showErrorDialog("Wrong input for " + dataNode.getName() + "; unit = " + dataNode.getUnit().getName(), "Test data entering", "Invalid value");
                 }
             }
         } else if (dataNode instanceof NormalCharacterDataNode) {
@@ -441,8 +326,9 @@ public class InputCellHandler implements IInputCellHandler {
                 else {
                     if (!isInAutoGenMode()) {
                         UIController.showErrorDialog("You type wrong character for the type " + dataNode.getRawType()
-                                + " in src " + dataNode.getUnit().getName() +
-                                NormalCharacterDataNode.RULE, "Wrong input of character", "Fail");
+                                        + " in src " + dataNode.getUnit().getName() +
+                                        NormalCharacterDataNode.RULE
+                                , "Wrong input of character", "Fail");
                     }
                     logger.error("Do not handle when the length of text > 1 for character parameter");
                 }
@@ -452,6 +338,7 @@ public class InputCellHandler implements IInputCellHandler {
                     String normalizedValue = Utils.preprocessorLiteral(newValue);
                     long value = Long.parseLong(normalizedValue);
                     DataSizeModel dataSizeModel = Environment.getBoundOfDataTypes().getBounds();
+                    String type = dataNode.getRealType();
                     PrimitiveBound bound = dataSizeModel.get(type);
                     if (bound == null)
                         bound = dataSizeModel.get(type.replace("std::", "").trim());
@@ -461,10 +348,10 @@ public class InputCellHandler implements IInputCellHandler {
                                     + " in src " + dataNode.getUnit().getName() +
                                     NormalCharacterDataNode.RULE);
                         else
-                            UIController
-                                    .showErrorDialog("You type wrong character for the type " + dataNode.getRawType()
-                                            + " in src " + dataNode.getUnit().getName() +
-                                            NormalCharacterDataNode.RULE, "Wrong input of character", "Fail");
+                            UIController.showErrorDialog("You type wrong character for the type " + dataNode.getRawType()
+                                        + " in src " + dataNode.getUnit().getName() +
+                                        NormalCharacterDataNode.RULE
+                                , "Wrong input of character", "Fail");
 
                     } else if (value <= bound.getUpperAsDouble() && value >= bound.getLowerAsDouble()) {
                         ((NormalCharacterDataNode) dataNode).setValue(newValue);
@@ -476,11 +363,11 @@ public class InputCellHandler implements IInputCellHandler {
                                     + " in src " + dataNode.getUnit().getName() +
                                     NormalCharacterDataNode.RULE);
                         else
-                            UIController
-                                    .showErrorDialog("Value " + newValue + " is out of bound " + dataNode.getRawType()
-                                            + "[" + bound.getLowerAsDouble() + "," + bound.getUpperAsDouble() + "]"
-                                            + " in src " + dataNode.getUnit().getName() +
-                                            NormalCharacterDataNode.RULE, "Wrong input of character", "Fail");
+                            UIController.showErrorDialog("Value " + newValue + " is out of bound " + dataNode.getRawType()
+                                        + "[" + bound.getLowerAsDouble() + "," + bound.getUpperAsDouble() + "]"
+                                        + " in src " + dataNode.getUnit().getName() +
+                                        NormalCharacterDataNode.RULE
+                                , "Wrong input of character", "Fail");
                     }
                 } catch (Exception e) {
                     if (!isInAutoGenMode()) {
@@ -494,29 +381,18 @@ public class InputCellHandler implements IInputCellHandler {
         } else if (dataNode instanceof NormalStringDataNode) {
             try {
                 long lengthOfString = Long.parseLong(newValue);
-                if (lengthOfString < 0) {
+
+                if (lengthOfString < 0)
                     throw new Exception("Negative length of string");
-                }
+
                 ((NormalStringDataNode) dataNode).setAllocatedSize(lengthOfString);
                 TreeExpander expander = new TreeExpander();
                 expander.setRealTypeMapping(this.realTypeMapping);
                 expander.expandTree(dataNode);
             } catch (Exception e) {
-                if (!(newValue.startsWith(SpecialCharacter.DOUBLE_QUOTES)
-                        && newValue.endsWith(SpecialCharacter.DOUBLE_QUOTES))) {
-                    ((NormalStringDataNode) dataNode)
-                            .setValue(SpecialCharacter.DOUBLE_QUOTES + newValue + SpecialCharacter.DOUBLE_QUOTES);
-                } else {
-                    ((NormalStringDataNode) dataNode).setValue(newValue);
-                }
-                if (!isInAutoGenMode()) {
-                    UIController.showErrorDialog("Length of a string must be >=0 and is an integer",
-                            "Wrong length of string", "Invalid length");
-                } else {
-                    TreeExpander expander = new TreeExpander();
-                    expander.setRealTypeMapping(this.realTypeMapping);
-                    expander.expandTree(dataNode);
-                }
+                e.printStackTrace();
+                if (!isInAutoGenMode())
+                    UIController.showErrorDialog("Length of a string must be >=0 and is an integer", "Wrong length of string", "Invalid length");
             }
 
         } else if (dataNode instanceof EnumDataNode) {
@@ -524,65 +400,26 @@ public class InputCellHandler implements IInputCellHandler {
             ((EnumDataNode) dataNode).setValue(newValue);
             ((EnumDataNode) dataNode).setValueIsSet(true);
 
-        } else if (dataNode instanceof SubUnionDataNode) {
-            ((SubUnionDataNode) dataNode).chooseConstructor(newValue);
-            new TreeExpander().expandTree(dataNode);
         } else if (dataNode instanceof UnionDataNode) {
-            if (Environment.getInstance().isC()) {
-                // union oke
-                // expand tree với thuộc tính được chọn ở combobox
-                ((UnionDataNode) dataNode).setField(newValue);
-                new TreeExpander().expandStructureNodeOnDataTree(dataNode, newValue);
-            } else {
-                ((UnionDataNode) dataNode).setSubUnion();
-            }
+            // union oke
+            // expand tree với thuộc tính được chọn ở combobox
+            ((UnionDataNode) dataNode).setField(newValue);
+            new TreeExpander().expandStructureNodeOnDataTree(dataNode, newValue);
 
-        } else if (dataNode instanceof SubStructDataNode) {
-            ((SubStructDataNode) dataNode).chooseConstructor(newValue);
-            new TreeExpander().expandTree(dataNode);
         } else if (dataNode instanceof StructDataNode) {
-            if (Environment.getInstance().isC()) {
-                // do nothing
-            } else {
-                ((StructDataNode) dataNode).setSubStructure(VariableTypeUtils.removeRedundantKeyword(newValue));
-            }
+            // do nothing
 
         } else if (dataNode instanceof SubClassDataNode) {
             // subclass (cũng là class) oke
-            if (((ClassNode) dataNode.getCorrespondingVar().getCorrespondingNode()).isSingleton()) {
-                ((SubClassDataNode) dataNode).chooseGetInstance(newValue);
-            } else {
-                ((SubClassDataNode) dataNode).chooseConstructor(newValue);
-            }
+            ((SubClassDataNode) dataNode).chooseConstructor(newValue);
             new TreeExpander().expandTree(dataNode);
 
         } else if (dataNode instanceof ClassDataNode) {
             // class oke
-            ((ClassDataNode) dataNode).setSubStructure(VariableTypeUtils.removeRedundantKeyword(newValue));
+            ((ClassDataNode) dataNode).setSubClass(newValue);
 
-        } else if (dataNode instanceof PointerStructureDataNode
-                && ((PointerStructureDataNode) dataNode).getLevel() == 0) {
-            List<INode> derivedClass = Search.getDerivedNodesInSpace((StructOrClassNode) dataNode.getCorrespondingVar().getCorrespondingNode(), this.getTestCase().getFunctionNode());
-            INode structureNode = derivedClass.stream().filter(iNode -> iNode.getName().equals(newValue)).findFirst().get();
-            String fullStructName = Search.getScopeQualifier(structureNode);
-            VariableNode correspondingVar = VariableTypeUtils.cloneAndReplaceType(fullStructName, dataNode.getCorrespondingVar(), structureNode);
-            ISubStructOrClassDataNode subStructure = null;
-            if (structureNode instanceof ClassNode) {
-                subStructure = new SubClassDataNode();
-            } else {
-                subStructure = new SubStructDataNode();
-            }
-
-            subStructure.setName(correspondingVar.getName());
-            subStructure.setRawType(correspondingVar.getRawType());
-            subStructure.setRealType(correspondingVar.getRealType());
-            subStructure.setCorrespondingVar(correspondingVar);
-
-            subStructure.setParent(dataNode);
-            dataNode.getChildren().clear();
-            dataNode.addChild(subStructure);
         } else if (dataNode instanceof OneDimensionDataNode) {
-            // array cua normal data. oke
+            //array cua normal data. oke
             int size = Integer.parseInt(newValue);
             OneDimensionDataNode currentNode = (OneDimensionDataNode) dataNode;
             if (!currentNode.isFixedSize()) {
@@ -627,7 +464,7 @@ public class InputCellHandler implements IInputCellHandler {
             new TreeExpander().expandTree(dataNode);
 
         } else if (dataNode instanceof ListBaseDataNode && !(dataNode instanceof STLArrayDataNode)) {
-            // array cua normal data. oke
+            //array cua normal data. oke
             int size = Integer.parseInt(newValue);
             ListBaseDataNode currentNode = (ListBaseDataNode) dataNode;
             currentNode.setSize(size);
@@ -653,7 +490,7 @@ public class InputCellHandler implements IInputCellHandler {
             }
         } else if (dataNode instanceof OtherUnresolvedDataNode) {
             logger.debug("OtherUnresolvedDataNode");
-            // ((OtherUnresolvedDataNode) dataNode).setUserCode(newValue);
+//            ((OtherUnresolvedDataNode) dataNode).setUserCode(newValue);
 
         } else if (dataNode instanceof VoidPointerDataNode) {
             commitVoidPtrInputMethod(dataNode, newValue);
@@ -687,7 +524,8 @@ public class InputCellHandler implements IInputCellHandler {
             for (String element : elements)
                 elementMap.put(
                         element.split(DELIMITER_BETWEEN_KEY_AND_VALUE)[0],
-                        element.split(DELIMITER_BETWEEN_KEY_AND_VALUE)[1]);
+                        element.split(DELIMITER_BETWEEN_KEY_AND_VALUE)[1]
+                );
 
             String category = elementMap.get(RandomInputGeneration.VOID_POINTER____SELECTED_CATEGORY);
             controller.setTestCase(testCase);
@@ -725,7 +563,7 @@ public class InputCellHandler implements IInputCellHandler {
     public void commitSelectedReference(FunctionPointerDataNode fpDataNode, ICommonFunctionNode f) {
         fpDataNode.setSelectedFunction(f);
         if (testCase != null) {
-            // TODO: relative
+            //TODO: relative
             String filePath = Utils.getSourcecodeFile(f).getAbsolutePath();
             String cloneFilePath = ProjectClone.getClonedFilePath(filePath);
             if (!new File(cloneFilePath).exists())

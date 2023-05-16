@@ -151,7 +151,7 @@ public class FunctionConfigurationController implements Initializable {
         }
     }
 
-    public static FunctionConfig loadOrInitFunctionConfig(ICommonFunctionNode functionNode) {
+    private static FunctionConfig loadOrInitFunctionConfig(ICommonFunctionNode functionNode) {
         // search the function config in database
         FunctionConfig functionConfig = null;
         File functionConfigDirectory = new File(new WorkspaceConfig().fromJson().getFunctionConfigDirectory());
@@ -197,7 +197,6 @@ public class FunctionConfigurationController implements Initializable {
 
         return null;
     }
-
     private String getValidTypeRange(String varName, ICommonFunctionNode functionNode) {
         for (IVariableNode variableNode : functionNode.getArgumentsAndGlobalVariables()) {
             if (variableNode.getName().equals(varName)) {
@@ -265,12 +264,12 @@ public class FunctionConfigurationController implements Initializable {
                     editable = false;
                 }
                 parameters.add(
-                        new FunctionConfigParameter(
-                                functionConfig,
-                                key + IFunctionConfigBound.ARGUMENT_SIZE,
-                                ((PointerOrArrayBound) b).showIndexes(),
-                                editable
-                        )
+                    new FunctionConfigParameter(
+                        functionConfig,
+                        key + IFunctionConfigBound.ARGUMENT_SIZE,
+                        ((PointerOrArrayBound) b).showIndexes(),
+                        editable
+                    )
                 );
             } else if (b instanceof UndefinedBound)
                 parameters.add(new FunctionConfigParameter(functionConfig, key, ((UndefinedBound) b).show()));
@@ -319,8 +318,8 @@ public class FunctionConfigurationController implements Initializable {
         }
     }
 
-    public static void exportFunctionConfigToJson(FunctionConfig functionConfig) {
-        if (functionConfig.getFunctionNode() == null) {
+    private void exportFunctionConfigToJson(FunctionConfig functionConfig) {
+        if (functionConfig.getFunctionNode() == null){
             // set up config for workspace level
             new WorkspaceConfig().fromJson().setDefaultFunctionConfig(functionConfig).exportToJson();
 

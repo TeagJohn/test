@@ -2,14 +2,16 @@ package auto_testcase_generation.testdatagen;
 
 import auto_testcase_generation.cfg.CFGGenerationforSubConditionCoverage;
 import auto_testcase_generation.cfg.ICFG;
-import auto_testcase_generation.cfg.object.*;
+import auto_testcase_generation.cfg.object.AbstractConditionLoopCfgNode;
+import auto_testcase_generation.cfg.object.ConditionCfgNode;
+import auto_testcase_generation.cfg.object.EndFlagCfgNode;
+import auto_testcase_generation.cfg.object.ICfgNode;
 import auto_testcase_generation.cfg.testpath.FullTestpath;
 import auto_testcase_generation.cfg.testpath.FullTestpaths;
 import com.dse.boundary.PrimitiveBound;
 import com.dse.boundary.WhiteboxBoundaryMultipleBound;
 import com.dse.config.IFunctionConfigBound;
 import com.dse.config.WorkspaceConfig;
-import com.dse.environment.Environment;
 import com.dse.guifx_v3.controllers.TestCasesNavigatorController;
 import com.dse.guifx_v3.helps.CacheHelper;
 import com.dse.guifx_v3.helps.UIController;
@@ -58,8 +60,8 @@ public class WhiteboxBoundaryTestDataGeneration extends AbstractAutomatedTestdat
     private int maxIterationsforEachLoop;
     private final FullTestpaths possibleTestpaths = new FullTestpaths();
     private final List<IVariableNode> variables;
-    public String bufferName = "";
-    public String bufferType = "";
+    public String bufferName="";
+    public String bufferType="";
 
     public WhiteboxBoundaryTestDataGeneration(ICommonFunctionNode fn, String coverageType) {
         super(fn);
@@ -142,15 +144,18 @@ public class WhiteboxBoundaryTestDataGeneration extends AbstractAutomatedTestdat
                     StructNode typeNode = (StructNode) node;
                     ArrayList<IVariableNode> attributes = typeNode.getPublicAttributes();
                     genTestDataForComplexNode(varMultipleBounds, var, attributes);
-                } else if (node instanceof ClassNode) {
+                }
+                else if(node instanceof ClassNode){
                     ClassNode typeNode = (ClassNode) node;
                     ArrayList<IVariableNode> attributes = typeNode.getPublicAttributes();
                     genTestDataForComplexNode(varMultipleBounds, var, attributes);
-                } else if (node instanceof UnionNode) {
+                }
+                else if(node instanceof UnionNode){
                     UnionNode typeNode = (UnionNode) node;
                     ArrayList<IVariableNode> attributes = typeNode.getPublicAttributes();
                     genTestDataForComplexNode(varMultipleBounds, var, attributes);
-                } else if (node instanceof EnumNode) {
+                }
+                else if(node instanceof EnumNode){
                     List<String> boundValues = new ArrayList<String>();
                     ICfgNode beginNode = cfg.getBeginNode();
                     FullTestpath initialTestpath = new FullTestpath();
@@ -166,7 +171,8 @@ public class WhiteboxBoundaryTestDataGeneration extends AbstractAutomatedTestdat
                         WhiteboxBoundaryMultipleBound multipleBound = new WhiteboxBoundaryMultipleBound(var, boundValues);
                         varMultipleBounds.add(multipleBound);
                     }
-                } else {
+                }
+                else {
                     List<String> boundValues = new ArrayList<String>();
                     ICfgNode beginNode = cfg.getBeginNode();
                     FullTestpath initialTestpath = new FullTestpath();
@@ -188,12 +194,13 @@ public class WhiteboxBoundaryTestDataGeneration extends AbstractAutomatedTestdat
                         }
                     }
                 }
-            } else if (VariableTypeUtils.isOneDimension(realType) && realType.contains("*[")) {
+            }
+            else if(VariableTypeUtils.isOneDimension(realType) && realType.contains("*[")){
                 List<String> boundValues = new ArrayList<String>();
                 ICfgNode beginNode = cfg.getBeginNode();
                 FullTestpath initialTestpath = new FullTestpath();
                 initialTestpath.setFunctionNode(cfg.getFunctionNode());
-                String originalName = var.getName() + IRegex.ARRAY_INDEX + IRegex.ARRAY_INDEX;
+                String originalName = var.getName()+IRegex.ARRAY_INDEX+IRegex.ARRAY_INDEX;
                 String type = var.getRealType();
                 try {
                     traverseCFG(beginNode, initialTestpath, originalName, type, var, boundValues, varMultipleBounds);
@@ -207,7 +214,8 @@ public class WhiteboxBoundaryTestDataGeneration extends AbstractAutomatedTestdat
                     WhiteboxBoundaryMultipleBound multipleBound = new WhiteboxBoundaryMultipleBound(clone, boundValues);
                     varMultipleBounds.add(multipleBound);
                 }
-            } else {
+            }
+            else {
                 List<String> boundValues = new ArrayList<String>();
                 ICfgNode beginNode = cfg.getBeginNode();
                 FullTestpath initialTestpath = new FullTestpath();
@@ -232,29 +240,30 @@ public class WhiteboxBoundaryTestDataGeneration extends AbstractAutomatedTestdat
         }
 
         //filter
-        List<WhiteboxBoundaryMultipleBound> sub_varMultipleBounds = new ArrayList<WhiteboxBoundaryMultipleBound>();
-        for (WhiteboxBoundaryMultipleBound multiBounds : varMultipleBounds) {
+        List<WhiteboxBoundaryMultipleBound> sub_varMultipleBounds= new ArrayList<WhiteboxBoundaryMultipleBound>();
+        for(WhiteboxBoundaryMultipleBound multiBounds : varMultipleBounds){
             sub_varMultipleBounds.add(multiBounds);
         }
-        List<String> multiBoundNames = new ArrayList<String>();
-        for (WhiteboxBoundaryMultipleBound multiBounds : sub_varMultipleBounds) {
+        List <String> multiBoundNames = new ArrayList<String>();
+        for(WhiteboxBoundaryMultipleBound multiBounds : sub_varMultipleBounds){
             String name = multiBounds.getVar().getName();
-            if (!multiBoundNames.contains(name)) {
+            if(!multiBoundNames.contains(name)){
                 multiBoundNames.add(name);
-            } else {
+            }
+            else{
                 varMultipleBounds.remove(varMultipleBounds.indexOf(multiBounds));
             }
         }
 
         //gen test data
-        if (varMultipleBounds.size() != 0) {
+        if(varMultipleBounds.size()!=0){
             for (WhiteboxBoundaryMultipleBound multiBounds : varMultipleBounds) {
                 String norm = multiBounds.getNorm();
                 boolean hasNorm = false;
                 //lap 3 lan cac bien xung quanh tung gia tri bien (So sanh voi cac params cua UUT)
                 for (int i = -1; i < 2; i++) {
                     //duyet tung bien cua 1 bien
-                    ExecutorService es = Executors.newFixedThreadPool(Environment.getInstance().getMaxThreadCount());
+                    ExecutorService es = Executors.newFixedThreadPool(5);
                     List<Callable<String>> tasks = new ArrayList<>();
                     for (String bound : multiBounds.getBoundValues()) {
                         StringHandler task = new StringHandler(bound, i, multiBounds, varMultipleBounds);
@@ -273,7 +282,8 @@ public class WhiteboxBoundaryTestDataGeneration extends AbstractAutomatedTestdat
                     task.handleData();
                 }
             }
-        } else {
+        }
+        else {
             TestCase testCase = createTestcase(fn);
             RootDataNode root = testCase.getRootDataNode();
             IDataNode sutRoot = Search2.findSubprogramUnderTest(root);
@@ -299,7 +309,7 @@ public class WhiteboxBoundaryTestDataGeneration extends AbstractAutomatedTestdat
         onGenerateSuccess(showReport);
     }
 
-    public void genTestDataForComplexNode(List<WhiteboxBoundaryMultipleBound> varMultipleBounds, IVariableNode var, ArrayList<IVariableNode> attributes) {
+    public void genTestDataForComplexNode(List<WhiteboxBoundaryMultipleBound> varMultipleBounds,IVariableNode var, ArrayList<IVariableNode> attributes){
         for (IVariableNode attrVar : attributes) {
             List<String> boundValues = new ArrayList<String>();
             ICfgNode beginNode = cfg.getBeginNode();
@@ -329,8 +339,7 @@ public class WhiteboxBoundaryTestDataGeneration extends AbstractAutomatedTestdat
             }
         }
     }
-
-    public void genTestDataForComplexNode(List<WhiteboxBoundaryMultipleBound> varMultipleBounds, IVariableNode arguments, ArrayList<IVariableNode> attributes, String originalName) {
+    public void genTestDataForComplexNode(List<WhiteboxBoundaryMultipleBound> varMultipleBounds, IVariableNode arguments, ArrayList<IVariableNode> attributes,String originalName){
         for (IVariableNode attrVar : attributes) {
             List<String> boundValues2 = new ArrayList<String>();
             ICfgNode beginNode = cfg.getBeginNode();
@@ -359,34 +368,33 @@ public class WhiteboxBoundaryTestDataGeneration extends AbstractAutomatedTestdat
     }
 
     private void traverseCFG(ICfgNode stm, FullTestpath tp, String originalName, String type, IVariableNode arguments, List<String> boundValues, List<WhiteboxBoundaryMultipleBound> varMultipleBounds) throws Exception {
-        type = type.replace("*", "").replace("[", "").replace("]", "");
+        type = type.replace("*","").replace("[","").replace("]","");
         if (stm instanceof EndFlagCfgNode) {
             return;
         }
-        if (stm instanceof ConditionCfgNode || stm instanceof CaseCfgNode) {
-            IASTNode ast = ((NormalCfgNode) stm).getAst();
-            if (ast instanceof IASTBinaryExpression) {
-                IASTExpression astOp1 = ((IASTBinaryExpression) ast).getOperand1();
-                IASTExpression astOp2 = ((IASTBinaryExpression) ast).getOperand2();
+        if (stm instanceof ConditionCfgNode) {
+            if (((ConditionCfgNode) stm).getAst() instanceof IASTBinaryExpression) {
+                IASTExpression astOp1 = ((IASTBinaryExpression) ((ConditionCfgNode) stm).getAst()).getOperand1();
+                IASTExpression astOp2 = ((IASTBinaryExpression) ((ConditionCfgNode) stm).getAst()).getOperand2();
                 String op1 = astOp1.getRawSignature();
                 String op2 = astOp2.getRawSignature();
                 String type1 = new NewTypeResolver(fn).exec(astOp1);
                 String type2 = new NewTypeResolver(fn).exec(astOp2);
 
-                if (((Pattern.matches(originalName + ".*", op1)
-                        || Pattern.matches(originalName + ".*", op2)))
-                        && VariableTypeUtils.isStructureSimple(type)) {
+                if (((Pattern.matches(originalName + ".*", op1) || Pattern.matches(originalName + ".*", op2))) && VariableTypeUtils.isStructureSimple(type)) {
                     INode node = arguments.resolveCoreType();
                     if (node instanceof StructNode) {
                         StructNode typeNode = (StructNode) node;
                         ArrayList<IVariableNode> attributes = typeNode.getPublicAttributes();
                         genTestDataForComplexNode(varMultipleBounds, arguments, attributes, originalName);
-                    } else if (node instanceof ClassNode) {
+                    }
+                    else if (node instanceof ClassNode) {
                         ClassNode typeNode = (ClassNode) node;
                         ArrayList<IVariableNode> attributes = typeNode.getPublicAttributes();
                         genTestDataForComplexNode(varMultipleBounds, arguments, attributes, originalName);
 
-                    } else if (node instanceof UnionNode) {
+                    }
+                    else if (node instanceof UnionNode) {
                         UnionNode typeNode = (UnionNode) node;
                         ArrayList<IVariableNode> attributes = typeNode.getPublicAttributes();
                         genTestDataForComplexNode(varMultipleBounds, arguments, attributes, originalName);
@@ -394,75 +402,80 @@ public class WhiteboxBoundaryTestDataGeneration extends AbstractAutomatedTestdat
                 }
                 else {
                     String boundName ="";
-                    IASTExpression exp1 = ((IASTBinaryExpression) ast).getOperand1() ;
+                    IASTExpression exp1 = ((IASTBinaryExpression) ((ConditionCfgNode) stm).getAst()).getOperand1() ;
                     IASTNode root = exp1.getOriginalNode();
                     boolean isDotted = false;
-                    if(exp1 instanceof IASTFieldReference
-                            || exp1 instanceof IASTArraySubscriptExpression
-                            || exp1 instanceof IASTUnaryExpression) {
+                    if(exp1 instanceof IASTFieldReference || exp1 instanceof IASTArraySubscriptExpression|| exp1 instanceof IASTUnaryExpression){
                         if(exp1 instanceof IASTFieldReference){
                             root = ((IASTFieldReference) exp1).getFieldOwner();
                             boundName = ((IASTFieldReference) exp1).getFieldName().getRawSignature();
-                            isDotted = false;
-                        } else if (exp1 instanceof IASTArraySubscriptExpression) {
-                            root = ((IASTArraySubscriptExpression) exp1).getArrayExpression();
-                            boundName = "[i]";
-                            isDotted = true;
-                        } else {
-                            root = ((IASTUnaryExpression) exp1).getOperand();
-                            isDotted = true;
+                            isDotted=false;
                         }
-                        while (true) {
-                            if (root instanceof IASTFieldReference) {
+                        else if (exp1 instanceof IASTArraySubscriptExpression) {
+                            root = ((IASTArraySubscriptExpression) exp1).getArrayExpression();
+                            boundName="[i]";
+                            isDotted=true;
+                        }
+                        else {
+                            root = ((IASTUnaryExpression) exp1).getOperand();
+                            isDotted=true;
+                        }
+                        while(true){
+                            if(root instanceof IASTFieldReference){
                                 String fReference = ((IASTFieldReference) root).getFieldName().getRawSignature();
-                                if (isDotted) {
-                                    boundName = fReference + boundName;
-                                } else {
-                                    boundName = fReference + "." + boundName;
+                                if(isDotted){
+                                    boundName = fReference+boundName;
+                                }else{
+                                    boundName = fReference+"."+boundName;
                                 }
                                 root = ((IASTFieldReference) root).getFieldOwner();
-                                isDotted = false;
-                            } else if (root instanceof IASTUnaryExpression) {
+                                isDotted=false;
+                            }
+                            else if(root instanceof IASTUnaryExpression){
                                 root = ((IASTUnaryExpression) root).getOperand();
 
-                            } else if (root instanceof IASTArraySubscriptExpression) {
-                                if (isDotted) {
-                                    boundName = "[i]" + boundName;
-                                } else {
-                                    boundName = "[i]." + boundName;
+                            }
+                            else if(root instanceof IASTArraySubscriptExpression){
+                                if(isDotted){
+                                    boundName = "[i]"+boundName;
+                                }else{
+                                    boundName = "[i]."+boundName;
                                 }
-                                isDotted = true;
+                                isDotted=true;
                                 root = ((IASTArraySubscriptExpression) root).getArrayExpression();
-                            } else if (root instanceof IASTIdExpression) {
+                            }
+                            else if (root instanceof IASTIdExpression)
+                            {
                                 String idExp = ((IASTIdExpression) root).getName().getRawSignature();
-                                if (isDotted) {
-                                    boundName = idExp + boundName;
-                                } else {
-                                    boundName = idExp + "." + boundName;
+                                if(isDotted){
+                                    boundName=idExp+boundName;
+                                }else{
+                                    boundName=idExp+"."+boundName;
                                 }
 
-                                if (Pattern.matches(originalName, boundName) || boundName.startsWith(originalName)) {
-                                    if (isValue(op2, type2))
+                                if(Pattern.matches(originalName,boundName)||boundName.startsWith(originalName)){
+                                    if (isValue(op2,type2))
                                         if (!boundValues.contains(op2)) {
                                             boundValues.add(op2);
                                         }
-                                    this.bufferName = boundName;
-                                    this.bufferType = type1;
+                                    this.bufferName=boundName;
+                                    this.bufferType=type1;
                                 }
                                 break;
                             }
 
                         }
-                    } else if (exp1 instanceof IASTIdExpression) {
+                    }
+                    else if (exp1 instanceof IASTIdExpression){
                         boundName = ((IASTIdExpression) exp1).getName().getRawSignature();
 
-                        if (boundName.equals(originalName)) {
-                            if (isValue(op2, type2))
+                        if(boundName.equals(originalName)){
+                            if (isValue(op2,type2))
                                 if (!boundValues.contains(op2)) {
                                     boundValues.add(op2);
                                 }
-                            this.bufferName = boundName;
-                            this.bufferType = type1;
+                            this.bufferName=boundName;
+                            this.bufferType=type1;
                         }
                     }
                 }
@@ -476,26 +489,30 @@ public class WhiteboxBoundaryTestDataGeneration extends AbstractAutomatedTestdat
         ICfgNode trueNode = stm.getTrueNode();
         ICfgNode falseNode = stm.getFalseNode();
 
-        if (stm instanceof SwitchCfgNode) {
-            for (ICfgNode node : ((SwitchCfgNode) stm).getCases()) {
-                traverseCFG(node, tp, originalName, type, arguments, boundValues, varMultipleBounds);
-            }
-        } else if (stm instanceof ConditionCfgNode) {
+        if (stm instanceof ConditionCfgNode) {
+
             if (stm instanceof AbstractConditionLoopCfgNode) {
+
                 int currentIterations = tp.count(trueNode);
                 if (currentIterations < maxIterationsforEachLoop) {
+
                     traverseCFG(falseNode, tp, originalName, type, arguments, boundValues, varMultipleBounds);
                     traverseCFG(trueNode, tp, originalName, type, arguments, boundValues, varMultipleBounds);
                 } else {
                     traverseCFG(falseNode, tp, originalName, type, arguments, boundValues, varMultipleBounds);
                 }
             } else {
+
                 traverseCFG(falseNode, tp, originalName, type, arguments, boundValues, varMultipleBounds);
+
                 traverseCFG(trueNode, tp, originalName, type, arguments, boundValues, varMultipleBounds);
+
             }
         } else {
             traverseCFG(trueNode, tp, originalName, type, arguments, boundValues, varMultipleBounds);
         }
+
+
     }
 
     public String getCharBound(String bound, int i) {
@@ -533,19 +550,20 @@ public class WhiteboxBoundaryTestDataGeneration extends AbstractAutomatedTestdat
         return bound;
     }
 
-    public void genRandomValue(NormalDataNode param) {
-        Random rand = new Random();
-        if (param instanceof NormalNumberDataNode) {
-            try {
-                int int_random = rand.nextInt();
+    public void genRandomValue(NormalDataNode param){
+        Random rand =  new Random();
+        if(param instanceof NormalNumberDataNode){
+            try{
+                int int_random=rand.nextInt();
                 String stringInt = String.valueOf(int_random);
                 ((NormalNumberDataNode) param).setValue(stringInt);
-            } catch (Exception error) {
-                double double_random = rand.nextDouble();
+            }catch(Exception error){
+                double double_random=rand.nextDouble();
                 String stringDouble = String.valueOf(double_random);
                 ((NormalNumberDataNode) param).setValue(stringDouble);
             }
-        } else if (param instanceof NormalCharacterDataNode) {
+        }
+        else if(param instanceof NormalCharacterDataNode){
             int upperBound = 128;
             int int_random = rand.nextInt(upperBound);
             String randomChar = String.valueOf(int_random);
@@ -575,7 +593,7 @@ public class WhiteboxBoundaryTestDataGeneration extends AbstractAutomatedTestdat
         }
     }
 
-    public boolean isValue(String op, String type) {
+    public boolean isValue(String op, String type){
         if (isNumeric(op) || (VariableTypeUtils.isChBasic(type) && op.startsWith("\'")))
             return true;
         return false;
@@ -604,7 +622,8 @@ public class WhiteboxBoundaryTestDataGeneration extends AbstractAutomatedTestdat
     protected synchronized TestCase createTestcase(ICommonFunctionNode functionNode) {
         TestCase testCase = null;
         // create a new test case at each iteration
-        String nameofTestcase = TestCaseManager.generateContinuousNameOfTestcase(TestCaseManager.getFunctionName(functionNode) + ITestCase.POSTFIX_TESTCASE_BY_BOUNDARY);
+        String nameofTestcase = TestCaseManager.generateContinuousNameOfTestcase(functionNode.getName() + ITestCase.POSTFIX_TESTCASE_BY_BOUNDARY);
+
         testCase = TestCaseManager.createTestCase(nameofTestcase, functionNode);
 
         if (testCase != null) {
@@ -655,15 +674,13 @@ public class WhiteboxBoundaryTestDataGeneration extends AbstractAutomatedTestdat
             handleData();
             return null;
         }
-
-        public void handleData() throws Exception {
+        public void handleData()throws Exception{
             String name = multiBounds.getVar().getName();
             String coreType = multiBounds.getVar().getCoreType();
-            genTestCaseAndExecute(name, coreType, bound, i, multiBounds, varMultipleBounds);
+            genTestCaseAndExecute(name,coreType,bound,i,multiBounds,varMultipleBounds);
         }
-
         //sinh testcase va execute
-        public void genTestCaseAndExecute(String name, String coreType, String bound, int i, WhiteboxBoundaryMultipleBound multiBounds, List<WhiteboxBoundaryMultipleBound> varMultipleBounds) throws Exception {
+        public void genTestCaseAndExecute (String name, String coreType, String bound, int i, WhiteboxBoundaryMultipleBound multiBounds, List<WhiteboxBoundaryMultipleBound> varMultipleBounds) throws  Exception{
             TestCase testCase = createTestcase(fn);
             RootDataNode root = testCase.getRootDataNode();
             IDataNode sutRoot = Search2.findSubprogramUnderTest(root);
@@ -680,9 +697,8 @@ public class WhiteboxBoundaryTestDataGeneration extends AbstractAutomatedTestdat
             TestCasesNavigatorController.getInstance().refreshNavigatorTreeFromAnotherThread();
             execute(testCase, execTasks);
         }
-
         //duyet tham so & set norm
-        private void traverseParams(List<IDataNode> parameters, String name, String coreType, String bound, int i, WhiteboxBoundaryMultipleBound multiBounds, List<WhiteboxBoundaryMultipleBound> varMultipleBounds) throws Exception {
+        private void traverseParams(List<IDataNode> parameters, String name, String coreType, String bound, int i, WhiteboxBoundaryMultipleBound multiBounds,List<WhiteboxBoundaryMultipleBound> varMultipleBounds) throws Exception {
             //set value cho cac params
             for (IDataNode var : parameters) {
                 if (Pattern.matches(var.getName(), name)) {
@@ -699,7 +715,8 @@ public class WhiteboxBoundaryTestDataGeneration extends AbstractAutomatedTestdat
                             bound = getCharBound(bound, i);
                             ((NormalCharacterDataNode) var).setValue(bound);
                         }
-                    } else if (var instanceof PointerDataNode) {
+                    }
+                    else if (var instanceof PointerDataNode) {
                         setPointerDataNodeSize(var);
                         if (var instanceof PointerNumberDataNode) {
                             if (VariableTypeUtils.isNumBasicInteger(coreType)) {
@@ -712,7 +729,8 @@ public class WhiteboxBoundaryTestDataGeneration extends AbstractAutomatedTestdat
                                     ((NormalNumberDataNode) child).setValue(bound);
                                 }
                             }
-                        } else if (var instanceof PointerCharacterDataNode) {
+                        }
+                        else if (var instanceof PointerCharacterDataNode) {
                             bound = getCharBound(bound, i);
                             for (IDataNode child : var.getChildren()) {
                                 if (child instanceof NormalCharacterDataNode) {
@@ -720,49 +738,57 @@ public class WhiteboxBoundaryTestDataGeneration extends AbstractAutomatedTestdat
                                 }
                             }
                         }
-                    } else if (var instanceof EnumDataNode) {
+                    }
+                    else if (var instanceof EnumDataNode){
                         bound = getIntBound(bound, i);
-                        ((EnumDataNode) var).setValue(bound);
-                        ((EnumDataNode) var).setValueIsSet(true);
+                        ((EnumDataNode)var).setValue(bound);
+                        ((EnumDataNode)var).setValueIsSet(true);
                     }
                     handleOtherVar(parameters, multiBounds, varMultipleBounds);
-                } else if (var instanceof StructDataNode) {
+                }
+                else if (var instanceof StructDataNode) {
                     if (Pattern.matches(var.getName() + ".*", name)) {
                         List<IDataNode> parameters2 = var.getChildren();
                         String name2 = name.substring(name.indexOf(".") + 1);
                         traverseParams(parameters2, name2, coreType, bound, i);
                         handleOtherVar(parameters, multiBounds, varMultipleBounds);
                     }
-                } else if (var instanceof ClassDataNode) {
+                }
+                else if (var instanceof ClassDataNode) {
                     if (Pattern.matches(var.getName() + ".*", name)) {
                         handleClassDataNode((ClassDataNode) var, name, coreType, bound, i);
                         handleOtherVar(parameters, multiBounds, varMultipleBounds);
                     }
-                } else if (var instanceof UnionDataNode) {
+                }
+                else if (var instanceof UnionDataNode) {
                     if (Pattern.matches(var.getName() + ".*", name)) {
                         handleUnionDataNode((UnionDataNode) var, name, coreType, bound, i);
                         handleOtherVar(parameters, multiBounds, varMultipleBounds);
                     }
-                } else if (var instanceof OneDimensionStructureDataNode) {
+                }
+                else if (var instanceof OneDimensionStructureDataNode) {
                     setArrayDataNodeSize(var);
                     List<IDataNode> parameters2 = var.getChildren();
                     String name2 = name.substring(name.indexOf(".") + 1);
                     traverseParams(parameters2, name2, coreType, bound, i);
                     handleOtherVar(parameters, multiBounds, varMultipleBounds);
-                } else if (var instanceof OneDimensionPointerDataNode) {
+                }
+                else if (var instanceof OneDimensionPointerDataNode) {
                     setArrayDataNodeSize(var);
                     List<IDataNode> parameters2 = var.getChildren();
-                    String name2 = name.substring(name.indexOf(".") + 1);
+                    String name2 = name.substring(name.indexOf(".")+1);
                     traverseParams(parameters2, name2, coreType, bound, i);
-                    handleOtherVar(parameters, multiBounds, varMultipleBounds);
-                } else if (var instanceof PointerStructureDataNode) {
+                    handleOtherVar(parameters,multiBounds,varMultipleBounds);
+                }
+                else if (var instanceof PointerStructureDataNode) {
                     setPointerDataNodeSize(var);
                     List<IDataNode> parameters2 = var.getChildren();
                     String name2 = name.substring(name.indexOf(".") + 1);
                     traverseParams(parameters2, name2, coreType, bound, i);
                     handleOtherVar(parameters, multiBounds, varMultipleBounds);
-                } else if (var instanceof ArrayDataNode) {
-                    if (Pattern.matches(var.getName() + IRegex.ARRAY_INDEX, name)) {
+                }
+                else if (var instanceof ArrayDataNode) {
+                    if(Pattern.matches(var.getName()+IRegex.ARRAY_INDEX,name)){
                         setArrayDataNodeSize(var);
                         if (var instanceof OneDimensionNumberDataNode) {
                             if (VariableTypeUtils.isNumBasicInteger(coreType)) {
@@ -775,7 +801,8 @@ public class WhiteboxBoundaryTestDataGeneration extends AbstractAutomatedTestdat
                                     ((NormalNumberDataNode) child).setValue(bound);
                                 }
                             }
-                        } else if (var instanceof OneDimensionCharacterDataNode) {
+                        }
+                        else if (var instanceof OneDimensionCharacterDataNode) {
                             bound = getCharBound(bound, i);
                             for (IDataNode child : var.getChildren()) {
                                 if (child instanceof NormalCharacterDataNode) {
@@ -784,18 +811,19 @@ public class WhiteboxBoundaryTestDataGeneration extends AbstractAutomatedTestdat
                             }
                         }
                         handleOtherVar(parameters, multiBounds, varMultipleBounds);
-                    } else {
-                        if (var instanceof OneDimensionDataNode) {
+                    }
+                    else {
+                        if(var instanceof OneDimensionDataNode){
                             setArrayDataNodeSize(var);
                         }
                     }
 
-                } else if (var instanceof PointerDataNode) {
+                }
+                else if (var instanceof PointerDataNode) {
                     setPointerDataNodeSize(var);
                 }
             }
         }
-
         //duyet tham so & khong set norm
         private void traverseParams(List<IDataNode> parameters, String name, String coreType, String bound, int i) throws Exception {
             for (IDataNode var : parameters) {
@@ -813,7 +841,8 @@ public class WhiteboxBoundaryTestDataGeneration extends AbstractAutomatedTestdat
                             bound = getCharBound(bound, i);
                             ((NormalCharacterDataNode) var).setValue(bound);
                         }
-                    } else if (var instanceof PointerDataNode) {
+                    }
+                    else if (var instanceof PointerDataNode) {
                         setPointerDataNodeSize(var);
                         if (var instanceof PointerNumberDataNode) {
                             if (VariableTypeUtils.isNumBasicInteger(coreType)) {
@@ -834,23 +863,28 @@ public class WhiteboxBoundaryTestDataGeneration extends AbstractAutomatedTestdat
                                 }
                             }
                         }
-                    } else if (var instanceof EnumDataNode) {
+                    }
+                    else if (var instanceof EnumDataNode){
                         bound = getIntBound(bound, i);
-                        ((EnumDataNode) var).setValue(bound);
+                        ((EnumDataNode)var).setValue(bound);
                         ((EnumDataNode) var).setValueIsSet(true);
                     }
-                } else if (var instanceof StructDataNode) {
+                }
+                else if (var instanceof StructDataNode) {
                     List<IDataNode> parameters2 = var.getChildren();
                     String name2 = name.substring(name.indexOf(".") + 1);
                     traverseParams(parameters2, name2, coreType, bound, i);
-                } else if (var instanceof ClassDataNode) {
-                    handleClassDataNode((ClassDataNode) var, name, coreType, bound, i);
-                } else if (var instanceof UnionDataNode) {
-                    handleUnionDataNode((UnionDataNode) var, name, coreType, bound, i);
-                } else if (var instanceof PointerDataNode) {
-                    if (name.startsWith(var.getName()) || var.getName().contains("[")) {
+                }
+                else if (var instanceof ClassDataNode) {
+                    handleClassDataNode((ClassDataNode) var,name, coreType, bound, i);
+                }
+                else if (var instanceof UnionDataNode){
+                    handleUnionDataNode((UnionDataNode) var,name,coreType,bound,i);
+                }
+                else if (var instanceof PointerDataNode) {
+                    if(name.startsWith(var.getName())||var.getName().contains("[")){
                         setPointerDataNodeSize(var);
-                        String childBound = "";
+                        String childBound="";
                         if (var instanceof PointerNumberDataNode) {
                             if (VariableTypeUtils.isNumBasicInteger(coreType)) {
                                 childBound = getIntBound(bound, i);
@@ -862,29 +896,34 @@ public class WhiteboxBoundaryTestDataGeneration extends AbstractAutomatedTestdat
                                     ((NormalNumberDataNode) child).setValue(childBound);
                                 }
                             }
-                        } else if (var instanceof PointerCharacterDataNode) {
+                        }
+                        else if (var instanceof PointerCharacterDataNode) {
                             childBound = getCharBound(bound, i);
                             for (IDataNode child : var.getChildren()) {
                                 if (child instanceof NormalCharacterDataNode) {
                                     ((NormalCharacterDataNode) child).setValue(childBound);
                                 }
                             }
-                        } else if (var instanceof PointerStructureDataNode) {
+                        }
+                        else if (var instanceof PointerStructureDataNode){
                             for (IDataNode child : var.getChildren()) {
-                                if (child instanceof StructDataNode) {
+                                if(child instanceof StructDataNode ){
                                     List<IDataNode> parameters2 = var.getChildren();
                                     String name2 = name.substring(name.indexOf(".") + 1);
                                     traverseParams(parameters2, name2, coreType, bound, i);
-                                } else if (child instanceof ClassDataNode) {
-                                    handleClassDataNode((ClassDataNode) child, name, coreType, bound, i);
-                                } else if (child instanceof UnionDataNode) {
-                                    handleUnionDataNode((UnionDataNode) child, name, coreType, bound, i);
+                                }
+                                else if(child instanceof ClassDataNode ){
+                                    handleClassDataNode((ClassDataNode) child,name, coreType, bound, i);
+                                }
+                                else if(child instanceof UnionDataNode ){
+                                    handleUnionDataNode((UnionDataNode) child,name,coreType,bound,i);
                                 }
                             }
                         }
                     }
-                } else if (var instanceof ArrayDataNode) {
-                    if (Pattern.matches(var.getName() + IRegex.ARRAY_INDEX, name)) {
+                }
+                else if (var instanceof ArrayDataNode) {
+                    if(Pattern.matches(var.getName()+IRegex.ARRAY_INDEX,name)){
                         if (var instanceof OneDimensionDataNode) {
                             setArrayDataNodeSize(var);
                             if (var instanceof OneDimensionNumberDataNode) {
@@ -911,11 +950,10 @@ public class WhiteboxBoundaryTestDataGeneration extends AbstractAutomatedTestdat
                 }
             }
         }
-
         //set norm
         private void traverseParams(List<IDataNode> parameters, String name, String norm) throws Exception {
             for (IDataNode var : parameters) {
-                if (Pattern.matches(var.getName(), name)) {
+                if (Pattern.matches(var.getName(),name)) {
                     if (var instanceof PointerDataNode) {
                         setPointerDataNodeSize(var);
                         for (IDataNode child : var.getChildren()) {
@@ -923,39 +961,49 @@ public class WhiteboxBoundaryTestDataGeneration extends AbstractAutomatedTestdat
                                 ((NormalDataNode) child).setValue(norm);
                             }
                         }
-                    } else if (var instanceof NormalDataNode) {
+                    }
+                    else if (var instanceof NormalDataNode) {
                         ((NormalDataNode) var).setValue(norm);
-                    } else if (var instanceof EnumDataNode) {
+                    }
+                    else if (var instanceof EnumDataNode) {
                         ((EnumDataNode) var).setValue(norm);
                     }
-                } else if (var instanceof StructDataNode) {
+                }
+                else if (var instanceof StructDataNode) {
                     List<IDataNode> parameters2 = var.getChildren();
                     String name2 = name.substring(name.indexOf(".") + 1);
                     traverseParams(parameters2, name2, norm);
 
-                } else if (var instanceof ClassDataNode) {
+                }
+                else if(var instanceof ClassDataNode){
                     handleNormClassDataNode((ClassDataNode) var, name, norm);
-                } else if (var instanceof UnionDataNode) {
+                }
+                else if(var instanceof UnionDataNode){
                     handleNormUnionDataNode((UnionDataNode) var, name, norm);
-                } else if (var instanceof PointerDataNode) {
-                    if (name.startsWith(var.getName()) || var.getName().contains("[")) {
+                }
+                else if (var instanceof PointerDataNode) {
+                    if(name.startsWith(var.getName())||var.getName().contains("[")){
                         setPointerDataNodeSize(var);
                         for (IDataNode child : var.getChildren()) {
                             if (child instanceof NormalDataNode) {
                                 ((NormalDataNode) child).setValue(norm);
-                            } else if (child instanceof StructDataNode) {
+                            }
+                            else if(child instanceof StructDataNode ){
                                 List<IDataNode> parameters2 = var.getChildren();
                                 String name2 = name.substring(name.indexOf(".") + 1);
                                 traverseParams(parameters2, name2, norm);
-                            } else if (child instanceof ClassDataNode) {
+                            }
+                            else if(child instanceof ClassDataNode ){
                                 handleNormClassDataNode((ClassDataNode) child, name, norm);
-                            } else if (child instanceof UnionDataNode) {
+                            }
+                            else if(child instanceof UnionDataNode ){
                                 handleNormUnionDataNode((UnionDataNode) child, name, norm);
                             }
                         }
                     }
-                } else if (var instanceof ArrayDataNode) {
-                    if (Pattern.matches(var.getName() + IRegex.ARRAY_INDEX, name)) {
+                }
+                else if (var instanceof ArrayDataNode) {
+                    if(Pattern.matches(var.getName()+IRegex.ARRAY_INDEX,name)){
                         if (var instanceof OneDimensionDataNode) {
                             setArrayDataNodeSize(var);
                             for (IDataNode child : var.getChildren()) {
@@ -968,23 +1016,22 @@ public class WhiteboxBoundaryTestDataGeneration extends AbstractAutomatedTestdat
                 }
             }
         }
-
         //xu ly ClassDataNode
-        public void handleClassDataNode(ClassDataNode var, String name, String coreType, String bound, int i) throws Exception {
+        public void handleClassDataNode(ClassDataNode var, String name, String coreType, String bound, int i) throws Exception{
             List<INode> subClasses = ((ClassDataNode) var).getDerivedClass();
             INode subClass = subClasses.get(0);
-            ((ClassDataNode) var).setSubStructure(subClass);
-            ISubStructOrClassDataNode subClassDataNode = ((ClassDataNode) var).getSubStructure();
-            List<ICommonFunctionNode> constructors = subClassDataNode.getConstructorsOnlyInCurrentClass();
+            ((ClassDataNode) var).setSubClass(subClass);
+            SubClassDataNode subClassDataNode = ((ClassDataNode) var).getSubClass();
+            List <ICommonFunctionNode> constructors = subClassDataNode.getConstructorsOnlyInCurrentClass();
             subClassDataNode.chooseConstructor(constructors.get(0));
-            (new TreeExpander()).expandTree((ValueDataNode) subClassDataNode);
+            (new TreeExpander()).expandTree(subClassDataNode);
 
             List<IDataNode> parameters2 = subClassDataNode.getChildren();
-            ConstructorDataNode constructor = subClassDataNode.getConstructorDataNode();
+            ConstructorDataNode constructor =  subClassDataNode.getConstructorDataNode();
             List<IDataNode> constructorParams = constructor.getChildren();
-            if (constructorParams.size() != 0) {
-                for (IDataNode param : constructorParams) {
-                    if (param instanceof NormalDataNode) {
+            if(constructorParams.size()!=0){
+                for(IDataNode param : constructorParams){
+                    if(param instanceof NormalDataNode){
                         genRandomValue((NormalDataNode) param);
                     }
                 }
@@ -992,38 +1039,36 @@ public class WhiteboxBoundaryTestDataGeneration extends AbstractAutomatedTestdat
             String name2 = name.substring(name.indexOf(".") + 1);
             traverseParams(parameters2, name2, coreType, bound, i);
         }
-
         //xu ly norm ClassDataNode
-        public void handleNormClassDataNode(ClassDataNode var, String name, String norm) throws Exception {
-            if (var.isSetSubStructure()) {
-                List<INode> subClasses = var.getDerivedClass();
+        public void handleNormClassDataNode(ClassDataNode var, String name, String norm) throws Exception{
+            if( ((ClassDataNode) var).getSubClass()==null){
+                List<INode> subClasses = ((ClassDataNode) var).getDerivedClass();
                 INode subClass = subClasses.get(0);
-                var.setSubStructure(subClass);
+                ((ClassDataNode) var).setSubClass(subClass);
             }
 
 
-            ISubStructOrClassDataNode subClassDataNode = var.getSubStructure();
-            if (subClassDataNode.getConstructorDataNode() == null) {
-                List<ICommonFunctionNode> constructors = subClassDataNode.getConstructorsOnlyInCurrentClass();
+            SubClassDataNode subClassDataNode = ((ClassDataNode) var).getSubClass();
+            if (subClassDataNode.getConstructorDataNode()==null){
+                List <ICommonFunctionNode> constructors = subClassDataNode.getConstructorsOnlyInCurrentClass();
                 subClassDataNode.chooseConstructor(constructors.get(0));
-                (new TreeExpander()).expandTree((ValueDataNode) subClassDataNode);
+                (new TreeExpander()).expandTree(subClassDataNode);
             }
 
             List<IDataNode> parameters2 = subClassDataNode.getChildren();
             String name2 = name.substring(name.indexOf(".") + 1);
             traverseParams(parameters2, name2, norm);
         }
-
         //xu ly
-        public void handleUnionDataNode(UnionDataNode var, String name, String coreType, String bound, int i) throws Exception {
+        public void handleUnionDataNode(UnionDataNode var, String name, String coreType, String bound, int i) throws Exception{
             INode correspondingType = ((UnionDataNode) var).getCorrespondingType();
-            if (correspondingType instanceof UnionNode) {
-                List<IVariableNode> attributes = ((UnionNode) correspondingType).getPublicAttributes();
-                for (IVariableNode attibute : attributes) {
+            if(correspondingType instanceof UnionNode){
+                List<IVariableNode> attributes = ((UnionNode)correspondingType).getPublicAttributes();
+                for(IVariableNode attibute : attributes){
                     String attrName = attibute.getName();
                     String name2 = name.substring(name.indexOf(".") + 1);
-                    if (name2.startsWith(attrName)) {
-                        new TreeExpander().expandStructureNodeOnDataTree((ValueDataNode) var, attrName);
+                    if(name2.startsWith(attrName)){
+                        new TreeExpander().expandStructureNodeOnDataTree((ValueDataNode) var,attrName);
                         List<IDataNode> parameters2 = var.getChildren();
                         traverseParams(parameters2, name2, coreType, bound, i);
                     }
@@ -1031,19 +1076,18 @@ public class WhiteboxBoundaryTestDataGeneration extends AbstractAutomatedTestdat
                 }
             }
         }
-
-        public void handleNormUnionDataNode(UnionDataNode var, String name, String norm) throws Exception {
+        public void handleNormUnionDataNode(UnionDataNode var, String name, String norm) throws Exception{
             List<IDataNode> children = var.getChildren();
             int size = children.size();
-            if (size == 0) {
+            if(size==0){
                 INode correspondingType = ((UnionDataNode) var).getCorrespondingType();
-                if (correspondingType instanceof UnionNode) {
-                    List<IVariableNode> attributes = ((UnionNode) correspondingType).getPublicAttributes();
-                    for (IVariableNode attibute : attributes) {
+                if(correspondingType instanceof UnionNode){
+                    List<IVariableNode> attributes = ((UnionNode)correspondingType).getPublicAttributes();
+                    for(IVariableNode attibute : attributes){
                         String attrName = attibute.getName();
                         String name2 = name.substring(name.indexOf(".") + 1);
-                        if (name2.startsWith(attrName)) {
-                            new TreeExpander().expandStructureNodeOnDataTree((ValueDataNode) var, attrName);
+                        if(name2.startsWith(attrName)){
+                            new TreeExpander().expandStructureNodeOnDataTree((ValueDataNode) var,attrName);
                             List<IDataNode> parameters2 = var.getChildren();
                             traverseParams(parameters2, name2, norm);
                         }
@@ -1052,7 +1096,7 @@ public class WhiteboxBoundaryTestDataGeneration extends AbstractAutomatedTestdat
             }
         }
 
-        public void handleOtherVar(List<IDataNode> parameters, WhiteboxBoundaryMultipleBound multiBounds, List<WhiteboxBoundaryMultipleBound> varMultipleBounds) throws Exception {
+        public  void handleOtherVar (List<IDataNode> parameters, WhiteboxBoundaryMultipleBound multiBounds,List<WhiteboxBoundaryMultipleBound> varMultipleBounds) throws Exception{
             for (WhiteboxBoundaryMultipleBound otherBounds : varMultipleBounds) {
                 if (otherBounds != multiBounds) {
                     for (IDataNode otherVar : parameters) {
@@ -1066,49 +1110,58 @@ public class WhiteboxBoundaryTestDataGeneration extends AbstractAutomatedTestdat
                                         ((NormalDataNode) child).setValue(norm);
                                     }
                                 }
-                            } else if (otherVar instanceof NormalDataNode) {
+                            }
+                            else if (otherVar instanceof NormalDataNode) {
                                 ((NormalDataNode) otherVar).setValue(norm);
-                            } else if (otherVar instanceof EnumDataNode) {
+                            }
+                            else if (otherVar instanceof EnumDataNode) {
                                 ((EnumDataNode) otherVar).setValue(norm);
                                 ((EnumDataNode) otherVar).setValueIsSet(true);
                             }
-                        } else if (otherVar instanceof StructDataNode) {
+                        }
+                        else if (otherVar instanceof StructDataNode) {
                             if (Pattern.matches(otherVar.getName() + ".*", name)) {
                                 List<IDataNode> parametersNorm = otherVar.getChildren();
                                 String nameNorm = name.substring(name.indexOf(".") + 1);
                                 traverseParams(parametersNorm, nameNorm, norm);
                             }
-                        } else if (otherVar instanceof ClassDataNode) {
+                        }
+                        else if (otherVar instanceof ClassDataNode) {
                             if (Pattern.matches(otherVar.getName() + ".*", name)) {
                                 handleNormClassDataNode((ClassDataNode) otherVar, name, norm);
                             }
-                        } else if (otherVar instanceof UnionDataNode) {
+                        }
+                        else if (otherVar instanceof UnionDataNode) {
                             if (Pattern.matches(otherVar.getName() + ".*", name)) {
                                 handleNormUnionDataNode((UnionDataNode) otherVar, name, norm);
                             }
-                        } else if (otherVar instanceof OneDimensionStructureDataNode) {
-                            if (Pattern.matches(otherVar.getName() + IRegex.ARRAY_INDEX + ".*", name)) {
+                        }
+                        else if (otherVar instanceof OneDimensionStructureDataNode) {
+                            if (Pattern.matches(otherVar.getName() +IRegex.ARRAY_INDEX+".*",name)) {
                                 setArrayDataNodeSize(otherVar);
                                 List<IDataNode> parametersNorm = otherVar.getChildren();
                                 String nameNorm = name.substring(name.indexOf(".") + 1);
                                 traverseParams(parametersNorm, nameNorm, norm);
                             }
-                        } else if (otherVar instanceof OneDimensionPointerDataNode) {
-                            if (Pattern.matches(otherVar.getName() + IRegex.ARRAY_INDEX + IRegex.ARRAY_INDEX + ".*", name)) {
+                        }
+                        else if (otherVar instanceof OneDimensionPointerDataNode) {
+                            if (Pattern.matches(otherVar.getName() +IRegex.ARRAY_INDEX+IRegex.ARRAY_INDEX+".*",name)) {
                                 setArrayDataNodeSize(otherVar);
                                 List<IDataNode> parametersNorm = otherVar.getChildren();
                                 String nameNorm = name;
                                 traverseParams(parametersNorm, nameNorm, norm);
                             }
-                        } else if (otherVar instanceof PointerStructureDataNode) {
-                            if (Pattern.matches(otherVar.getName() + IRegex.ARRAY_INDEX + ".*", name)) {
+                        }
+                        else if (otherVar instanceof PointerStructureDataNode) {
+                            if (Pattern.matches(otherVar.getName() +IRegex.ARRAY_INDEX+".*",name)) {
                                 setPointerDataNodeSize(otherVar);
                                 List<IDataNode> parametersNorm = otherVar.getChildren();
                                 String nameNorm = name.substring(name.indexOf(".") + 1);
                                 traverseParams(parametersNorm, nameNorm, norm);
                             }
-                        } else if (otherVar instanceof ArrayDataNode) {
-                            if (Pattern.matches(otherVar.getName() + IRegex.ARRAY_INDEX, name)) {
+                        }
+                        else if (otherVar instanceof ArrayDataNode) {
+                            if(Pattern.matches(otherVar.getName()+IRegex.ARRAY_INDEX,name)){
                                 if (otherVar instanceof OneDimensionDataNode) {
                                     setArrayDataNodeSize(otherVar);
                                     for (IDataNode child : otherVar.getChildren()) {
@@ -1124,7 +1177,6 @@ public class WhiteboxBoundaryTestDataGeneration extends AbstractAutomatedTestdat
             }
         }
     }
-
     //set value th khong co bien
     private void traverseNoBound(List<IDataNode> parameters) throws Exception {
         //set value cho cac params chinh

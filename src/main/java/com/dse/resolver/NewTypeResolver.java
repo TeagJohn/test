@@ -16,6 +16,7 @@ import com.dse.util.IRegex;
 import com.dse.util.SpecialCharacter;
 import com.dse.util.VariableTypeUtils;
 import org.eclipse.cdt.core.dom.ast.*;
+import org.eclipse.cdt.internal.core.dom.parser.cpp.CPPArrayType;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -70,8 +71,8 @@ public class NewTypeResolver {
         if (type == null && shouldSolveByParent)
             type = solveByParent(clause);
 
-        if (type != null && type.contains(" "))
-            return null;
+//        if (type != null && type.contains(" "))
+//             return null;
 
         return type;
     }
@@ -95,7 +96,11 @@ public class NewTypeResolver {
 
     private String solveExpression(IASTExpression expr) {
         String type = expr.getExpressionType().toString();
-
+        IType expType = expr.getExpressionType();
+        if (expType instanceof IArrayType) {
+            String t = ((IArrayType) expType).getType().toString();
+            int size = Integer.parseInt(((IArrayType) expType).getSize().toString());
+        }
         if (type.contains(SpecialCharacter.STRUCTURE_OR_NAMESPACE_ACCESS)) {
             int lastNameIdx = type.lastIndexOf(SpecialCharacter.STRUCTURE_OR_NAMESPACE_ACCESS)
                     + SpecialCharacter.STRUCTURE_OR_NAMESPACE_ACCESS.length();
@@ -267,7 +272,7 @@ public class NewTypeResolver {
 
             case IASTUnaryExpression.op_amper:
                 type = new NewTypeResolver(context, iterator).solve(operand);
-                type += VariableTypeUtils.POINTER_CHAR;
+                type += VariableTypeUtils.REFERENCE;
                 break;
 
             case IASTUnaryExpression.op_star:

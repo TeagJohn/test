@@ -22,12 +22,8 @@ import org.eclipse.cdt.core.dom.ast.IASTNode;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.regex.Pattern;
 
 public class LcovProjectClone extends ProjectClone {
@@ -46,34 +42,25 @@ public class LcovProjectClone extends ProjectClone {
 
         boolean onWhiteBoxMode = Environment.getInstance().isOnWhiteBoxMode();
 
+
         ProjectNode projectRoot = Environment.getInstance().getProjectNode();
         List<INode> sources = Search.searchNodes(projectRoot, new SourcecodeFileNodeCondition());
         sources.removeIf(source -> libraries.contains(source.getAbsolutePath()));
-
-        ExecutorService executor = Executors.newFixedThreadPool(Environment.getInstance().getMaxThreadCount());
-        List<Callable<String>> cloneSourceCodeTasks = new ArrayList<>();
 
         for (INode sourceCode : sources) {
             LcovProjectClone lcovClone = new LcovProjectClone();
 
             lcovClone.libraries = libraries;
-            lcovClone.whiteBoxEnable = (uutUnits.contains(sourceCode) || sbfUnits.contains(sourceCode))
-                    && onWhiteBoxMode;
+            lcovClone.whiteBoxEnable = (uutUnits.contains(sourceCode) || sbfUnits.contains(sourceCode)) && onWhiteBoxMode;
             lcovClone.canStub = stubUnits.contains(sourceCode) || sbfUnits.contains(sourceCode);
             lcovClone.stubLibraries = stubLibraries;
 
-            cloneSourceCodeTasks.add(() -> {
+            try {
                 String newContent = lcovClone.generateFileContent(sourceCode);
                 Utils.writeContentToFile(newContent, getLcovClonedFilePath(sourceCode.getAbsolutePath()));
-                return "Done";
-            });
-        }
-
-        try {
-            executor.invokeAll(cloneSourceCodeTasks);
-            logger.debug("Done cloning all source code files using multi-threading");
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 

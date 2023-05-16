@@ -9,9 +9,6 @@ import com.dse.testdata.gen.module.subtree.InitialArgTreeGen;
 import com.dse.testdata.gen.module.subtree.InitialStubTreeGen;
 import com.dse.testdata.gen.module.type.*;
 import com.dse.testdata.object.*;
-import com.dse.testdata.object.Gmock.MatcherMultipleNode;
-import com.dse.testdata.object.Gmock.TimesNode;
-import com.dse.testdata.object.Gmock.WithNode;
 import com.dse.testdata.object.stl.ListBaseDataNode;
 import com.dse.testdata.object.stl.PairDataNode;
 import com.dse.testdata.object.stl.STLDataNode;
@@ -68,20 +65,17 @@ public abstract class AbstractDataTreeExpander implements IDataTreeExpander {
         } else if (node instanceof PairDataNode) {
             expandPairDataNode((PairDataNode) node);
 
-        } else if (node instanceof SubStructDataNode) {
-            generateConstructor(vParent, node);
+        } else if (node instanceof StructDataNode) {
+            if (vParent == null) {
+                System.out.println();
+            }
             generateStructureItem(vParent, node);
 
-        } else if (node instanceof StructDataNode && Environment.getInstance().isC()) {
-            generateStructureItem(vParent, node);
             for (IDataNode child : node.getChildren())
                 if (child instanceof StructDataNode)
                     expandTree(((StructDataNode) child));
 
-        } else if (node instanceof SubUnionDataNode) {
-            generateConstructor(vParent,node);
-            generateStructureItem(vParent, node);
-        } else if (node instanceof UnionDataNode && Environment.getInstance().isC()) {
+        } else if (node instanceof UnionDataNode) {
 //            generateStructureItem(vParent, node);
 
         } else if (node instanceof SubClassDataNode) {
@@ -116,7 +110,7 @@ public abstract class AbstractDataTreeExpander implements IDataTreeExpander {
                     num *= size;
 
 //                if (num <= MAX_ARRAY_SIZE)
-                expandMultipleDimension(node);
+                    expandMultipleDimension(node);
             }
 
         } else if (node instanceof PointerDataNode) {
@@ -150,35 +144,12 @@ public abstract class AbstractDataTreeExpander implements IDataTreeExpander {
                 node.addChild(iterationSubprogramNodeCall);
                 iterationSubprogramNodeCall.setParent(node);
                 new InitialStubTreeGen().addSubprogram(iterationSubprogramNodeCall);
-                iterationSubprogramNodeCall.initInputToExpectedOutputMap();
             }
 
-        } else if (node instanceof TimesNode) {
-            int times = Integer.parseInt(((TimesNode) node).getValue());
-            for (int i = 0; i < times; i++) {
-                if (!((SubprogramNode) node.getParent()).getRawType().equals("void")) {
-                    NormalNumberDataNode returnNode = new NormalNumberDataNode();
-                    VariableNode returnVariableNode = ((SubprogramNode) node.getParent()).getCorrespondingVar();
-                    returnNode.setName("Return_" + (i + 1));
-                    returnNode.setRawType(returnVariableNode.getRawType());
-                    returnNode.setRealType(returnVariableNode.getRealType());
-                    returnNode.setCorrespondingVar(returnVariableNode);
-                    returnNode.setParent(node);
-                    node.addChild(returnNode);
-                }
-            }
-        } else if (node instanceof WithNode) {
-            int value = Integer.parseInt(((WithNode) node).getValue());
-            for (int i = 0; i < value; i++) {
-                MatcherMultipleNode matcher = new MatcherMultipleNode("Matcher_" + (i + 1));
-                matcher.setParent(node);
-                node.addChild(matcher);
-            }
         } else {
 //            logger.error("Does not support to expand " + node.getClass());
         }
     }
-
     public String getDisplayName(String name) {
         int check = 0;
         for (int i = 0; i < name.length(); i++) {
@@ -252,7 +223,8 @@ public abstract class AbstractDataTreeExpander implements IDataTreeExpander {
     }
 
     /**
-     * @param element       Example: "a[1]"
+     *
+     * @param element Example: "a[1]"
      * @param currentParent array data node need to expand
      * @return normal data node
      */
@@ -488,7 +460,7 @@ public abstract class AbstractDataTreeExpander implements IDataTreeExpander {
         v.setParent(currentVar);
 
 //        if (skipTypeResolver) {
-        v.setCorrespondingNode(currentVar.getCorrespondingNode());
+            v.setCorrespondingNode(currentVar.getCorrespondingNode());
 //        }
 
         String rType = getRawType(currentParent);
@@ -662,15 +634,9 @@ public abstract class AbstractDataTreeExpander implements IDataTreeExpander {
         if (nParent instanceof SubClassDataNode) {
             correspondingNode = ((ClassDataNode) nParent.getParent()).getCorrespondingType();
             parentVariable = ((ClassDataNode) nParent.getParent()).getCorrespondingVar();
-        } else if (nParent instanceof SubStructDataNode) {
-            correspondingNode = ((StructDataNode) nParent.getParent()).getCorrespondingType();
-            parentVariable = ((StructDataNode) nParent.getParent()).getCorrespondingVar();
-        } else if (nParent instanceof SubUnionDataNode) {
-            correspondingNode = ((UnionDataNode) nParent.getParent()).getCorrespondingType();
-            parentVariable = ((UnionDataNode) nParent.getParent()).getCorrespondingVar();
         }
 
-        StructureNode childClass = (StructureNode) correspondingNode;
+        StructOrClassNode childClass = (StructOrClassNode) correspondingNode;
 
         HashMap<String, String> template = null;
 
@@ -687,20 +653,10 @@ public abstract class AbstractDataTreeExpander implements IDataTreeExpander {
         if (childClass == null)
             throw new Exception("Cant find structure node of " + vParent.getRawType());
 
-        List<IVariableNode> attributes;
-
-        if (Environment.getInstance().isOnWhiteBoxMode()) {
-            attributes = childClass.getAttributes();
-        } else {
-            attributes = childClass.getPublicAttributes();
-        }
-
-
-        if (childClass instanceof StructOrClassNode) {
-            for (INode baseNode : ((StructOrClassNode) childClass).getBaseNodes())
-                if (baseNode instanceof StructureNode)
-                    attributes.addAll(((StructureNode) baseNode).getPublicAttributes());
-        }
+        List<IVariableNode> attributes = childClass.getPublicAttributes();
+        for (INode baseNode : childClass.getBaseNodes())
+            if (baseNode instanceof StructureNode)
+                attributes.addAll(((StructureNode) baseNode).getPublicAttributes());
 
         for (IVariableNode node : attributes) {
             IVariableNode finalVar = node;
@@ -710,10 +666,10 @@ public abstract class AbstractDataTreeExpander implements IDataTreeExpander {
                 coreType = template.get(node.getCoreType());
             else
                 coreType = node.getCoreType();
-            if (coreType != null) {
-                String rawType = node.getReducedRawType().replace(node.getCoreType(), coreType);
-                finalVar = (VariableNode) node.clone();
-                finalVar.getDependencies().clear();
+                if (coreType != null) {
+                    String rawType = node.getReducedRawType().replace(node.getCoreType(), coreType);
+                    finalVar = (VariableNode) node.clone();
+                    finalVar.getDependencies().clear();
 //                    finalVar.setRawType(rawType);
 ////                    String coreType;
 ////                    if (VariableTypeUtils.isTemplateClass(rawType))
@@ -723,25 +679,25 @@ public abstract class AbstractDataTreeExpander implements IDataTreeExpander {
 //                    finalVar.setCoreType(coreType);
 //                    finalVar.setReducedRawType(rawType);
 
-                String virtualDeclaration = rawType + " " + node.getName();
-                IASTNode ast = Utils.convertToIAST(virtualDeclaration);
-                if (ast instanceof IASTDeclarationStatement)
-                    ast = ((IASTDeclarationStatement) ast).getDeclaration();
-                if (ast instanceof IASTDeclaration)
-                    finalVar.setAST(ast);
-                else {
-                    finalVar.setRawType(rawType);
+                    String virtualDeclaration = rawType + " " + node.getName();
+                    IASTNode ast = Utils.convertToIAST(virtualDeclaration);
+                    if (ast instanceof IASTDeclarationStatement)
+                        ast = ((IASTDeclarationStatement) ast).getDeclaration();
+                    if (ast instanceof IASTDeclaration)
+                        finalVar.setAST(ast);
+                    else {
+                        finalVar.setRawType(rawType);
 //                    String coreType;
 //                    if (VariableTypeUtils.isTemplateClass(rawType))
 //                        coreType = VariableTypeUtils.getTemplateClassCoreType(rawType);
 //                    else
 //                        coreType = VariableTypeUtils.getCoreTypeWithTemplate(rawType);
-                    finalVar.setCoreType(coreType);
-                    finalVar.setReducedRawType(rawType);
+                        finalVar.setCoreType(coreType);
+                        finalVar.setReducedRawType(rawType);
+                    }
                 }
-            }
 
-            new InitialTreeGen().genInitialTree((VariableNode) finalVar, nParent);
+                new InitialTreeGen().genInitialTree((VariableNode) finalVar, nParent);
 //            generateStructureItem((VariableNode) finalVar, vParent + "." + finalVar, nParent);
         }
     }
@@ -795,7 +751,7 @@ public abstract class AbstractDataTreeExpander implements IDataTreeExpander {
         } else if (VariableTypeUtils.isFunctionPointer(rawType)) {
             child = new FunctionPointerTypeInitiation(vChild, currentParent).execute();
 
-        } else {
+        } else  {
             logger.error("Do not handle " + vChild.toString() + " with type " + rawType);
             throw new Exception("Do not handle " + element + " in generateStructureItem");
         }
@@ -810,11 +766,11 @@ public abstract class AbstractDataTreeExpander implements IDataTreeExpander {
         int[] sizes = null;
 
         if (node instanceof PointerDataNode) {
-            sizes = new int[]{((PointerDataNode) node).getAllocatedSize()};
+            sizes = new int[] {((PointerDataNode) node).getAllocatedSize()};
         } else if (node instanceof OneDimensionDataNode) {
-            sizes = new int[]{((OneDimensionDataNode) node).getSize()};
+            sizes = new int[] {((OneDimensionDataNode) node).getSize()};
         } else if (node instanceof ListBaseDataNode) {
-            sizes = new int[]{((ListBaseDataNode) node).getSize()};
+            sizes = new int[] {((ListBaseDataNode) node).getSize()};
         } else if (node instanceof MultipleDimensionDataNode) {
             sizes = ((MultipleDimensionDataNode) node).getSizes();
         }
@@ -960,7 +916,7 @@ public abstract class AbstractDataTreeExpander implements IDataTreeExpander {
 
     private String getRawType(ValueDataNode dataNode) {
         String rType;
-        if (this.realTypeMapping != null && this.realTypeMapping.size() > 0) {
+        if (this.realTypeMapping != null && this.realTypeMapping.size() > 0){
             // if the data note belongs to template function
             rType = dataNode.getRealType();
         } else if (dataNode.getCorrespondingVar() != null) {

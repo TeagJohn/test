@@ -117,8 +117,6 @@ public interface IValueDataNode extends IDataNode {
 
     String getAssertion();
 
-    String getAssertStm();
-
     String getRawType();
 
     void setRawType(String rawType);

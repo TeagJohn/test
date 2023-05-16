@@ -8,8 +8,6 @@ import org.eclipse.cdt.core.dom.ast.IASTDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTDeclarationStatement;
 import org.eclipse.cdt.internal.core.dom.parser.cpp.CPPASTSimpleDeclaration;
 
-import java.util.ArrayList;
-
 public abstract class SmartPointerDataNode extends STLDataNode implements IConstructorExpanableDataNode  {
     @Override
     public ICommonFunctionNode getSelectedConstructor() {
@@ -107,11 +105,6 @@ public abstract class SmartPointerDataNode extends STLDataNode implements IConst
 
             selectedConstructor = functionNode;
         }
-    }
-
-    @Override
-    public void chooseConstructor() throws Exception {
-
     }
 
 //    public void setConstructor(DefinitionFunctionNode constructor) throws Exception {

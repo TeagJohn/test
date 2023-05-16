@@ -131,18 +131,12 @@ public class BinaryAssignmentParser extends AssignmentParser {
 			if (right instanceof IASTCastExpression) {
 				// Get "malloc(sizeof(int)*n)"
 				IASTNode tmp = right.getChildren()[1];
-				String rawSignature = Utils.shortenAstNode(tmp).getRawSignature();
 				if (tmp.getRawSignature().startsWith(MALLOC_SIGNAL))
 					return MALLOC;
 				else if (tmp.getRawSignature().startsWith(CALLOC_SIGNAL))
 					return CALLOC;
-				else if (rawSignature.startsWith(AssignmentParser.ADDRESS_OPERATOR))
-					return NORMAL_ASSIGNMENT;
-				else if (tmp instanceof IASTIdExpression) {
-					return NORMAL_ASSIGNMENT;
-				} else {
+				else
 					return AssignmentParser.UNSPECIFIED_ASSIGNMENT;
-				}
 			} else if (right instanceof ICPPASTNewExpression)
 				return AssignmentParser.NEW;
 			else if (right.getRawSignature().startsWith(MALLOC_SIGNAL))

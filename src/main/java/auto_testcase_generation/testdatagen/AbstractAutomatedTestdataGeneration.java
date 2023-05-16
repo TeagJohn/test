@@ -3,19 +3,13 @@ package auto_testcase_generation.testdatagen;
 import auto_testcase_generation.cfg.object.ConditionCfgNode;
 import auto_testcase_generation.cfg.object.ICfgNode;
 import com.dse.config.WorkspaceConfig;
-import com.dse.environment.Environment;
 import com.dse.guifx_v3.controllers.TestCasesNavigatorController;
 import com.dse.guifx_v3.helps.UIController;
 import com.dse.guifx_v3.helps.UILogger;
-import com.dse.guifx_v3.objects.TestDataStubParamTreeItem;
 import com.dse.parser.object.INode;
 import com.dse.testcase_execution.TestcaseExecution;
 import com.dse.testcase_manager.*;
 import com.dse.testdata.gen.module.TreeExpander;
-import com.dse.testdata.object.Gmock.GMockValueDataNode;
-import com.dse.testdata.object.Gmock.GmockUnitNode;
-import com.dse.testdata.object.Gmock.TimesNode;
-import com.dse.testdata.object.Gmock.WithNode;
 import com.dse.testdata.object.RootDataNode;
 import com.dse.thread.AkaThread;
 import com.dse.thread.AkaThreadManager;
@@ -170,7 +164,7 @@ public abstract class AbstractAutomatedTestdataGeneration implements IAutomatedT
         inputCellHandler.setInAutoGenMode(true);
     }
 
-    protected void onGenerateSuccess(boolean showReport) {
+    public void onGenerateSuccess(boolean showReport) {
         // view coverage of generated set of test cases
         if (showReport) {
             List<TestCase> testCases = TestCaseManager.getTestCasesByFunction(fn);
@@ -178,7 +172,7 @@ public abstract class AbstractAutomatedTestdataGeneration implements IAutomatedT
 //            UILogger.getUiLogger().info("[DONE] Generate test cases for function " + fn.getName() + ". Total of test cases in this function:" + nTestcases);
 
             // view coverage of the function with all test cases (old test cases and new test cases)
-            UIController.viewCoverageOfMultipleTestcasesFromAnotherThread(TestCaseManager.getFunctionName(fn), testCases);
+            UIController.viewCoverageOfMultipleTestcasesFromAnotherThread(fn.getName(), testCases);
         }
 
         TestCasesNavigatorController.getInstance().refreshNavigatorTreeFromAnotherThread();
@@ -195,64 +189,22 @@ public abstract class AbstractAutomatedTestdataGeneration implements IAutomatedT
         return name;
     }
 
-    public String getRecursiveParentName(IDataNode node) {
-        IDataNode currentNode = node;
-        while (!(currentNode instanceof IterationSubprogramNode)) {
-            if (currentNode.getParent() == null) {
-                return node.getVituralName();
-            }
-            currentNode = currentNode.getParent();
-        }
-        String rootName = currentNode.getName();
-        String nodePath = node.getVituralName().replace(SourceConstant.STUB_PREFIX, "");
-
-        String nameUsedInExpansion = "akaut_stub_" + rootName.substring(0, rootName.lastIndexOf("_call"))
-                + "_ref_" + rootName.substring(rootName.lastIndexOf("call")) + "_" + nodePath;
-        return nameUsedInExpansion;
-    }
-
     private String getValue(IDataNode node, List<RandomValue> values) {
-        String originalName = node.getVituralName();
-        if (originalName.startsWith(SourceConstant.STUB_PREFIX)) {
-            originalName = getRecursiveParentName(node);
-        }
-
-        ///
-
-
-
-        String virtualNameOfNode = RandomValue.convertNameUsedInExpansionToCode(originalName);
+        String virtualNameOfNode = RandomValue.convertNameUsedInExpansionToCode(node.getVituralName());
 
         List<String> candidates = values.stream()
                 .filter(v -> v.getNameUsedToUpdateValue().equals(virtualNameOfNode))
                 .map(RandomValue::getValue)
                 .distinct()
                 .collect(Collectors.toList());
-        if (candidates.size() == 0 && node.getParent() instanceof ConstructorDataNode) {
-            candidates = values.stream()
-                    .filter(v -> v.getNameUsedToUpdateValue().equals(node.getName()))
-
-                    .map(RandomValue::getValue)
-                    .distinct()
-                    .collect(Collectors.toList());
-        }
-        if (candidates.size() == 0 && (node.getParent() instanceof SubClassDataNode || node.getParent() instanceof SubStructDataNode || node.getParent() instanceof SubUnionDataNode)) {
-            candidates = values.stream()
-                    .filter(v -> v.getNameUsedToUpdateValue().equals(virtualNameOfNode.replace(node.getParent().getVituralName(), "this0")))
-                    .map(RandomValue::getValue)
-                    .distinct()
-                    .collect(Collectors.toList());
-        }
-
-
+        /*
         if (candidates.size() == 0) {
-            String vt = RandomValue.convertNameUsedInExpansionToCode(node.getVituralName());
             candidates = values.stream()
-                    .filter(v -> v.getNameUsedToUpdateValue().equals(vt))
+                    .filter(v -> v.getNameUsedToUpdateValue().equals(node.getVituralName()))
                     .map(RandomValue::getValue)
                     .distinct()
                     .collect(Collectors.toList());
-        }
+        }*/
 
         String value = null;
         if (candidates.size() == 1)
@@ -262,6 +214,35 @@ public abstract class AbstractAutomatedTestdataGeneration implements IAutomatedT
                 value = candidates.stream().filter(c -> !c.matches("[0-9]+")).findFirst().orElse(candidates.get(candidates.size() - 1));
             } else
                 value = candidates.get(0);
+        }
+
+        if (node instanceof ClassDataNode) {
+            if (value == null || value.equals("0") || value.equals("0.0")) {
+                List<IVariableNode> argsOfNode = this.fn.getArguments();
+                ClassNode classNode = null;
+                for (IVariableNode arg : argsOfNode) {
+                    if (arg.getName().equals(node.getName())) {
+                        classNode = (ClassNode)arg.resolveCoreType();
+                        break;
+                    }
+                }
+                if (classNode != null) {
+                    if (classNode.getConstructors().size() > 0) {
+                        value = ((ClassDataNode) node).getRawType() + "(";
+                        List<IVariableNode> argsOfConstructor = classNode.getConstructors().get(0).getArguments();
+                        for (IVariableNode arg : argsOfConstructor) {
+                            value += arg.getRawType() + ",";
+                            //values.add(new RandomValue(node.getName() + "_" + arg.getName(), "0"));
+                        }
+                        if (value.endsWith(",")) {
+                            value = value.substring(0, value.length() - 1);
+                        }
+                        value += ")";
+                    }
+                } else {
+                    logger.debug("Cannot find class node for " + node.getName());
+                }
+            }
         }
 
         if (node instanceof SubprogramNode && !(node instanceof IterationSubprogramNode)) {
@@ -276,68 +257,8 @@ public abstract class AbstractAutomatedTestdataGeneration implements IAutomatedT
             }
         }
 
-
-
-//        if (node.getParent() instanceof IterationSubprogramNode || node.getParent() instanceof PointerStructureDataNode
-//                        || node.getParent() instanceof StructDataNode) {
-//            if (node instanceof NormalDataNode && ((NormalDataNode) node).getRawType().contains("&")) {
-//                String parentName = node.getParent().getName();
-//                String nameUsedInExpansion = "akaut_stub_" + parentName.substring(0, parentName.lastIndexOf("_call"))
-//                        + "_ref_" + parentName.substring(parentName.lastIndexOf("call")) + "_" + node.getName();
-//                for (RandomValue randomValue : values) {
-//                    if (randomValue.getNameUsedInExpansion().equals(nameUsedInExpansion)) {
-//                        value = randomValue.getValue();
-//                    }
-//                }
-//            } else if (node instanceof PointerDataNode && node.getParent() instanceof IterationSubprogramNode) {
-//                String parentName = node.getParent().getName();
-//                String nameUsedInExpansion = "akaut_stub_" + parentName.substring(0, parentName.lastIndexOf("_call"))
-//                        + "_ref_" + parentName.substring(parentName.lastIndexOf("call")) + "_" + node.getName();
-//                for (RandomValue randomValue : values) {
-//                    if (randomValue.getNameUsedInExpansion().equals(nameUsedInExpansion)) {
-//                        value = randomValue.getValue();
-//                    }
-//                }
-//            } else if (node.getParent() instanceof PointerStructureDataNode && node.getParent().getParent() instanceof IterationSubprogramNode) {
-//                String parentName = node.getParent().getParent().getName();
-//                String nameUsedInExpansion = "akaut_stub_" + parentName.substring(0, parentName.lastIndexOf("_call"))
-//                        + "_ref_" + parentName.substring(parentName.lastIndexOf("call")) + "_" + node.getName();
-//                for (RandomValue randomValue : values) {
-//                    if (randomValue.getNameUsedInExpansion().equals(nameUsedInExpansion)) {
-//                        value = randomValue.getValue();
-//                    }
-//                }
-//            } else if (node.getParent() instanceof StructDataNode) {
-//                String nameUsedInExpansion = node.getName();
-//                IDataNode currentNode = node;
-//                while (true) {
-//                    if (currentNode.getParent() instanceof PointerStructureDataNode || currentNode.getParent() == null) {
-//                        break;
-//                    }
-//                    currentNode = currentNode.getParent();
-//                    nameUsedInExpansion = currentNode.getName() + "." + nameUsedInExpansion;
-//                }
-//                if (currentNode.getParent() != null && currentNode.getParent().getParent() != null) {
-//                    String rootName = currentNode.getParent().getParent().getName();
-//                    nameUsedInExpansion = "akaut_stub_" + rootName.substring(0, rootName.lastIndexOf("_call"))
-//                            + "_ref_" + rootName.substring(rootName.lastIndexOf("call")) + "_" + nameUsedInExpansion;
-//                    for (RandomValue randomValue : values) {
-//                        if (randomValue.getNameUsedInExpansion().equals(nameUsedInExpansion)) {
-//                            value = randomValue.getValue();
-//                        }
-//                    }
-//                }
-//            }
-//        }
-
-
-
         if (node instanceof NumberOfCallNode) {
             value = ((NumberOfCallNode) node).getValue();
-        }
-
-        if (node instanceof GMockValueDataNode) {
-            value = ((GMockValueDataNode) node).getValue();
         }
 
         if (node.getParent() instanceof IterationSubprogramNode && node.getName().equals("RETURN") && node instanceof PointerDataNode) {
@@ -355,7 +276,6 @@ public abstract class AbstractAutomatedTestdataGeneration implements IAutomatedT
                 if (randomValue.getNameUsedInExpansion().equals("akaut_stub_" + parent.getName() + "." + node.getName())) {
                     if (value == null || value.equals("0") || value.equals("0.0")) {
                         value = randomValue.getValue();
-                        break;
                     }
                 }
             }
@@ -374,53 +294,7 @@ public abstract class AbstractAutomatedTestdataGeneration implements IAutomatedT
                 if (randomValue.getNameUsedInExpansion().equals("akaut_stub_" + parent.getName())) {
                     if (value == null || value.equals("0") || value.equals("0.0")) {
                         value = randomValue.getValue();
-                        break;
                     }
-                }
-            }
-        } else if (node instanceof ClassDataNode
-                && (node.getParent() instanceof SubprogramNode
-                || node.getParent() instanceof ClassDataNode
-                || node.getParent() instanceof PointerStructureDataNode)) {
-            if (value != null) {
-                try {
-                    Integer.parseInt(value);
-                    value = ((ClassDataNode) node).getRawType();
-                    if (value.contains("::")) {
-                        value = value.split("::")[1];
-                    }
-                } catch (Exception e) {
-                    //nothing
-                }
-            }
-        } else if (node instanceof StructDataNode
-                && (node.getParent() instanceof SubprogramNode
-                || node.getParent() instanceof StructDataNode
-                || node.getParent() instanceof PointerStructureDataNode)) {
-            if (value != null) {
-                try {
-                    Integer.parseInt(value);
-                    value = ((StructDataNode) node).getRawType();
-                    if (value.contains("::")) {
-                        value = value.split("::")[1];
-                    }
-                } catch (Exception e) {
-                    //nothing
-                }
-            }
-        } else if (node instanceof UnionDataNode
-                && (node.getParent() instanceof SubprogramNode
-                || node.getParent() instanceof UnionDataNode
-                || node.getParent() instanceof PointerStructureDataNode)) {
-            if (value != null) {
-                try {
-                    Integer.parseInt(value);
-                    value = ((UnionDataNode) node).getRawType();
-                    if (value.contains("::")) {
-                        value = value.split("::")[1];
-                    }
-                } catch (Exception e) {
-                    //nothing
                 }
             }
         }
@@ -429,25 +303,11 @@ public abstract class AbstractAutomatedTestdataGeneration implements IAutomatedT
     }
 
     public void addNumberOfCallNode(IDataNode node, String value) {
-        NumberOfCallNode numberOfCallNode = new NumberOfCallNode();
+        NumberOfCallNode numberOfCallNode = new NumberOfCallNode("Number of calls");
         numberOfCallNode.setValue(value);
         node.addChild(numberOfCallNode);
         numberOfCallNode.setParent(node);
 
-    }
-
-    public void addTimesNode(IDataNode node, String value) {
-        TimesNode timesNode = new TimesNode("Times");
-        timesNode.setValue(value);
-        node.addChild(timesNode);
-        timesNode.setParent(node);
-    }
-
-    public void addWithNode (IDataNode node, String value) {
-        WithNode withNode = new WithNode("With");
-        withNode.setValue(value);
-        node.addChild(withNode);
-        withNode.setParent(node);
     }
 
     public void recursiveExpandUutBranch(IDataNode node, List<RandomValue> values, TestCase testCase) throws Exception {
@@ -458,32 +318,15 @@ public abstract class AbstractAutomatedTestdataGeneration implements IAutomatedT
         // STEP 2: get raw value from static solutions
         String value = getValue(node, values);
 
-        if (value == null) {
-            if (node instanceof NormalNumberDataNode && node.getParent() instanceof ConstructorDataNode) {
-                value = "0";
-            } else if (node instanceof ClassDataNode || ((node instanceof StructDataNode || node instanceof UnionDataNode) && !Environment.getInstance().isC())) {
-                if (fn instanceof ConstructorNode && !((ConstructorNode) fn).isInAbstractClass()) {
-
-                } else {
-                    value = ((StructureDataNode) node).getRawType().replaceFirst("::", "");
-                }
-            }
-        }
-
         // STEP 3: commit edit with value
 
         if (value != null) {
             if ((node.getParent().getName().equals("SBF") || node.getParent() instanceof StubUnitNode) && node instanceof SubprogramNode && !(node instanceof IterationSubprogramNode)) {
                 addNumberOfCallNode(node, value);
             }
-
-            if (node.getParent() instanceof GmockUnitNode && node instanceof SubprogramNode) {
-                addTimesNode(node, value);
-                addWithNode(node, value);
-            }
             if (node instanceof TemplateSubprogramDataNode) {
                 TestPrototype prototype = allPrototypes.get(0);
-                TemplateSubprogramDataNode templateSubprogramDataNode = (TemplateSubprogramDataNode) Search2.findSubprogramUnderTest(prototype.getRootDataNode());
+                TemplateSubprogramDataNode templateSubprogramDataNode = (TemplateSubprogramDataNode)Search2.findSubprogramUnderTest(prototype.getRootDataNode());
 //                ((TemplateSubprogramDataNode) node).setListArgOfTemplate(templateSubprogramDataNode.getListArgOfTemplate());
                 for (IValueDataNode valueDataNode : templateSubprogramDataNode.getListArgOfTemplate()) {
                     ((TemplateSubprogramDataNode) node).getListArgOfTemplate().add(valueDataNode);
@@ -503,23 +346,6 @@ public abstract class AbstractAutomatedTestdataGeneration implements IAutomatedT
                     value = value.substring(0, value.indexOf('('));
                 if (value.contains("::"))
                     value = value.substring(value.indexOf("::") + 2).trim();
-
-            } else if (node instanceof StructDataNode && !(node instanceof SubStructDataNode)) {
-                // Ex: key = "sv", value="Student(int,int)"
-                // get name of the constructor
-                if (value.contains("("))
-                    value = value.substring(0, value.indexOf('('));
-                if (value.contains("::"))
-                    value = value.substring(value.indexOf("::") + 2).trim();
-
-            } else if (node instanceof UnionDataNode && !(node instanceof SubUnionDataNode)) {
-                // Ex: key = "sv", value="Student(int,int)"
-                // get name of the constructor
-                if (value.contains("("))
-                    value = value.substring(0, value.indexOf('('));
-                if (value.contains("::"))
-                    value = value.substring(value.indexOf("::") + 2).trim();
-
             } else if (node instanceof NormalCharacterDataNode && !value.isEmpty()) {
                 value = NormalCharacterDataNode.toASCII(value) + "";
             }
@@ -528,33 +354,21 @@ public abstract class AbstractAutomatedTestdataGeneration implements IAutomatedT
                 try {
                     ValueDataNode valueNode = (ValueDataNode) node;
                     if (valueNode instanceof PointerDataNode && !value.matches("-{0,1}[0-9]+")) {
-                        if (valueNode instanceof PointerStructureDataNode) {
-                            ((PointerStructureDataNode) valueNode).setLevel(0);
-                            inputCellHandler.setRealTypeMapping(realTypeMapping);
-                            inputCellHandler.setTestCase(testCase);
-                            inputCellHandler.commitEdit(valueNode, value);
-                        } else {
-                            PointerDataNode pointerNode = (PointerDataNode) valueNode;
-                            UsedParameterUserCode userCode = new UsedParameterUserCode();
-                            userCode.setType(UsedParameterUserCode.TYPE_CODE);
-                            String content = pointerNode.getVituralName() + "=" + value + ";";
-                            userCode.setContent(content);
-                            pointerNode.setUserCode(userCode);
-                            pointerNode.setUseUserCode(true);
-                            testCase.putOrUpdateDataNodeIncludes(pointerNode);
-                        }
-                    } else if (!((valueNode instanceof StructDataNode && Environment.getInstance().isC())
+                        PointerDataNode pointerNode = (PointerDataNode) valueNode;
+                        UsedParameterUserCode userCode = new UsedParameterUserCode();
+                        userCode.setType(UsedParameterUserCode.TYPE_CODE);
+                        String content = pointerNode.getVituralName() + "=" + value + ";";
+                        userCode.setContent(content);
+                        pointerNode.setUserCode(userCode);
+                        pointerNode.setUseUserCode(true);
+                        testCase.putOrUpdateDataNodeIncludes(pointerNode);
+                    } else if (!(valueNode instanceof StructDataNode
                             || (valueNode instanceof ArrayDataNode && ((ArrayDataNode) valueNode).isFixedSize()))) {
                         if (!value.isEmpty()) {
                             logger.debug("Commit edit for node \"" + valueNode.getName() + "\"; value = \"" + value + "\", class = " + valueNode.getClass().getSimpleName());
                             inputCellHandler.setRealTypeMapping(realTypeMapping);
                             inputCellHandler.setTestCase(testCase);
-                            if ((valueNode instanceof SubClassDataNode || valueNode instanceof SubStructDataNode || valueNode instanceof SubUnionDataNode) &&
-                                    (valueNode.getRawType().equals(value) || valueNode.getRawType().equals("::" + value))) {
-                                inputCellHandler.commitEdit((StructureDataNode) valueNode);
-                            } else {
-                                inputCellHandler.commitEdit(valueNode, value);
-                            }
+                            inputCellHandler.commitEdit(valueNode, value);
                         }
                     }
 
@@ -588,7 +402,7 @@ public abstract class AbstractAutomatedTestdataGeneration implements IAutomatedT
                             if (randomValue.getNameUsedInExpansion().contains(parent.getName() + "[")) {
                                 String name = randomValue.getNameUsedInExpansion();
                                 int check = name.indexOf('[');
-                                name = name.substring(check);
+                                name = name.substring(check, name.length());
                                 String variable_name = "RETURN" + name;
                                 valueNode.getChildren().get(pointer_size).setName(variable_name);
                                 inputCellHandler.setRealTypeMapping(realTypeMapping);
@@ -618,26 +432,17 @@ public abstract class AbstractAutomatedTestdataGeneration implements IAutomatedT
                 }
         }
 
-        // STEP 4.1: repeat with its children
+        // STEP 4: repeat with its children
         for (IDataNode child : node.getChildren())
             recursiveExpandUutBranch(child, values, testCase);
 
-        // STEP 4.2: init map for stub function with reference parameters
-        if (node instanceof IterationSubprogramNode) {
-            IterationSubprogramNode iterationSubprogramNode = (IterationSubprogramNode) node;
-            INode functionNode = iterationSubprogramNode.getFunctionNode();
-            if (functionNode.getName().contains("&") || functionNode.getName().contains("*")) {
-                if (iterationSubprogramNode.getInputToExpectedOutputMap().isEmpty()) {
-                    iterationSubprogramNode.initInputToExpectedOutputMap();
-                }
-
-                Set<ValueDataNode> inputNodes = iterationSubprogramNode.getInputToExpectedOutputMap().keySet();
-                for (IDataNode child : inputNodes)
-                    recursiveExpandUutBranch(child, values, testCase);
+        if (node instanceof TemplateSubprogramDataNode) {
+            for (IValueDataNode valueDataNode : ((TemplateSubprogramDataNode) node).getListArgOfTemplate()) {
+                recursiveExpandUutBranch(valueDataNode, values, testCase);
             }
+            ((TemplateSubprogramDataNode) node).updateRealTypeMapping();
         }
 
-        // STEP 4.3: check expand for array
         if (node instanceof ArrayDataNode && node.getChildren().size() > 20) {
             int size = node.getChildren().size();
             for (int i = size - 1; i >= 0; i--) {
@@ -649,12 +454,6 @@ public abstract class AbstractAutomatedTestdataGeneration implements IAutomatedT
             }
         }
 
-        if (node instanceof TemplateSubprogramDataNode) {
-            for (IValueDataNode valueDataNode : ((TemplateSubprogramDataNode) node).getListArgOfTemplate()) {
-                recursiveExpandUutBranch(valueDataNode, values, testCase);
-            }
-            ((TemplateSubprogramDataNode) node).updateRealTypeMapping();
-        }
     }
 
     /**
@@ -688,10 +487,10 @@ public abstract class AbstractAutomatedTestdataGeneration implements IAutomatedT
                         if (var != null) listVar.add(var);
                     }
                 }
-            } else listVar = sut.getArguments();
-        } else {
-            listVar = sut.getArguments();
+            }
+            else listVar = sut.getArguments();
         }
+        else listVar = sut.getArguments();
 
         values = random.constructRandomInput(listVar, sut.getFunctionConfig(), "");
 
@@ -732,76 +531,32 @@ public abstract class AbstractAutomatedTestdataGeneration implements IAutomatedT
             else
                 classNode = sut.getParent();
 
-            if (classNode == null
-                    || !(classNode instanceof ClassNode || ((classNode instanceof StructNode || classNode instanceof UnionNode) && !Environment.getInstance().isC()))) {
+            if (classNode == null || !(classNode instanceof ClassNode))
                 // the function is not in a class
                 return null;
-            }
 
             ClassDataNode candidateClass = null;
             for (IDataNode child : globalRoot.getChildren())
-                if (child instanceof ClassDataNode) {
+                if (child instanceof ClassDataNode)
                     // if the global node is corresponding to an instance
-                    if (child.getName().startsWith(SourceConstant.INSTANCE_VARIABLE)) {
+                    if (child.getName().startsWith(SourceConstant.INSTANCE_VARIABLE)){
                         ClassNode classNode1 = (ClassNode) ((((ClassNode) classNode).isTemplate()) ? classNode.getParent() : classNode);
                         if (((ClassDataNode) child).getCorrespondingType().getAbsolutePath().equals(classNode1.getAbsolutePath())) {
                             candidateClass = (ClassDataNode) child;
                         }
                     }
-                }
-
-            StructDataNode candidateStruct = null;
 
             // select a random instance
-            if (candidateClass == null) {
-                for (IDataNode child : globalRoot.getChildren())
-                    if (child instanceof StructDataNode) {
-                        // if the global node is corresponding to an instance
-                        if (child.getName().startsWith(SourceConstant.INSTANCE_VARIABLE))
-                            if (((StructDataNode) child).getCorrespondingType().getAbsolutePath().equals(classNode.getAbsolutePath())) {
-                                candidateStruct = (StructDataNode) child;
-                            }
-                    }
-            }
-
-            UnionDataNode candidateUnion = null;
-            // select a random instance
-            if (candidateClass == null && candidateStruct == null) {
-                for (IDataNode child : globalRoot.getChildren())
-                    if (child instanceof UnionDataNode) {
-                        // if the global node is corresponding to an instance
-                        if (child.getName().startsWith(SourceConstant.INSTANCE_VARIABLE))
-                            if (((UnionDataNode) child).getCorrespondingType().getAbsolutePath().equals(classNode.getAbsolutePath())) {
-                                candidateUnion = (UnionDataNode) child;
-                            }
-                    }
-                if (candidateUnion == null) {
-                    return null;
-                }
-            }
+            if (candidateClass == null)
+                return null;
 
             // initialize the instance
             TmpVariableNode variableNode = new TmpVariableNode();
-            if (candidateClass != null) {
-                variableNode.setRawType(candidateClass.getRawType());
-                variableNode.setCoreType(candidateClass.getRawType());
-                variableNode.setReducedRawType(candidateClass.getRawType());
-                variableNode.setName(candidateClass.getName());
-                variableNode.setCorrespondingNode(candidateClass.getCorrespondingType());
-            } else if (candidateStruct != null) {
-                variableNode.setRawType(candidateStruct.getRawType());
-                variableNode.setCoreType(candidateStruct.getRawType());
-                variableNode.setReducedRawType(candidateStruct.getRawType());
-                variableNode.setName(candidateStruct.getName());
-                variableNode.setCorrespondingNode(candidateStruct.getCorrespondingType());
-            } else {
-                variableNode.setRawType(candidateUnion.getRawType());
-                variableNode.setCoreType(candidateUnion.getRawType());
-                variableNode.setReducedRawType(candidateUnion.getRawType());
-                variableNode.setName(candidateUnion.getName());
-                variableNode.setCorrespondingNode(candidateUnion.getCorrespondingType());
-            }
-
+            variableNode.setRawType(candidateClass.getRawType());
+            variableNode.setCoreType(candidateClass.getRawType());
+            variableNode.setReducedRawType(candidateClass.getRawType());
+            variableNode.setName(candidateClass.getName());
+            variableNode.setCorrespondingNode(candidateClass.getCorrespondingType());
             variableNode.setParent(fn);
 
             List<IVariableNode> vars = new ArrayList<>();
@@ -813,14 +568,7 @@ public abstract class AbstractAutomatedTestdataGeneration implements IAutomatedT
             if (fn instanceof ConstructorNode)
                 randomInputGeneration.setSelectedConstructor((ConstructorNode) fn);
             values = randomInputGeneration.constructRandomInput(vars, sut.getFunctionConfig(), "");
-            if (candidateClass != null) {
-                recursiveExpandUutBranch(candidateClass, values, testCase);
-            } else if (candidateStruct != null) {
-                recursiveExpandUutBranch(candidateStruct, values, testCase);
-            } else {
-                recursiveExpandUutBranch(candidateUnion, values, testCase);
-            }
-
+            recursiveExpandUutBranch(candidateClass, values, testCase);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -939,7 +687,7 @@ public abstract class AbstractAutomatedTestdataGeneration implements IAutomatedT
     protected TestCase createTestcase(TestPrototype selectedPrototype, int iteration, ICommonFunctionNode functionNode, String postfix) {
         TestCase testCase = null;
         // create a new test case at each iteration
-        String nameofTestcase = TestCaseManager.generateContinuousNameOfTestcase(TestCaseManager.getFunctionName(functionNode) + postfix);
+        String nameofTestcase = TestCaseManager.generateContinuousNameOfTestcase(functionNode.getName() + ITestCase.POSTFIX_TESTCASE_BY_RANDOM);
 
         if (selectedPrototype != null) {
             // create new test case based on the given prototype

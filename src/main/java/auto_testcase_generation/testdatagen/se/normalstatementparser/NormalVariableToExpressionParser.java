@@ -8,10 +8,7 @@ import auto_testcase_generation.testdatagen.se.memory.array.one_dim.OneDimension
 import auto_testcase_generation.testdatagen.se.memory.basic.BasicSymbolicVariable;
 import auto_testcase_generation.testdatagen.se.memory.pointer.PointerSymbolicVariable;
 import auto_testcase_generation.testdatagen.se.memory.structure.SimpleStructureSymbolicVariable;
-import auto_testcase_generation.utils.ASTUtils;
 import com.dse.parser.object.IFunctionNode;
-import com.dse.parser.object.INode;
-import com.dse.parser.object.StructOrClassNode;
 import com.dse.util.Utils;
 import org.eclipse.cdt.core.dom.ast.IASTExpression;
 import org.eclipse.cdt.core.dom.ast.IASTFunctionCallExpression;
@@ -23,10 +20,6 @@ import org.eclipse.cdt.internal.core.dom.parser.cpp.CPPASTCastExpression;
 import org.eclipse.cdt.internal.core.dom.parser.cpp.CPPASTIdExpression;
 import org.eclipse.cdt.internal.core.dom.parser.cpp.CPPASTLiteralExpression;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 /**
  * Assign a variable that its name is normal (e.g., x, y, z) to an expression.
  *
@@ -34,40 +27,40 @@ import java.util.List;
  */
 public class NormalVariableToExpressionParser extends NormalBinaryAssignmentParser {
 
-    @Override
-    public void parse(IASTNode ast, VariableNodeTable table, FunctionCallTable callTable) throws Exception {
-        ast = Utils.shortenAstNode(ast);
+	@Override
+	public void parse(IASTNode ast, VariableNodeTable table, FunctionCallTable callTable) throws Exception {
+		ast = Utils.shortenAstNode(ast);
 
-        if (ast instanceof ICPPASTBinaryExpression) {
-            IASTNode leftAST = ((ICPPASTBinaryExpression) ast).getOperand1();
-            IASTNode rightAST = ((ICPPASTBinaryExpression) ast).getOperand2();
-            ISymbolicVariable left = table.findorCreateVariableByName(leftAST.getRawSignature());
-            ISymbolicVariable right = table.findorCreateVariableByName(rightAST.getRawSignature());
+		if (ast instanceof ICPPASTBinaryExpression) {
+			IASTNode leftAST = ((ICPPASTBinaryExpression) ast).getOperand1();
+			IASTNode rightAST = ((ICPPASTBinaryExpression) ast).getOperand2();
+			ISymbolicVariable left = table.findorCreateVariableByName(leftAST.getRawSignature());
+			ISymbolicVariable right = table.findorCreateVariableByName(rightAST.getRawSignature());
 
-            if (left instanceof BasicSymbolicVariable) {
-                /*
-                 * In case right is type casting, e.g., (char) x
-                 */
-                if (rightAST instanceof CPPASTCastExpression)
-                    new NormalVariableToTypeCastingParser().parse(ast, table, callTable);
-                else
-                    /*
-                     * The right expression is a condition. Ex: x = a>b
-                     */
-                    if (rightAST instanceof CPPASTBinaryExpression && Utils.isCondition(rightAST.getRawSignature()))
-                        throw new Exception("Don't support " + ast.getRawSignature());
-                    else if (rightAST instanceof IASTFunctionCallExpression) {
-                        String varName = callTable.get(rightAST);
-                        if (varName != null) {
-                            BasicSymbolicVariable leftVar = (BasicSymbolicVariable) left;
-                            leftVar.setValue(varName);
-                            callTable.remove(rightAST);
-                        }
-                    } else {
-                        rightAST = Utils.shortenAstNode(rightAST);
+			if (left instanceof BasicSymbolicVariable) {
+				/*
+				 * In case right is type casting, e.g., (char) x
+				 */
+				if (rightAST instanceof CPPASTCastExpression)
+					new NormalVariableToTypeCastingParser().parse(ast, table, callTable);
+				else
+				/*
+				 * The right expression is a condition. Ex: x = a>b
+				 */
+				if (rightAST instanceof CPPASTBinaryExpression && Utils.isCondition(rightAST.getRawSignature()))
+					throw new Exception("Don't support " + ast.getRawSignature());
+				else if (rightAST instanceof IASTFunctionCallExpression) {
+					String varName = callTable.get(rightAST);
+					if (varName != null) {
+						BasicSymbolicVariable leftVar = (BasicSymbolicVariable) left;
+						leftVar.setValue(varName);
+						callTable.remove(rightAST);
+					}
+				} else {
+					rightAST = Utils.shortenAstNode(rightAST);
 
-                        BasicSymbolicVariable leftVar = (BasicSymbolicVariable) left;
-                        String reducedRight = ExpressionRewriterUtils.rewrite(table, rightAST.getRawSignature());
+					BasicSymbolicVariable leftVar = (BasicSymbolicVariable) left;
+					String reducedRight = ExpressionRewriterUtils.rewrite(table, rightAST.getRawSignature());
 
 //					if (rightAST.getRawSignature().equals(leftAST.getRawSignature())) {
 //						for (ISymbolicVariable var : table.findVariablesByName(rightAST.getRawSignature())) {
@@ -78,251 +71,212 @@ public class NormalVariableToExpressionParser extends NormalBinaryAssignmentPars
 //						}
 //					}
 
-                        leftVar.setValue(reducedRight);
-                    }
-            } else if (left instanceof PointerSymbolicVariable) {
-                rightAST = Utils.shortenAstNode(rightAST);
-                // TODO: MULTI LEVEL
+					leftVar.setValue(reducedRight);
+				}
+			} else if (left instanceof PointerSymbolicVariable) {
+				rightAST = Utils.shortenAstNode(rightAST);
+				// TODO: MULTI LEVEL
 //				if (((PointerSymbolicVariable) left).getLevel() == 1)
-                assignOneLevelSymbolicVariableToExpression(leftAST, rightAST, (PointerSymbolicVariable) left, table, callTable);
-            } else if (left instanceof SimpleStructureSymbolicVariable) {
-                SimpleStructureSymbolicVariable leftVar = (SimpleStructureSymbolicVariable) left;
-                if (right == null) {
-                    leftVar.createNewAttributes(rightAST.getRawSignature(), null);
-                } else {
-                    SimpleStructureSymbolicVariable rightVar = (SimpleStructureSymbolicVariable) right;
-                    leftVar.copyAttributes(rightVar);
+				assignOneLevelSymbolicVariableToExpression(leftAST, rightAST, (PointerSymbolicVariable) left, table, callTable);
+ 			} else if (left instanceof SimpleStructureSymbolicVariable) {
+				SimpleStructureSymbolicVariable leftVar = (SimpleStructureSymbolicVariable) left;
+				if (right == null) {
+					leftVar.createNewAttributes(rightAST.getRawSignature(), null);
+				} else {
+					SimpleStructureSymbolicVariable rightVar = (SimpleStructureSymbolicVariable) right;
+					leftVar.copyAttributes(rightVar);
 //					leftVar.assign(rightVar);
-                }
-            } else {
-                throw new Exception("Don't support " + ast.getRawSignature());
-            }
-        } else {
-            throw new Exception("Don't support " + ast.getRawSignature());
-        }
-    }
+				}
+			} else {
+				throw new Exception("Don't support " + ast.getRawSignature());
+			}
+		} else {
+			throw new Exception("Don't support " + ast.getRawSignature());
+		}
+	}
 
-    /**
-     * Consider expression below (p1 is a pointer): <br/>
-     * Ex1: p1 = &numbers[2]<br/>
-     * Ex2: p1 = &a<br/>
-     * Ex3: p1 = NULL<br/>
-     *
-     * @param astLeft
-     * @param astRight
-     * @param leftVar
-     * @param table
-     * @throws Exception
-     */
-    private void assignOneLevelSymbolicVariableToExpression(IASTNode astLeft, IASTNode astRight, PointerSymbolicVariable leftVar,
-                                                            IVariableNodeTable table, FunctionCallTable callTable) throws Exception {
-        String reducedRight = astRight.getRawSignature();
-        /*
-         * Ex1: p1 = &numbers[2]
-         *
-         * Ex2: p1 = &a
-         *
-         * Ex3: p1 = NULL
-         */
-        if (astRight instanceof IASTUnaryExpression && reducedRight.startsWith(AssignmentParser.ADDRESS_OPERATOR)) {
-            IASTNode shortenRight = Utils.shortenAstNode(astRight.getChildren()[0]);
+	/**
+	 * Consider expression below (p1 is a pointer): <br/>
+	 * Ex1: p1 = &numbers[2]<br/>
+	 * Ex2: p1 = &a<br/>
+	 * Ex3: p1 = NULL<br/>
+	 *
+	 * @param astLeft
+	 * @param astRight
+	 * @param leftVar
+	 * @param table
+	 * @throws Exception
+	 */
+	private void assignOneLevelSymbolicVariableToExpression(IASTNode astLeft, IASTNode astRight, PointerSymbolicVariable leftVar,
+															IVariableNodeTable table, FunctionCallTable callTable) throws Exception {
+		String reducedRight = astRight.getRawSignature();
+		/*
+		 * Ex1: p1 = &numbers[2]
+		 *
+		 * Ex2: p1 = &a
+		 *
+		 * Ex3: p1 = NULL
+		 */
+		if (astRight instanceof IASTUnaryExpression && reducedRight.startsWith(AssignmentParser.ADDRESS_OPERATOR)) {
+			IASTNode shortenRight = Utils.shortenAstNode(astRight.getChildren()[0]);
 
-            /*
-             * Ex: numbers[2]
-             */
-            if (shortenRight instanceof ICPPASTArraySubscriptExpression) {
-                CPPASTIdExpression nameVar = (CPPASTIdExpression) shortenRight.getChildren()[0];
-                CPPASTLiteralExpression index = (CPPASTLiteralExpression) shortenRight.getChildren()[1];
+			/*
+			 * Ex: numbers[2]
+			 */
+			if (shortenRight instanceof ICPPASTArraySubscriptExpression) {
+				CPPASTIdExpression nameVar = (CPPASTIdExpression) shortenRight.getChildren()[0];
+				CPPASTLiteralExpression index = (CPPASTLiteralExpression) shortenRight.getChildren()[1];
 
-                String newRight = nameVar + "+" + index;
-                assignPointerToPointer(Utils.convertToIAST(newRight), leftVar, table, callTable);
+				String newRight = nameVar + "+" + index;
+				assignPointerToPointer(Utils.convertToIAST(newRight), leftVar, table, callTable);
 
-            } else
-                /*
-                 * Ex: a
-                 */
-                if (shortenRight instanceof CPPASTIdExpression) {
-                    String shortenRightInStr = shortenRight.getRawSignature();
+			} else
+			/*
+			 * Ex: a
+			 */
+			if (shortenRight instanceof CPPASTIdExpression) {
+				String shortenRightInStr = shortenRight.getRawSignature();
 
-                    ISymbolicVariable ref = table.findorCreateVariableByName(shortenRightInStr);
+				ISymbolicVariable ref = table.findorCreateVariableByName(shortenRightInStr);
 
-                    if (ref instanceof BasicSymbolicVariable) {
-                        LogicBlock vituralLeftBlock = new LogicBlock(
-                                ISymbolicVariable.PREFIX_SYMBOLIC_VALUE + ref.getName());
-                        vituralLeftBlock.addLogicalCell(((BasicSymbolicVariable) ref).getCell(), LogicBlock.FIRST_CELL);
-                        leftVar.setReference(new Reference(vituralLeftBlock, Reference.FIRST_START_INDEX));
+				if (ref instanceof BasicSymbolicVariable) {
+					LogicBlock vituralLeftBlock = new LogicBlock(
+							ISymbolicVariable.PREFIX_SYMBOLIC_VALUE + ref.getName());
+					vituralLeftBlock.addLogicalCell(((BasicSymbolicVariable) ref).getCell(), LogicBlock.FIRST_CELL);
+					leftVar.setReference(new Reference(vituralLeftBlock, Reference.FIRST_START_INDEX));
 
-                    } else if (ref instanceof SimpleStructureSymbolicVariable) {
-                        LogicBlock virtualLeftBlock = new LogicBlock(
-                                ISymbolicVariable.PREFIX_SYMBOLIC_VALUE + ref.getName());
+				} else
+					throw new Exception(
+							"Don't support " + astLeft.getRawSignature() + " = " + astRight.getRawSignature());
+			}
+			/*
+			 * Ex: NULL
+			 */
+			else if (reducedRight.equals("NULL"))
+				assignPointerToNull(leftVar);
+			else
+				throw new Exception("Don't support " + astLeft.getRawSignature() + " = " + astRight.getRawSignature());
+		} else
+			/*
+			 * In this case, the right expression may be an expression of pointer. Ex1:
+			 * p2+1. Ex2: p2-1
+			 */
+			assignPointerToPointer(astRight, leftVar, table, callTable);
+	}
 
-                        ArrayList<PhysicalCell> cells = (ArrayList<PhysicalCell>) ref.getAllPhysicalCells();
-                        for (int i = 0; i < cells.size(); i++) {
-                            virtualLeftBlock.addLogicalCell(cells.get(i), String.valueOf(i));
-                        }
-                        leftVar.setReference(new Reference(virtualLeftBlock, Reference.FIRST_START_INDEX));
+	private void assignPointerToNull(Object left) {
+		((Reference) left).setBlock(null);
+		((Reference) left).setStartIndex(Reference.UNDEFINED_INDEX);
+	}
 
-                    } else
-                        throw new Exception(
-                                "Don't support " + astLeft.getRawSignature() + " = " + astRight.getRawSignature());
-                }
-                /*
-                 * Ex: NULL
-                 */
-                else if (reducedRight.equals("NULL"))
-                    assignPointerToNull(leftVar);
-                else
-                    throw new Exception("Don't support " + astLeft.getRawSignature() + " = " + astRight.getRawSignature());
-        } else if (astRight instanceof ICPPASTCastExpression) {
-//            String castType = ((ICPPASTCastExpression) astRight).getTypeId().getDeclSpecifier().getRawSignature();
-            IASTExpression expression = ((ICPPASTCastExpression) astRight).getOperand();
-            if (expression instanceof IASTUnaryExpression) {
-                expression = ((IASTUnaryExpression) expression).getOperand();
-            }
-            expression = (IASTExpression) Utils.shortenAstNode(expression);
+	/**
+	 * Parse statement that change the reference of a pointer <br/>
+	 * Ex1: p1 = p2<br/>
+	 * Ex2: p1 = p2 + 1<br/>
+	 * Ex3: p1 = p2 - 1<br/>
+	 *
+	 * @param right right-hand side
+	 * @param left left-hand side
+	 * @param table table of variables
+	 * @throws Exception
+	 */
+	private void assignPointerToPointer(IASTNode right, PointerSymbolicVariable left,
+										IVariableNodeTable table, FunctionCallTable callTable) throws Exception {
 
-            ISymbolicVariable ref = table.findorCreateVariableByName(expression.getRawSignature());
+		String index = Reference.FIRST_START_INDEX;
+		String nameRightPointer;
 
-//            StructOrClassNode node = (StructOrClassNode) ref.getNode();
-//            StructOrClassNode castNode = null;
-//            List<INode> derivedNodes = node.getDerivedNodes();
-//            for (INode derivedNode : derivedNodes) {
-//                if (derivedNode.getName().equals(castType)) {
-//                    castNode = (StructOrClassNode) derivedNode;
-//                    break;
-//                }
-//            }
+		String newRight = right.getRawSignature();
+		FunctionCallVisitor visitor = new FunctionCallVisitor((IFunctionNode) table.getFunctionNode());
+		right.accept(visitor);
+		for (IASTFunctionCallExpression expr : visitor.getCallMap().keySet()) {
+			String varName = callTable.get(expr);
+			if (varName != null) {
+				String regex = "\\Q" + expr.getRawSignature() + "\\E";
+				newRight = newRight.replaceFirst(regex, varName);
+				callTable.remove(expr);
+			}
+		}
 
-//			ref.setNode(castNode);
-            LogicBlock virtualLeftBlock = new LogicBlock(
-                    ISymbolicVariable.PREFIX_SYMBOLIC_VALUE + ref.getName());
+		if (!newRight.equals(right.getRawSignature())) {
+			assignPointerToPointer(Utils.convertToIAST(newRight), left, table, callTable);
+			return;
+		}
 
-            ArrayList<PhysicalCell> cells = (ArrayList<PhysicalCell>) ref.getAllPhysicalCells();
-            for (int i = 0; i < cells.size(); i++) {
-                virtualLeftBlock.addLogicalCell(cells.get(i), String.valueOf(i));
-            }
-            leftVar.setReference(new CastReference(ref, virtualLeftBlock, Reference.FIRST_START_INDEX));
-        } else
-            /*
-             * In this case, the right expression may be an expression of pointer. Ex1:
-             * p2+1. Ex2: p2-1
-             */
-            assignPointerToPointer(astRight, leftVar, table, callTable);
-    }
+		// Assign pointer to pointer directly
+		// Ex1: p1=student.age
+		// Ex2: p1 = student[0]
+		// Ex3: p1 = p2
+		if (right instanceof ICPPASTFieldReference // Ex1
+				|| right instanceof ICPPASTArraySubscriptExpression // Ex2
+				|| right instanceof CPPASTIdExpression// Ex3
+		) {
+			String rightStr = right.getRawSignature();
+			ISymbolicVariable rightVar = table.findorCreateVariableByName(rightStr);
 
-    private void assignPointerToNull(Object left) {
-        ((Reference) left).setBlock(null);
-        ((Reference) left).setStartIndex(Reference.UNDEFINED_INDEX);
-    }
+			if (rightVar != null)
+				if (rightVar instanceof PointerSymbolicVariable) {
+					/*
+					 * p = numbers+3; (p: pointer, numbers: one-dimension array)
+					 */
+					Reference r = ((PointerSymbolicVariable) rightVar).getReference();
 
-    /**
-     * Parse statement that change the reference of a pointer <br/>
-     * Ex1: p1 = p2<br/>
-     * Ex2: p1 = p2 + 1<br/>
-     * Ex3: p1 = p2 - 1<br/>
-     *
-     * @param right right-hand side
-     * @param left  left-hand side
-     * @param table table of variables
-     * @throws Exception
-     */
-    private void assignPointerToPointer(IASTNode right, PointerSymbolicVariable left,
-                                        IVariableNodeTable table, FunctionCallTable callTable) throws Exception {
+					if (r != null) {
+						left.getReference().setBlock(r.getBlock());
+						left.getReference().setStartIndex(r.getStartIndex());
+					}
 
-        String index = Reference.FIRST_START_INDEX;
-        String nameRightPointer;
+				} else if (rightVar instanceof ArraySymbolicVariable) {
+					LogicBlock b = ((ArraySymbolicVariable) rightVar).getBlock();
 
-        String newRight = right.getRawSignature();
-        FunctionCallVisitor visitor = new FunctionCallVisitor((IFunctionNode) table.getFunctionNode());
-        right.accept(visitor);
-        for (IASTFunctionCallExpression expr : visitor.getCallMap().keySet()) {
-            String varName = callTable.get(expr);
-            if (varName != null) {
-                String regex = "\\Q" + expr.getRawSignature() + "\\E";
-                newRight = newRight.replaceFirst(regex, varName);
-                callTable.remove(expr);
-            }
-        }
+					if (b != null) {
+						left.getReference().setBlock(b);
+						left.getReference().setStartIndex(index);
+					}
+				} else
+					throw new Exception("Don't support " + left + " = " + right);
 
-        if (!newRight.equals(right.getRawSignature())) {
-            assignPointerToPointer(Utils.convertToIAST(newRight), left, table, callTable);
-            return;
-        }
+		} else if (right instanceof IASTExpression) {
+			String reducedRightExpression = right.getRawSignature();
 
-        // Assign pointer to pointer directly
-        // Ex1: p1=student.age
-        // Ex2: p1 = student[0]
-        // Ex3: p1 = p2
-        if (right instanceof ICPPASTFieldReference // Ex1
-                || right instanceof ICPPASTArraySubscriptExpression // Ex2
-                || right instanceof CPPASTIdExpression// Ex3
-        ) {
-            String rightStr = right.getRawSignature();
-            ISymbolicVariable rightVar = table.findorCreateVariableByName(rightStr);
+			int location = -1;
+			if (right.getRawSignature().contains("+"))
+				location = reducedRightExpression.indexOf("+");
+			else if (right.getRawSignature().contains("-"))
+				location = reducedRightExpression.indexOf("-");
 
-            if (rightVar != null)
-                if (rightVar instanceof PointerSymbolicVariable) {
-                    /*
-                     * p = numbers+3; (p: pointer, numbers: one-dimension array)
-                     */
-                    Reference r = ((PointerSymbolicVariable) rightVar).getReference();
+			if (location >= 0) {
+				index = reducedRightExpression.substring(location + 1);
+				nameRightPointer = reducedRightExpression.substring(0, location);
 
-                    if (r != null) {
-                        left.getReference().setBlock(r.getBlock());
-                        left.getReference().setStartIndex(r.getStartIndex());
-                    }
+				/*
+				 * If name of pointer put in pair of brackets
+				 */
+				nameRightPointer = nameRightPointer.replace("(", "").replace(")", "");
+				ISymbolicVariable rightVar = table.findorCreateVariableByName(nameRightPointer);
 
-                } else if (rightVar instanceof ArraySymbolicVariable) {
-                    LogicBlock b = ((ArraySymbolicVariable) rightVar).getBlock();
+				if (rightVar != null)
+					if (rightVar instanceof PointerSymbolicVariable) {
+						/*
+						 * p = numbers+3; (p: pointer, numbers: one-dimension array)
+						 */
+						Reference r = ((PointerSymbolicVariable) rightVar).getReference();
 
-                    if (b != null) {
-                        left.getReference().setBlock(b);
-                        left.getReference().setStartIndex(index);
-                    }
-                } else
-                    throw new Exception("Don't support " + left + " = " + right);
+						if (r != null) {
+							left.getReference().setBlock(r.getBlock());
+							left.getReference().setStartIndex(r.getStartIndex() + "+ (" + index + ")");
+						}
 
-        } else if (right instanceof IASTExpression) {
-            String reducedRightExpression = right.getRawSignature();
+					} else if (rightVar instanceof OneDimensionSymbolicVariable) {
+						LogicBlock b = ((OneDimensionSymbolicVariable) rightVar).getBlock();
 
-            int location = -1;
-            if (right.getRawSignature().contains("+"))
-                location = reducedRightExpression.indexOf("+");
-            else if (right.getRawSignature().contains("-"))
-                location = reducedRightExpression.indexOf("-");
-
-            if (location >= 0) {
-                index = reducedRightExpression.substring(location + 1);
-                nameRightPointer = reducedRightExpression.substring(0, location);
-
-                /*
-                 * If name of pointer put in pair of brackets
-                 */
-                nameRightPointer = nameRightPointer.replace("(", "").replace(")", "");
-                ISymbolicVariable rightVar = table.findorCreateVariableByName(nameRightPointer);
-
-                if (rightVar != null)
-                    if (rightVar instanceof PointerSymbolicVariable) {
-                        /*
-                         * p = numbers+3; (p: pointer, numbers: one-dimension array)
-                         */
-                        Reference r = ((PointerSymbolicVariable) rightVar).getReference();
-
-                        if (r != null) {
-                            left.getReference().setBlock(r.getBlock());
-                            left.getReference().setStartIndex(r.getStartIndex() + "+ (" + index + ")");
-                        }
-
-                    } else if (rightVar instanceof OneDimensionSymbolicVariable) {
-                        LogicBlock b = ((OneDimensionSymbolicVariable) rightVar).getBlock();
-
-                        if (b != null) {
-                            left.getReference().setBlock(b);
-                            left.getReference().setStartIndex(index);
-                        }
-                    } else
-                        throw new Exception("Don't support " + left + " = " + right);
-            }
-        }
-    }
+						if (b != null) {
+							left.getReference().setBlock(b);
+							left.getReference().setStartIndex(index);
+						}
+					} else
+						throw new Exception("Don't support " + left + " = " + right);
+			}
+		}
+	}
 }

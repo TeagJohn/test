@@ -95,10 +95,7 @@ public class MultipleDimensionTypeInitiation extends AbstractTypeInitiation {
                 List<INode> macroNodes = Search.searchInSpace(space, new MacroDefinitionNodeCondition(), path);
                 if (!macroNodes.isEmpty()) {
                     MacroDefinitionNode macroNode = (MacroDefinitionNode) macroNodes.get(0);
-                    String size = macroNode.getOldType()
-                            .trim()
-                            .replaceAll("^\\((.+)\\)$","$1");
-                    sizes[i] = Integer.parseInt(size);
+                    sizes[i] = Integer.parseInt(macroNode.getOldType());
                 }
 
             } else

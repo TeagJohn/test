@@ -5,9 +5,7 @@ import auto_testcase_generation.cfg.object.*;
 import auto_testcase_generation.cfg.testpath.ITestpathInCFG;
 import auto_testcase_generation.testdatagen.SymbolicExecutionTestdataGeneration;
 import auto_testcase_generation.testdatagen.se.memory.array.ArraySymbolicVariable;
-import auto_testcase_generation.testdatagen.se.memory.pointer.PointerStructureSymbolicVariable;
 import auto_testcase_generation.testdatagen.se.memory.pointer.PointerSymbolicVariable;
-import auto_testcase_generation.testdatagen.se.memory.structure.SimpleStructureSymbolicVariable;
 import auto_testcase_generation.testdatagen.se.normalization.ConstraintNormalizer;
 import auto_testcase_generation.testdatagen.AbstractAutomatedTestdataGeneration;
 import auto_testcase_generation.testdatagen.se.memory.*;
@@ -15,7 +13,6 @@ import auto_testcase_generation.testdatagen.se.memory.basic.BasicSymbolicVariabl
 import auto_testcase_generation.testdatagen.se.normalstatementparser.*;
 import auto_testcase_generation.utils.ASTUtils;
 import com.dse.config.IFunctionConfig;
-import com.dse.debugger.component.Point;
 import com.dse.environment.Environment;
 import com.dse.logger.AkaLogger;
 import com.dse.parser.dependency.Dependency;
@@ -27,7 +24,6 @@ import com.dse.parser.dependency.finder.VariableSearchingSpace;
 import com.dse.parser.object.*;
 import com.dse.search.Search;
 import com.dse.search.condition.EnumNodeCondition;
-import com.dse.search.condition.FunctionNodeCondition;
 import com.dse.search.condition.MacroDefinitionNodeCondition;
 import com.dse.search.condition.MacroFunctionNodeCondition;
 import com.dse.util.IRegex;
@@ -36,7 +32,6 @@ import com.dse.util.Utils;
 import com.dse.util.VariableTypeUtils;
 import org.eclipse.cdt.core.dom.ast.*;
 import org.eclipse.cdt.core.dom.ast.cpp.*;
-import org.eclipse.cdt.internal.core.dom.parser.cpp.CPPASTFunctionCallExpression;
 import org.eclipse.cdt.internal.core.dom.parser.cpp.CPPASTIdExpression;
 
 import java.util.*;
@@ -82,7 +77,7 @@ public class SymbolicExecution implements ISymbolicExecution {
 
     private List<String> parameterNames = new ArrayList<>();
 
-    List<INode> listStubNode = new ArrayList<>();
+    List <Node> listStubNode = new ArrayList<>();
 
     private String newAstString = "";
 
@@ -94,20 +89,11 @@ public class SymbolicExecution implements ISymbolicExecution {
 
             this.testpath = testpath;
             this.parameters = parameters;
-            for (IVariableNode node : parameters) {
+            for(IVariableNode node : parameters){
                 parameterNames.add(node.getName());
             }
             this.functionNode = functionNode;
-            INode fileNode = Utils.getSourcecodeFile(functionNode);
-            List<ICommonFunctionNode> functionsInFile = Search.searchNodes(fileNode, new FunctionNodeCondition());
-            listStubNode.addAll(functionsInFile);
-            for (Dependency d : functionNode.getDependencies()) {
-                if (d instanceof FunctionCallDependency && d.getStartArrow().equals(functionNode)) {
-                    listStubNode.add(d.getEndArrow());
-                }
-            }
-//            listStubNode = this.functionNode.getParent().getChildren();
-            listStubNode = listStubNode.stream().distinct().collect(Collectors.toList());
+            listStubNode = this.functionNode.getParent().getChildren();
 
             tableMapping.setFunctionNode(this.functionNode);
             createMappingTable(parameters);
@@ -141,7 +127,7 @@ public class SymbolicExecution implements ISymbolicExecution {
         ICommonFunctionNode prevContext = null;
 
         for (ICfgNode cfgNode : cfgNodes) {
-            int a = 0;
+            int a =0;
             // If the test path is always false, we stop the symbolic execution.
             if (!this.constraints.isAlwaysFalse())
                 try {
@@ -173,18 +159,19 @@ public class SymbolicExecution implements ISymbolicExecution {
                         boolean isContinue = true;
 
                         if (cfgNode instanceof NormalCfgNode) {
-                            newAstString = "";
+                            newAstString ="";
                             IASTNode ast = ((NormalCfgNode) cfgNode).getAst();
                             //Replace stub function ast by its stub-name
                             collectStubVar(ast);
                             String name = ast.getRawSignature();
                             String content = "";
                             boolean containStub = false;
-                            if (newAstString != "") {
+                            if(newAstString != ""){
                                 IASTNode newAst = Utils.convertToIAST(newAstString);
                                 content = ExpressionRewriterUtils.rewriteMacro(functionNode, newAst.getRawSignature());
                                 containStub = true;
-                            } else {
+                            }
+                            else {
                                 content = ExpressionRewriterUtils.rewriteMacro(functionNode, ast.getRawSignature());
                             }
                             IASTNode normalizedAST = Utils.convertToIAST(content);
@@ -272,7 +259,7 @@ public class SymbolicExecution implements ISymbolicExecution {
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
-//                    break;
+                    break;
                 }
         }
     }
@@ -419,7 +406,7 @@ public class SymbolicExecution implements ISymbolicExecution {
             addNewVariablesAndConstraintsFromStarExpr(starExpr, newVariables, constraints);
         }
 
-        List<IASTArraySubscriptExpression> arraySubscripts = ASTUtils.getArraySubscriptExpressionRecursive(newNode);
+        List<IASTArraySubscriptExpression> arraySubscripts = ASTUtils.getArraySubscriptExpression(newNode);
         for (IASTArraySubscriptExpression arraySubscript : arraySubscripts) {
             IASTExpression expr = arraySubscript;
             do {
@@ -444,11 +431,10 @@ public class SymbolicExecution implements ISymbolicExecution {
 
         // new var = "trie[0].root_node"
         String fullNameVar;
-        if (fieldReference.isPointerDereference()) {
+        if (fieldReference.isPointerDereference())
             fullNameVar = owner + "[0]." + fieldReference.getFieldName().getRawSignature();
-        } else {
+        else
             fullNameVar = owner + "." + fieldReference.getFieldName().getRawSignature();
-        }
 
         String normalizedFullName = VariableNodeTable.normalizeNameOfVariable(fullNameVar);
         newVariables.add(new NewVariableInSe(fullNameVar, normalizedFullName));
@@ -769,7 +755,7 @@ public class SymbolicExecution implements ISymbolicExecution {
         if (stm instanceof ReturnNode) {
             content = originAST.getRawSignature();
         }
-        if (containStubVar) {
+        if(containStubVar) {
             content = originAST.getRawSignature();
         }
         content = ExpressionRewriterUtils.rewriteMacro(functionNode, content);
@@ -798,80 +784,14 @@ public class SymbolicExecution implements ISymbolicExecution {
                                             stm, PathConstraint.CREATE_FROM_DECISION));
                     } else
                         throw new Exception("Dont support " + stm + " / " + content);
-                } else {
-                    List<ISymbolicVariable> vars = table.findVariablesByName(var).stream().filter(v -> {
-                        if (v instanceof PointerSymbolicVariable && ((PointerSymbolicVariable) v).getReference() instanceof CastReference) {
-                            return true;
-                        }
-                        return false;
-                    }).collect(Collectors.toList());
-                    if (vars.size() == 1) {
-                        ISymbolicVariable firstVar = vars.get(0);
-                        if (firstVar instanceof PointerStructureSymbolicVariable) {
-                            ISymbolicVariable test = ((CastReference) ((PointerStructureSymbolicVariable) firstVar).getReference()).getRef();
-                            while (!(parameterNames.contains(test.getName())) && test instanceof PointerStructureSymbolicVariable) {
-                                if (((PointerStructureSymbolicVariable) test).getReference() instanceof CastReference) {
-                                    test = ((CastReference) ((PointerStructureSymbolicVariable) test).getReference()).getRef();
-                                } else {
-                                    List<ISymbolicVariable> list = table.findVariablesByName(((PointerStructureSymbolicVariable) test).getReference().getBlock().getName());
-                                    if (list.size() > 0) {
-                                        test = list.get(0);
-                                    }
-                                }
-                            }
-                            if (parameterNames.contains(test.getName())) {
-                                this.constraints.add(new TypeCastConstraint(
-                                        test.getName() + "==" + firstVar.getNode().getName(), stm, PathConstraint.CREATE_FROM_DECISION));
-                            }
-                        }
-                    } else {
-                        throw new Exception("Dont support" + stm + " / " + content);
-                    }
                 }
             } else {
-                if (ast instanceof IASTUnaryExpression && ((IASTUnaryExpression) ast).getOperator() == IASTUnaryExpression.op_not) {
-                    IASTExpression exp = ((IASTUnaryExpression) ast).getOperand();
-                    while (exp instanceof IASTUnaryExpression && ((IASTUnaryExpression) exp).getOperator() == IASTUnaryExpression.op_bracketedPrimary) {
-                        exp = ((IASTUnaryExpression) exp).getOperand();
-                    }
-                    if (exp instanceof IASTIdExpression) {
-                        List<ISymbolicVariable> vars = table.findVariablesByName(exp.getRawSignature()).stream().filter(v -> {
-                            if (v instanceof PointerSymbolicVariable && ((PointerSymbolicVariable) v).getReference() instanceof CastReference) {
-                                return true;
-                            }
-                            return false;
-                        }).collect(Collectors.toList());
-                        if (vars.size() == 1) {
-                            ISymbolicVariable firstVar = vars.get(0);
-                            if (firstVar instanceof PointerStructureSymbolicVariable) {
-                                ISymbolicVariable test = ((CastReference) ((PointerStructureSymbolicVariable) firstVar).getReference()).getRef();
-                                while (!(parameterNames.contains(test.getName())) && test instanceof PointerStructureSymbolicVariable) {
-                                    if (((PointerStructureSymbolicVariable) test).getReference() instanceof CastReference) {
-                                        test = ((CastReference) ((PointerStructureSymbolicVariable) test).getReference()).getRef();
-                                    } else {
-                                        List<ISymbolicVariable> list = table.findVariablesByName(((PointerStructureSymbolicVariable) test).getReference().getBlock().getName());
-                                        if (list.size() > 0) {
-                                            test = list.get(0);
-                                        }
-                                    }
-                                }
-                                if (parameterNames.contains(test.getName())) {
-                                    this.constraints.add(new TypeCastConstraint(
-                                            test.getName() + "!=" + firstVar.getNode().getName(), stm, PathConstraint.CREATE_FROM_DECISION));
-                                }
-                            }
-                        } else {
-                            throw new Exception("Dont support" + stm + " / " + content);
-                        }
-                    }
-                } else {
-                    ConditionParser conditionParser = new ConditionParser();
-                    conditionParser.parse(ast, table, callTable);
-                    //get owner ((CPPASTFieldReference)((CPPASTFieldReference)((CPPASTArraySubscriptExpression)((IASTBinaryExpression)Utils.convertToIAST(str)).getOperand1()).arrayExpression).fOwner).fOwner
-                    //compare name tableMapping.get(0).getName().equals(((CPPASTIdExpression)((CPPASTBinaryExpression)Utils.convertToIAST(str)).fOperand2).toString())
-                    this.constraints
-                            .add(new PathConstraint(conditionParser.getNewConstraint(), stm, PathConstraint.CREATE_FROM_DECISION));
-                }
+                ConditionParser conditionParser = new ConditionParser();
+                conditionParser.parse(ast, table, callTable);
+                //get owner ((CPPASTFieldReference)((CPPASTFieldReference)((CPPASTArraySubscriptExpression)((IASTBinaryExpression)Utils.convertToIAST(str)).getOperand1()).arrayExpression).fOwner).fOwner
+                //compare name tableMapping.get(0).getName().equals(((CPPASTIdExpression)((CPPASTBinaryExpression)Utils.convertToIAST(str)).fOperand2).toString())
+                this.constraints
+                        .add(new PathConstraint(conditionParser.getNewConstraint(), stm, PathConstraint.CREATE_FROM_DECISION));
             }
         } else if (ASTUtils.isMultipleCodition(ast)) {
             logger.debug("is multiple condition");
@@ -887,79 +807,86 @@ public class SymbolicExecution implements ISymbolicExecution {
         return true;
 
     }
-
-
-    private void collectStubVar(IASTNode nodeAst) {
-        if (nodeAst instanceof IASTBinaryExpression) {
+    private void collectStubVar(IASTNode nodeAst){
+        if(nodeAst instanceof IASTBinaryExpression){
             handleRecursiveBinaryExp((IASTBinaryExpression) nodeAst, nodeAst);
-        } else if (nodeAst instanceof IASTDeclarationStatement) {
-            IASTDeclaration declaration = ((IASTDeclarationStatement) nodeAst).getDeclaration();
-            if (declaration instanceof IASTSimpleDeclaration) {
-                IASTDeclarator declarator = ((IASTSimpleDeclaration) declaration).getDeclarators()[0];
+        }
+        else if(nodeAst instanceof IASTDeclarationStatement){
+            IASTDeclaration declaration = ((IASTDeclarationStatement)nodeAst).getDeclaration();
+            if(declaration instanceof IASTSimpleDeclaration){
+                IASTDeclarator declarator = ((IASTSimpleDeclaration)declaration).getDeclarators()[0];
                 IASTInitializer initializer = declarator.getInitializer();
-                if (initializer instanceof IASTEqualsInitializer) {
-                    IASTInitializerClause clause = ((IASTEqualsInitializer) initializer).getInitializerClause();
-                    if (clause instanceof IASTFunctionCallExpression) {
+                if(initializer instanceof IASTEqualsInitializer){
+                    IASTInitializerClause clause =  ((IASTEqualsInitializer)initializer).getInitializerClause();
+                    if(clause instanceof IASTFunctionCallExpression){
                         handleStubVar((IASTExpression) clause, nodeAst);
-                    } else if (clause instanceof IASTUnaryExpression) {
-                        handleRecursiveUnaryExp((IASTUnaryExpression) clause, nodeAst);
-                    } else if (clause instanceof IASTBinaryExpression) {
-                        handleRecursiveBinaryExp((IASTBinaryExpression) clause, nodeAst);
+                    }
+                    else if(clause instanceof IASTUnaryExpression){
+                        handleRecursiveUnaryExp((IASTUnaryExpression) clause,nodeAst);
+                    }
+                    else if(clause instanceof IASTBinaryExpression){
+                        handleRecursiveBinaryExp((IASTBinaryExpression) clause,nodeAst);
                     }
                 }
 
             }
-        } else if (nodeAst instanceof IASTUnaryExpression) {
+        }
+        else if(nodeAst instanceof IASTUnaryExpression){
             handleRecursiveUnaryExp((IASTUnaryExpression) nodeAst, nodeAst);
-        } else if (nodeAst instanceof IASTExpressionStatement) {
-            IASTExpression op = ((IASTExpressionStatement) nodeAst).getExpression();
-            if (op instanceof IASTBinaryExpression) {
-                handleRecursiveBinaryExp((IASTBinaryExpression) op, nodeAst);
+        }
+        else if(nodeAst instanceof IASTExpressionStatement){
+            IASTExpression op = ((IASTExpressionStatement)nodeAst).getExpression();
+            if(op instanceof IASTBinaryExpression) {
+                handleRecursiveBinaryExp((IASTBinaryExpression)op, nodeAst);
             }
         }
     }
-
-    private void handleRecursiveBinaryExp(IASTBinaryExpression nodeAst, IASTNode originalAst) {
-        IASTExpression op1 = nodeAst.getOperand1();
-        IASTExpression op2 = nodeAst.getOperand2();
-        if (op1 instanceof IASTFunctionCallExpression) {
+    private void handleRecursiveBinaryExp(IASTBinaryExpression nodeAst, IASTNode originalAst){
+        IASTExpression op1 = ((IASTBinaryExpression)nodeAst).getOperand1();
+        IASTExpression op2 = ((IASTBinaryExpression)nodeAst).getOperand2();
+        if(op1 instanceof IASTFunctionCallExpression){
             handleStubVar(op1, originalAst);
-        } else if (op1 instanceof IASTBinaryExpression) {
-            handleRecursiveBinaryExp((IASTBinaryExpression) op1, originalAst);
-        } else if (op1 instanceof IASTUnaryExpression) {
-            handleRecursiveUnaryExp((IASTUnaryExpression) op1, originalAst);
         }
-        if (op2 instanceof IASTFunctionCallExpression) {
+        else if(op1 instanceof IASTBinaryExpression){
+            handleRecursiveBinaryExp((IASTBinaryExpression)op1, originalAst);
+        }
+        else if(op1 instanceof IASTUnaryExpression){
+            handleRecursiveUnaryExp((IASTUnaryExpression)op1, originalAst);
+        }
+        if(op2 instanceof  IASTFunctionCallExpression){
             handleStubVar(op2, originalAst);
-        } else if (op2 instanceof IASTBinaryExpression) {
-            handleRecursiveBinaryExp((IASTBinaryExpression) op2, originalAst);
-        } else if (op2 instanceof IASTUnaryExpression) {
-            handleRecursiveUnaryExp((IASTUnaryExpression) op2, originalAst);
+        }
+        else if(op2 instanceof IASTBinaryExpression){
+            handleRecursiveBinaryExp((IASTBinaryExpression)op2, originalAst);
+        }
+        else if(op2 instanceof IASTUnaryExpression){
+            handleRecursiveUnaryExp((IASTUnaryExpression)op2, originalAst);
         }
     }
-
-    private void handleRecursiveUnaryExp(IASTUnaryExpression nodeAst, IASTNode originalAst) {
-        IASTExpression op = nodeAst.getOperand();
-        if (op instanceof IASTFunctionCallExpression) {
-            handleStubVar(op, originalAst);
-        } else if (op instanceof IASTUnaryExpression) {
-            int operator = ((IASTUnaryExpression) op).getOperator();
-            if (operator == 7 || operator == 11) {
-                IASTExpression operand = ((IASTUnaryExpression) op).getOperand();
-                if (operand instanceof IASTUnaryExpression) {
-                    handleRecursiveUnaryExp((IASTUnaryExpression) operand, originalAst);
-                } else if (operand instanceof IASTBinaryExpression) {
-                    handleRecursiveBinaryExp((IASTBinaryExpression) operand, originalAst);
+    private void handleRecursiveUnaryExp(IASTUnaryExpression nodeAst, IASTNode originalAst){
+        IASTExpression op = ((IASTUnaryExpression)nodeAst).getOperand();
+        if(op instanceof IASTFunctionCallExpression){
+            handleStubVar(op,originalAst);
+        }
+        else if(op instanceof IASTUnaryExpression){
+            int operator = ((IASTUnaryExpression)op).getOperator();
+            if (operator == 7 || operator == 11){
+                IASTExpression operand = ((IASTUnaryExpression)op).getOperand();
+                if(operand instanceof IASTUnaryExpression){
+                    handleRecursiveUnaryExp((IASTUnaryExpression)operand, originalAst);
+                }
+                else if(operand instanceof IASTBinaryExpression){
+                    handleRecursiveBinaryExp((IASTBinaryExpression)operand, originalAst);
                 }
             }
-        } else if (op instanceof IASTBinaryExpression) {
+        }
+        else if(op instanceof IASTBinaryExpression){
             handleRecursiveBinaryExp((IASTBinaryExpression) op, originalAst);
         }
     }
-
-    private void handleStubVar(IASTNode op, IASTNode originalAst) {
+    private void handleStubVar(IASTNode op, IASTNode originalAst){
         String originalName = op.getRawSignature();
-        String replaceString = "";
+        String replaceString ="";
 //        if(op instanceof IASTFieldReference || op instanceof IASTArraySubscriptExpression ){
 //            String[] fieldSplit = originalName.split("\\.");
 //            Queue<String> queue = new LinkedList<>(Arrays.asList(fieldSplit));
@@ -992,15 +919,10 @@ public class SymbolicExecution implements ISymbolicExecution {
 //            else replaceString = originalName;
 //        }
 //        else{
-        String reducedStubName = "";
-        if (op instanceof IASTFunctionCallExpression) {
-            IASTExpression fNameExp = ((IASTFunctionCallExpression) op).getFunctionNameExpression();
-            if (fNameExp instanceof IASTFieldReference) {
-                reducedStubName = ((IASTFieldReference) fNameExp).getFieldName().getRawSignature();
-            } else {
-                reducedStubName = originalName.substring(0, originalName.lastIndexOf("("));
+            String reducedStubName = "";
+            if(op instanceof IASTFunctionCallExpression){
+                reducedStubName = originalName.substring(0,originalName.lastIndexOf("("));
             }
-        }
 //            else{
 //                for(Node stubNode : listStubNode){
 //                    if(stubNode instanceof StructNode){
@@ -1019,21 +941,22 @@ public class SymbolicExecution implements ISymbolicExecution {
 //                    }
 //                }
 //            }
-        String stubName = "akaut_stub_" + reducedStubName + "_call";
+            String stubName = "akaut_stub_"+reducedStubName+"_call";
 
-        for (String name : parameterNames) {
-            if (name.startsWith(stubName)) {
-                replaceString = name;
-                parameterNames.remove(name);
-                break;
+            for(String name : parameterNames){
+                if(name.startsWith(stubName)){
+                    replaceString = name;
+                    parameterNames.remove(name);
+                    break;
+                }
             }
-        }
 //        }
-        if (newAstString == "") {
-            String newCfgAstString = originalAst.getRawSignature().replace(originalName, replaceString);
+        if(newAstString == ""){
+            String newCfgAstString = originalAst.getRawSignature().replace(originalName,replaceString);
             newAstString = newCfgAstString;
-        } else {
-            newAstString = newAstString.replace(originalName, replaceString);
+        }
+        else{
+            newAstString = newAstString.replace(originalName,replaceString);
         }
     }
 

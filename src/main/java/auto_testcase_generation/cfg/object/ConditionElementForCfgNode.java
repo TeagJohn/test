@@ -5,6 +5,8 @@ import org.eclipse.cdt.core.dom.ast.IASTBinaryExpression;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 
 public class ConditionElementForCfgNode extends ConditionForCfgNode implements IConditionElementCfgNode {
+	public ConditionElementForCfgNode() {
+	}
 
 	public ConditionElementForCfgNode(IASTNode node) {
 		super(node);

@@ -2,9 +2,11 @@ package com.dse.util;
 
 import auto_testcase_generation.cfg.ICFG;
 import auto_testcase_generation.cfg.object.ICfgNode;
+import auto_testcase_generation.testdata.object.TestpathString_Marker;
 import com.dse.coverage.function_call.ConstructorCall;
 import com.dse.coverage.function_call.FunctionCall;
 import com.dse.environment.object.EnviroCoverageTypeNode;
+import com.dse.logger.AkaLogger;
 import com.dse.testcase_manager.minimize.Scope;
 import com.dse.parser.object.ICommonFunctionNode;
 import com.dse.report.element.Event;
@@ -26,6 +28,8 @@ public class TestPathUtils {
     public static final String RETURN_TAG = "Return from: ";
     private static final String PRE_CALLING_TAG = "<<PRE-CALLING>>";
     private static final String DELIMITER = "|";
+
+    final static AkaLogger logger = AkaLogger.get(TestPathUtils.class);
 
     public static List<FunctionCall> traceFunctionCall(String filePath) {
         List<FunctionCall> calledFunctions = new ArrayList<>();
@@ -202,6 +206,54 @@ public class TestPathUtils {
     private static boolean isExecutable(ITestCase testCase) {
         return testCase.getStatus().equals(ITestCase.STATUS_RUNTIME_ERR)
                 || testCase.getStatus().equals(ITestCase.STATUS_SUCCESS);
+    }
+
+    public static TestpathString_Marker readTestPathFromFile(String testPathFile) {
+        TestpathString_Marker encodedTestpath = new TestpathString_Marker();
+
+        int MAX_READ_FILE_NUMBER = 10;
+        int countReadFile = 0;
+
+        do {
+            logger.debug("Finish. We are getting a execution path from hard disk");
+            String tpContent = Utils.readFileContent(testPathFile);
+            encodedTestpath.setEncodedTestpath(tpContent.split("\\R"));
+
+            if (encodedTestpath.getEncodedTestpath().length == 0) {
+                //initialization = "";
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            countReadFile++;
+        } while (encodedTestpath.getEncodedTestpath().length == 0 && countReadFile <= MAX_READ_FILE_NUMBER);
+
+        return encodedTestpath;
+    }
+
+    public static TestpathString_Marker readTestpathFromFile(ITestCase testCase) throws InterruptedException {
+        TestpathString_Marker encodedTestpath = new TestpathString_Marker();
+
+        int MAX_READ_FILE_NUMBER = 10;
+        int countReadFile = 0;
+
+        do {
+            logger.debug("Finish. We are getting a execution path from hard disk");
+            encodedTestpath.setEncodedTestpath(
+                    Utils.readFileContent(testCase.getTestPathFile()).split("\\R"));
+
+            if (encodedTestpath.getEncodedTestpath().length == 0) {
+                //initialization = "";
+                Thread.sleep(10);
+            }
+
+            countReadFile++;
+        } while (encodedTestpath.getEncodedTestpath().length == 0 && countReadFile <= MAX_READ_FILE_NUMBER);
+
+        return encodedTestpath;
     }
 
     public static final int EQUAL = 0;

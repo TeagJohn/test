@@ -36,10 +36,10 @@ import com.dse.search.condition.AbstractFunctionNodeCondition;
 import com.dse.search.condition.VariableNodeCondition;
 import com.dse.testcase_execution.TestcaseExecution;
 import com.dse.testcase_execution.result_trace.AssertionResult;
+import com.dse.testcase_manager.ITestCase;
 import com.dse.testcase_manager.TestCase;
 import com.dse.testcase_manager.TestCaseManager;
 import com.dse.testcase_manager.TestPrototype;
-import com.dse.testcase_manager.ITestCase;
 import com.dse.testdata.InputCellHandler;
 import com.dse.testdata.gen.module.InitialTreeGen;
 import com.dse.testdata.gen.module.SimpleTreeDisplayer;
@@ -49,16 +49,14 @@ import com.dse.util.*;
 import javafx.collections.ObservableList;
 import org.apache.commons.math3.random.RandomDataGenerator;
 import org.eclipse.cdt.core.dom.ast.*;
-import org.eclipse.cdt.internal.core.dom.parser.cpp.CPPASTIdExpression;
-import org.eclipse.cdt.internal.core.dom.parser.cpp.CPPASTFunctionCallExpression;
+
 import java.io.File;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public abstract class SymbolicExecutionTestdataGeneration extends AbstractAutomatedTestdataGeneration {
     private final static AkaLogger logger = AkaLogger.get(SymbolicExecutionTestdataGeneration.class);
     List<StubVar> stubCall = new ArrayList<>();
-    List<Node> listStubNode;
+    List<Node> listStubNode = new ArrayList<>();
 
     public SymbolicExecutionTestdataGeneration(ICommonFunctionNode fn, String coverageType) {
         super(fn);
@@ -69,12 +67,7 @@ public abstract class SymbolicExecutionTestdataGeneration extends AbstractAutoma
             if (child instanceof FunctionNode) {
                 String name = child.getName();
                 String reducedDependName = name.substring(name.lastIndexOf("\\") + 1, name.lastIndexOf("("));
-                String stubName;
-                if (child.getParent() instanceof StructOrClassNode) {
-                    stubName = "akaut_stub_" + /*child.getParent().getName() + "_" +*/ reducedDependName + "_Number_of_Calls";
-                } else {
-                    stubName = "akaut_stub_" + reducedDependName + "_Number_of_Calls";
-                }
+                String stubName = "akaut_stub_" + reducedDependName + "_Number_of_Calls";
                 StubVar dpVar = new StubVar(stubName, 0);
                 stubCall.add(dpVar);
             }
@@ -138,10 +131,10 @@ public abstract class SymbolicExecutionTestdataGeneration extends AbstractAutoma
      * Generate test data
      */
     protected abstract void start(List<TestCase> testCases, ICommonFunctionNode fn, String coverageType,
-                                  List<TestPrototype> allPrototypes,
-                                  List<String> generatedTestcases,
-                                  List<String> analyzedTestpathMd5,
-                                  boolean showReport) throws Exception;
+            List<TestPrototype> allPrototypes,
+            List<String> generatedTestcases,
+            List<String> analyzedTestpathMd5,
+            boolean showReport) throws Exception;
 
     /**
      * Find a test case traversing the given test path
@@ -152,11 +145,11 @@ public abstract class SymbolicExecutionTestdataGeneration extends AbstractAutoma
      * @param analyzedTestpathMd5 md5 of analyzed test paths (result of executing
      *                            the generated test case)
      * @return state of solving process (FOUND_DUPLICATED_TESTCASE/
-     * COULD_NOT_CONSTRUCT_TREE_FROM_TESTCASE/
-     * COUND_NOT_EXECUTE_TESTCASE/ BE_ABLE_TO_EXECUTE_TESTCASE)
+     *         COULD_NOT_CONSTRUCT_TREE_FROM_TESTCASE/
+     *         COUND_NOT_EXECUTE_TESTCASE/ BE_ABLE_TO_EXECUTE_TESTCASE)
      */
     protected int solve(List<ICfgNode> testpath, ICommonFunctionNode fn, List<String> generatedTestcases,
-                        List<String> analyzedTestpathMd5) {
+            List<String> analyzedTestpathMd5) {
         String tpStr = testpath.toString();
         String md5 = Utils.computeMd5(tpStr);
         if (analyzedTestpathMd5.contains(md5))
@@ -173,17 +166,18 @@ public abstract class SymbolicExecutionTestdataGeneration extends AbstractAutoma
             String nameofTestcase = TestCaseManager.generateContinuousNameOfTestcase(getTestCaseNamePrefix(fn));
             TestCase testCase = null;
             if (fn.isTemplate()) {
-                testCase = TestCaseManager.createTestCase(nameofTestcase, fn);
+                testCase = createTestcase(allPrototypes.get(0), new Random().nextInt(), fn, ITestCase.POSTFIX_TESTCASE_BY_DIRECTED_METHOD);
             }
-            testCase = createTestcase(allPrototypes.get(0), new Random().nextInt(), fn, ITestCase.POSTFIX_TESTCASE_BY_DIRECTED_METHOD);
+            else testCase = TestCaseManager.createTestCase(nameofTestcase, fn);
             /*
              * Execute a test case
              */
             if (testCase != null) {
-//                List<RandomValue> randomValuesForInstance = generateRandomValuesForInstance(testCase.getRootDataNode(), fn, testCase);
-//                if (randomValuesForInstance != null)
-//                    theNextTestdata.addAll(randomValuesForInstance);
-//                logger.debug("add sub class and constructor into global children in directed generate test cast: " + randomValuesForInstance);
+                List<RandomValue> randomValuesForInstance = generateRandomValuesForInstance(testCase.getRootDataNode(), fn, testCase);
+                if (randomValuesForInstance != null)
+                    theNextTestdata.addAll(randomValuesForInstance);
+                logger.debug("add sub class and constructor into global children in directed generate test cast: " + randomValuesForInstance);
+
 
                 TestCasesNavigatorController.getInstance().refreshNavigatorTreeFromAnotherThread();
 
@@ -196,7 +190,11 @@ public abstract class SymbolicExecutionTestdataGeneration extends AbstractAutoma
 
                 if (executionStatus == AUTOGEN_STATUS.EXECUTION.BE_ABLE_TO_EXECUTE_TESTCASE) {
                     testCases.add(testCase);
-                    testCase.updateToTestCasesNavigatorTree();
+                    try {
+                        testCase.updateToTestCasesNavigatorTree();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
 
                 return executionStatus;
@@ -209,6 +207,8 @@ public abstract class SymbolicExecutionTestdataGeneration extends AbstractAutoma
         }
     }
 
+
+
     protected abstract String getTestCaseNamePrefix(ICommonFunctionNode fn);
 
     /**
@@ -217,10 +217,10 @@ public abstract class SymbolicExecutionTestdataGeneration extends AbstractAutoma
      * @param fn
      * @param theNextTestdata
      * @return COULD_NOT_CONSTRUCT_TREE_FROM_TESTCASE/ COUND_NOT_EXECUTE_TESTCASE/
-     * BE_ABLE_TO_EXECUTE_TESTCASE
+     *         BE_ABLE_TO_EXECUTE_TESTCASE
      */
     protected int iterateDirectly(TestCase testCase, TestcaseExecution executor, ICommonFunctionNode fn,
-                                  List<RandomValue> theNextTestdata) {
+            List<RandomValue> theNextTestdata) {
         RootDataNode root = testCase.getRootDataNode();
 
         try {
@@ -364,7 +364,7 @@ public abstract class SymbolicExecutionTestdataGeneration extends AbstractAutoma
     }
 
     protected List<RandomValue> generateTheNextTestData(List<ICfgNode> testpath, ICommonFunctionNode functionNode,
-                                                        List<String> generatedTestcases) {
+            List<String> generatedTestcases) {
         List<RandomValue> theNextTestdata = new ArrayList<>();
 
         Parameters parameters = new Parameters();
@@ -376,8 +376,8 @@ public abstract class SymbolicExecutionTestdataGeneration extends AbstractAutoma
         List<StubVar> stubVarCount = collectStubVar(stubParameters, testpath);
         if (functionNode.isTemplate()) {
             TestPrototype prototype = allPrototypes.get(0);
-            List<IDataNode> listPrototypeArgs = Search2.findSubprogramUnderTest(prototype.getRootDataNode()).getChildren();
-            List<IVariableNode> listArgsVariables = functionNode.getArgumentsAndGlobalVariables();
+            List<IDataNode> listPrototypeArgs = Search2.findSubprogramUnderTest(prototype.getRootDataNode()). getChildren();
+            List<IVariableNode> listArgsVariables =  functionNode.getArgumentsAndGlobalVariables();
             //because of size of prototype > argsVariables 1 node: argsVariables list do not have return node
             for (int i = 0; i < listArgsVariables.size(); i++) {
                 IDataNode dataNode = listPrototypeArgs.get(i);
@@ -392,9 +392,8 @@ public abstract class SymbolicExecutionTestdataGeneration extends AbstractAutoma
 
             List<IVariableNode> listVariables = TemplateUtils.getTemplateArgs((IFunctionNode) functionNode);
             parameters.addAll(listVariables);
-        } else {
-            parameters.addAll(functionNode.getArgumentsAndGlobalVariables());
         }
+        else parameters.addAll(functionNode.getArguments());
         parameters.addAll(stubParameters);
         //
 
@@ -402,7 +401,6 @@ public abstract class SymbolicExecutionTestdataGeneration extends AbstractAutoma
             ITestpathInCFG testpathInCFG = new FullTestpath();
             testpathInCFG.getAllCfgNodes().addAll(testpath);
             ISymbolicExecution se = new SymbolicExecution(testpathInCFG, parameters, functionNode);
-            System.out.println("break");
             logger.debug("Constraints: " + se.getConstraints());
             logger.debug("New variables: " + se.getNewVariables().toString());
             logger.debug("Table mapping: " + se.getTableMapping().toString());
@@ -431,9 +429,6 @@ public abstract class SymbolicExecutionTestdataGeneration extends AbstractAutoma
 
             addSizeOfArrayOrPointerDependencies(se, parameters, functionNode);
 
-            List<TypeCastConstraint> typeCastConstraints = se.getConstraints().getAndRemoveAllTypeCastConstraints();
-
-            List<RandomValue> structureTestdata = generateStructureData(typeCastConstraints, parameters);
             // generate smt-lib2
             SmtLibGeneration smt = new SmtLibGeneration(parameters, se.getNormalizedPathConstraints(), functionNode,
                     se.getNewVariables());
@@ -529,54 +524,13 @@ public abstract class SymbolicExecutionTestdataGeneration extends AbstractAutoma
                 RandomValue templateRandomValue = new RandomValue(functionNode.getName(), prototype);
                 theNextTestdata.add(templateRandomValue);
             }
-            theNextTestdata.addAll(structureTestdata);
         } catch (Exception e) {
-            logger.error("Something wrong", e);
+            UIController.showErrorDialog(e.getMessage(), "Something wrong", "");
             e.printStackTrace();
         }
 
 //        theNextTestdata = handleStringInTestData(theNextTestdata);
         return theNextTestdata;
-    }
-
-    private List<RandomValue> generateStructureData(List<TypeCastConstraint> constraints, Parameters parameters) {
-        List<RandomValue> values = new ArrayList<>();
-        for (IVariableNode param : parameters) {
-            if (param.getCorrespondingNode() instanceof StructOrClassNode) {
-                String paramName = param.getName();
-                List<INode> allClasses = Search.getDerivedNodesInSpace((StructOrClassNode) param.getCorrespondingNode(), fn);
-                List<INode> satisfiedClasses = new ArrayList<>();
-                satisfiedClasses.addAll(allClasses);
-                Set<INode> removedClasses = new HashSet<>();
-                for (TypeCastConstraint constraint : constraints) {
-                    boolean isInstanceOf = constraint.getConstraint().contains("==");
-                    String[] strings = constraint.getConstraint().split(isInstanceOf ? "==" : "!=");
-                    if (strings[0].equals(paramName)) {
-                        if (isInstanceOf) {
-                            List<INode> nodes = satisfiedClasses.stream()
-                                    .filter(iNode -> strings[1].equals(iNode.getName())).collect(Collectors.toList());
-                            if (nodes.size() > 0) {
-                                satisfiedClasses = Search.getDerivedNodesInSpace((StructOrClassNode) nodes.get(0), fn);
-                            }
-                        } else {
-                            List<INode> nodes = allClasses.stream()
-                                    .filter(iNode -> strings[1].equals(iNode.getName())).collect(Collectors.toList());
-                            if (nodes.size() > 0) {
-                                removedClasses.addAll(Search.getDerivedNodesInSpace((StructOrClassNode) nodes.get(0), fn));
-                            }
-                        }
-                    }
-                }
-                satisfiedClasses.removeAll(removedClasses);
-                satisfiedClasses.removeIf(iNode -> ((StructOrClassNode) iNode).isAbstract());
-                if (satisfiedClasses.size() > 0) {
-                    INode selected = satisfiedClasses
-                            .get(new Random().nextInt(satisfiedClasses.size()));
-                    values.add(new RandomValueForAssignment(paramName, selected.getName()));
-                }
-            }
-        }
-        return values;
     }
 
     private IVariableNode findCorrespondingVar(NewVariableInSe newVar, List<IVariableNode> variableNodes) {
@@ -642,7 +596,7 @@ public abstract class SymbolicExecutionTestdataGeneration extends AbstractAutoma
                         if (initializer instanceof IASTEqualsInitializer) {
                             IASTInitializerClause clause = ((IASTEqualsInitializer) initializer).getInitializerClause();
                             if (clause instanceof IASTFunctionCallExpression) {
-                                handleStubVar(stubParameters, (IASTFunctionCallExpression) clause);
+                                handleStubVar(stubParameters, (IASTExpression) clause);
                             } else if (clause instanceof IASTUnaryExpression) {
                                 handleRecursiveUnaryExp((IASTUnaryExpression) clause, stubParameters);
                             } else if (clause instanceof IASTBinaryExpression) {
@@ -658,9 +612,6 @@ public abstract class SymbolicExecutionTestdataGeneration extends AbstractAutoma
                     IASTExpression op = ((IASTExpressionStatement) nodeAst).getExpression();
                     if (op instanceof IASTBinaryExpression) {
                         handleRecursiveBinaryExp((IASTBinaryExpression) op, stubParameters);
-                    } else if (op instanceof IASTFunctionCallExpression) {
-//                        handleStubRef(stubParameters, op);
-                        handleStubVar(stubParameters, op);
                     }
                 }
             }
@@ -674,14 +625,14 @@ public abstract class SymbolicExecutionTestdataGeneration extends AbstractAutoma
         IASTExpression op1 = ((IASTBinaryExpression) nodeAst).getOperand1();
         IASTExpression op2 = ((IASTBinaryExpression) nodeAst).getOperand2();
         if (op1 instanceof IASTFunctionCallExpression) {
-            handleStubVar(stubParameters, (IASTFunctionCallExpression) op1);
+            handleStubVar(stubParameters, op1);
         } else if (op1 instanceof IASTBinaryExpression) {
             handleRecursiveBinaryExp((IASTBinaryExpression) op1, stubParameters);
         } else if (op1 instanceof IASTUnaryExpression) {
             handleRecursiveUnaryExp((IASTUnaryExpression) op1, stubParameters);
         }
         if (op2 instanceof IASTFunctionCallExpression) {
-            handleStubVar(stubParameters, (IASTFunctionCallExpression) op2);
+            handleStubVar(stubParameters, op2);
         } else if (op2 instanceof IASTBinaryExpression) {
             handleRecursiveBinaryExp((IASTBinaryExpression) op2, stubParameters);
         } else if (op2 instanceof IASTUnaryExpression) {
@@ -692,7 +643,7 @@ public abstract class SymbolicExecutionTestdataGeneration extends AbstractAutoma
     private void handleRecursiveUnaryExp(IASTUnaryExpression nodeAst, Parameters stubParameters) {
         IASTExpression op = ((IASTUnaryExpression) nodeAst).getOperand();
         if (op instanceof IASTFunctionCallExpression) {
-            handleStubVar(stubParameters, (IASTFunctionCallExpression) op);
+            handleStubVar(stubParameters, op);
         } else if (op instanceof IASTUnaryExpression) {
             int operator = ((IASTUnaryExpression) op).getOperator();
             if (operator == 7 || operator == 11) {
@@ -717,64 +668,23 @@ public abstract class SymbolicExecutionTestdataGeneration extends AbstractAutoma
                 String reducedStubName = stubNode.getName().substring(0, stubNode.getName().indexOf("("));
                 if (reducedOpName.equals(reducedStubName)) {
 
-                    if (stubNode.getName().contains("&") || stubNode.getName().contains("*")) {
-                        handleStubRef(stubParams, stubNode, op);
-                    }
                     int count = stubCall.get(j).count + 1;
                     stubCall.get(j).setCount(count);
                     String stubName = "akaut_stub_" + reducedStubName + "_call" + count;
 
                     VariableNode stubVar = new InternalVariableNode();
                     String stubNodeDeclSpecifier = ((FunctionNode) stubNode).getAST().getDeclSpecifier().toString();
-                    if (!stubNodeDeclSpecifier.equals("void")) {
-                        IASTPointerOperator[] pointerOps = ((FunctionNode) stubNode).getAST().getDeclarator()
-                                .getPointerOperators();
-                        for (int i = 0; i < pointerOps.length; i++) {
-                            stubNodeDeclSpecifier += "*";
-                        }
-                        IASTDeclarationStatement declareAst = ASTUtils.generateDeclarationStatement(stubNodeDeclSpecifier);
-                        stubVar.setAST(declareAst.getDeclaration());
-                        stubVar.setName(stubName);
-                        stubParams.add(stubVar);
-                        break;
+                    IASTPointerOperator[] pointerOps = ((FunctionNode) stubNode).getAST().getDeclarator()
+                            .getPointerOperators();
+                    for (int i = 0; i < pointerOps.length; i++) {
+                        stubNodeDeclSpecifier += "*";
                     }
-                }
-            }
-        }
-    }
-
-    private void handleStubRef(Parameters stubParams, Node function, IASTNode op) {
-        List<IVariableNode> functionParams = ((FunctionNode) function).getArguments();
-        IASTInitializerClause[] opParams = ((CPPASTFunctionCallExpression) op).getArguments();
-        String functionName = op.getRawSignature().substring(0, op.getRawSignature().indexOf("("));
-        for (int i = 0; i < functionParams.size(); i++) {
-            IVariableNode param = functionParams.get(i);
-            String paramType = param.getRealType();
-            if ((VariableTypeUtils.isReference(paramType) && opParams[i] instanceof CPPASTIdExpression)
-                    || (VariableTypeUtils.isPointer(paramType) && (opParams[i] instanceof CPPASTIdExpression
-                    || opParams[i] instanceof IASTUnaryExpression))) {
-//                if (opParams[i] instanceof CPPASTIdExpression) {
-                    int count = stubCall.get(i).count + 1;
-                    stubCall.get(i).setCount(count);
-                    String stubName = "akaut_stub_" + functionName + "_ref_call" + count + "_" + param.getName();
-                    VariableNode stubVar = new InternalVariableNode();
-                    String stubNodeDeclSpecifier = VariableTypeUtils.deleteReferenceOperator(paramType);
-//                    stubNodeDeclSpecifier = VariableTypeUtils.deleteReferenceOperator(stubNodeDeclSpecifier);
                     IASTDeclarationStatement declareAst = ASTUtils.generateDeclarationStatement(stubNodeDeclSpecifier);
-                    if (declareAst != null) {
-                        stubVar.setAST(declareAst.getDeclaration());
-                    } else {
-                        stubVar.setRawType(stubNodeDeclSpecifier);
-                        stubVar.setReducedRawType(stubNodeDeclSpecifier);
-                        String coreType = VariableTypeUtils.removeRedundantKeyword(stubNodeDeclSpecifier);
-                        coreType = VariableTypeUtils.deletePointerOperator(coreType);
-                        stubVar.setCoreType(coreType);
-                    }
+                    stubVar.setAST(declareAst.getDeclaration());
                     stubVar.setName(stubName);
-                    stubVar.setAbsolutePath(this.fn.getAbsolutePath() + File.separator + stubName);
-                    stubVar.setParent(this.fn);
                     stubParams.add(stubVar);
-//                }
+                    break;
+                }
             }
         }
     }
@@ -805,7 +715,7 @@ public abstract class SymbolicExecutionTestdataGeneration extends AbstractAutoma
     }
 
     protected void addSizeOfArrayOrPointerDependencies(ISymbolicExecution se, Parameters parameters,
-                                                       ICommonFunctionNode functionNode) throws Exception {
+            ICommonFunctionNode functionNode) throws Exception {
         if (foundSolution(se, parameters, functionNode)) {
             Set<SizeOfArrayOrPointerDependency> dependencies = new HashSet<>();
 

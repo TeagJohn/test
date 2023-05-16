@@ -183,7 +183,7 @@ public abstract class AssertionConverter extends Converter {
 
                 if ((failure.getExpectedName().equals(expectedName)
                         || failure.getActualName().equals(expectedName))
-                        /*&& failure.getMessage().contains(fcallTag)*/) {
+                        && failure.getMessage().contains(fcallTag)) {
 
                     found = true;
 

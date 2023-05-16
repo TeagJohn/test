@@ -1,7 +1,9 @@
 package com.dse.regression;
 
 import com.dse.config.WorkspaceConfig;
+import com.dse.coverage.InstructionComputator;
 import com.dse.environment.Environment;
+import com.dse.environment.WorkspaceCreation;
 import com.dse.exception.FunctionNodeNotFoundException;
 import com.dse.guifx_v3.helps.UIController;
 import com.dse.guifx_v3.objects.DefaultTreeTableCell;
@@ -14,6 +16,7 @@ import com.dse.parser.object.*;
 import com.dse.probe_point_manager.ProbePointManager;
 import com.dse.probe_point_manager.objects.CheckBoxTreeTableRowForProbePoint;
 import com.dse.probe_point_manager.objects.ProbePoint;
+import com.dse.regression.cia.WaveCIA;
 import com.dse.regression.objects.Reason;
 import com.dse.search.Search;
 import com.dse.search.condition.FunctionNodeCondition;
@@ -26,6 +29,7 @@ import com.dse.testcasescript.object.*;
 import com.dse.thread.task.IncrementalBuildEnvironmentLoaderTask;
 import com.dse.util.PathUtils;
 import com.dse.util.Utils;
+import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -214,7 +218,8 @@ public abstract class AbstractApplyChangesConfirm implements Initializable {
     }
 
     // add IFunctionNode to affectedNodes to know test cases that are affected
-    private void addToAffectedNodes(List<INode> affectedNodes, INode node) {
+    private void addToAffectedNodes(List<INode> affectedNodes, INode node, int level) {
+        if (level < 0) return;
         List<String> deletedPaths = ChangesBetweenSourcecodeFiles.deletedPaths;
         // nodes are deleted can not be added to affectedNodes
         if (!deletedPaths.contains(node.getAbsolutePath()) && !affectedNodes.contains(node)) {
@@ -225,15 +230,17 @@ public abstract class AbstractApplyChangesConfirm implements Initializable {
 
             // if a function node is affected then all functions that call this function are affected nodes too
             if (node instanceof IFunctionNode) {
-                affectedNodes.add(node);
-                for (Dependency dependency : node.getDependencies()) {
-                    if (dependency instanceof FunctionCallDependency && dependency.getEndArrow() == node) {
-                        INode start = dependency.getStartArrow();
-                        if (!ChangesBetweenSourcecodeFiles.modifiedNodes.contains(start)) {
-                            Reason reason = new Reason(start, Reason.STATUS_AFFECTED, node);
-                            ReasonManager.putToReasonMap(start, reason);
+                if (!affectedNodes.contains(node)) {
+                    affectedNodes.add(node);
+                    for (Dependency dependency : node.getDependencies()) {
+                        if (dependency instanceof FunctionCallDependency && dependency.getEndArrow() == node) {
+                            INode start = dependency.getStartArrow();
+                            if (!ChangesBetweenSourcecodeFiles.modifiedNodes.contains(start)) {
+                                Reason reason = new Reason(start, Reason.STATUS_AFFECTED, node);
+                                ReasonManager.putToReasonMap(start, reason);
 
-                            addToAffectedNodes(affectedNodes, start);
+                                addToAffectedNodes(affectedNodes, start, level - 1);
+                            }
                         }
                     }
                 }
@@ -256,7 +263,7 @@ public abstract class AbstractApplyChangesConfirm implements Initializable {
                             Reason reason = new Reason(functionNode, Reason.STATUS_AFFECTED, node);
                             ReasonManager.putToReasonMap(functionNode, reason);
 
-                            addToAffectedNodes(affectedNodes, functionNode);
+                            addToAffectedNodes(affectedNodes, functionNode, level - 1);
                         }
                     } else if (dependency instanceof ExtendDependency && dependency.getEndArrow() == node) {
                         // if a Structure Node "A" is affected then all Structure nodes that extend "A" are affected too
@@ -270,7 +277,7 @@ public abstract class AbstractApplyChangesConfirm implements Initializable {
                             Reason reason = new Reason(start, Reason.STATUS_AFFECTED, node);
                             ReasonManager.putToReasonMap(start, reason);
 
-                            addToAffectedNodes(affectedNodes, child);
+                            addToAffectedNodes(affectedNodes, child, level - 1);
                         }
                     }
                 }
@@ -283,7 +290,7 @@ public abstract class AbstractApplyChangesConfirm implements Initializable {
                         Reason reason = new Reason(method, Reason.STATUS_AFFECTED, node);
                         ReasonManager.putToReasonMap(method, reason);
 
-                        addToAffectedNodes(affectedNodes, method);
+                        addToAffectedNodes(affectedNodes, method, level - 1);
                     }
                 }
             }
@@ -336,10 +343,44 @@ public abstract class AbstractApplyChangesConfirm implements Initializable {
             ReasonManager.putToReasonMap(modifiedNode, reason);
         }
 
+        // Todo: We need to fix here. How is an affected node?
+        //  Are they only modified but impacted by the modified?
+        //  How about if the function call would be deleted after modification? There is no more FuncCallDependency?
+        //  *
+        //  Here is solution.
+        // reanalyze dependencies
+        try {
+            ProjectNode projectRootNode = Environment.getInstance().getProjectNode();
+
+//            InstructionComputator.compute();
+
+            new WorkspaceCreation().exportSourcecodeFileNodeToWorkingDirectory(projectRootNode,
+                    new WorkspaceConfig().fromJson().getElementDirectory(),
+                    new WorkspaceConfig().fromJson().getDependencyDirectory());
+            logger.debug("Analyze dependency for new Environment successfully!");
+//            Platform.runLater(() -> UIController
+//                    .showSuccessDialog("Dependency analyzer successes", "Dependency analyzer", "Success"));
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("Analyze dependency for new Environment failed!");
+        }
+        // todo: end solution
+
+        WaveCIA waveCIA = WaveCIA.getWaveCIA();
+        waveCIA.reset();
+//        waveCIA.setBackupEnvironment(Environment.getBackupEnvironment());
+//        waveCIA.setNewEnvironment(Environment.getInstance());
+        waveCIA.getModifiedFunctionNodes().addAll(ChangesBetweenSourcecodeFiles.modifiedNodes);
+        for (INode node : ChangesBetweenSourcecodeFiles.modifiedNodes) {
+            waveCIA.addImpactedNode(node, WaveCIA.LEVEL);
+        }
+
         for (INode modifiedNode : modifiedNodes) {
             if (modifiedNode instanceof IFunctionNode || modifiedNode instanceof StructureNode)
-                addToAffectedNodes(affectedNodes, modifiedNode);
+                addToAffectedNodes(affectedNodes, modifiedNode, WaveCIA.LEVEL);
         }
+        waveCIA.getImpactedFunctionNode().clear();
+        waveCIA.getImpactedFunctionNode().addAll(affectedNodes);
     }
 
     /**

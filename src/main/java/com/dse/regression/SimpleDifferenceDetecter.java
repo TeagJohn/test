@@ -36,9 +36,14 @@ public class SimpleDifferenceDetecter extends AbstractDifferenceDetecter {
                     // Analyze changed source code file again
                     List<INode> allNodesInLatestVersion = Search.searchNodes(modifiedSrcNode, new NodeCondition());
 
+                    // TODO: 11/10/2022 Need add all in-leaf node of new files added (not done)
                     findAddedNodes(allNodesInLatestVersion, oldElements);
                     findDeletedNodes(oldElements, allNodesInLatestVersion);
                     findModifiedNodes(oldElements, allNodesInLatestVersion);
+                }
+                else {
+                    // new file or folder added
+                    // this has been done before
                 }
             } catch (Exception e) {
                 logger.debug("Can not parse " + modifiedSrcNode.getAbsolutePath());

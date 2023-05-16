@@ -80,10 +80,10 @@ public class IncludeHeaderDependencyGeneration extends AbstractDependencyGenerat
                         INode refferedNode = searchedNodes.get(0);
 
                         IncludeHeaderDependency d = new IncludeHeaderDependency(owner, refferedNode);
-                        if (!owner.onlyGetDependencies().contains(d)
-                                && !refferedNode.onlyGetDependencies().contains(d)) {
-                            owner.onlyGetDependencies().add(d);
-                            refferedNode.onlyGetDependencies().add(d);
+                        if (!owner.getDependencies().contains(d)
+                                && !refferedNode.getDependencies().contains(d)) {
+                            owner.getDependencies().add(d);
+                            refferedNode.getDependencies().add(d);
 
                             logger.debug("Found an include dependency: " + d.toString());
                         }

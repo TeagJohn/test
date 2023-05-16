@@ -1,14 +1,10 @@
 package com.dse.testdata.object;
 
 import com.dse.logger.AkaLogger;
-import com.dse.testdata.comparable.gtest.BooleanConditionsStatementGenerator;
-import com.dse.testdata.comparable.gtest.FloatingPointComparisonStatementGenerator;
-import com.dse.testdata.comparable.gtest.IBooleanConditions;
-import com.dse.testdata.comparable.gtest.IFloatingPointComparison;
 import com.dse.util.SpecialCharacter;
 import com.dse.util.VariableTypeUtils;
 
-public class NormalNumberDataNode extends NormalDataNode implements IBooleanConditions, IFloatingPointComparison {
+public class NormalNumberDataNode extends NormalDataNode {
     private final static AkaLogger logger = AkaLogger.get(NormalNumberDataNode.class);
 
     @Override
@@ -22,8 +18,8 @@ public class NormalNumberDataNode extends NormalDataNode implements IBooleanCond
                 return getUserCodeContent();
         }
 
-        if (!isPassingVariable() || (isPassingVariable() && isDeclared) || isInConstructor()) {
-            input = super.getInputForGoogleTest(isDeclared) + SpecialCharacter.LINE_BREAK;
+        if(!isPassingVariable() || (isPassingVariable() && isDeclared) || isInConstructor()){
+            input =  super.getInputForGoogleTest(isDeclared) + SpecialCharacter.LINE_BREAK;
 
             // get type of variable
             String typeVar = VariableTypeUtils.deleteStorageClassesExceptConst(this.getRawType())
@@ -58,21 +54,11 @@ public class NormalNumberDataNode extends NormalDataNode implements IBooleanCond
             } else if (isPassingVariable() || isInConstructor()) {
                 input += typeVar + " " + getVituralName() + SpecialCharacter.END_OF_STATEMENT;
             } else if (this.getValue() == null) {
-                input += "/* " + getName() + " : null value -> no code */";
+                input += "/* "+getName()+" : null value -> no code */";
             }
         }
 
         return input + SpecialCharacter.LINE_BREAK;
-    }
-
-    @Override
-    public String getFloatingPointComparisonAssertion() {
-        return new FloatingPointComparisonStatementGenerator(this).getFloatingPointComparisonAssertion();
-    }
-
-    @Override
-    public String getBooleanConditionAssertion() {
-        return new BooleanConditionsStatementGenerator(this).getBooleanConditionAssertion();
     }
 
 //    @Override

@@ -49,7 +49,7 @@ public interface IRegex {
      * Ex2: a1b2c3 <br/>
      * Ex3: a1_b2_c3
      */
-    String NAME_REGEX = "[a-zA-Z0-9_]+";
+    String NAME_REGEX = "[a-zA-Z0-9\\_]+";
 
     String SPACES = "\\s*";
 
@@ -78,7 +78,7 @@ public interface IRegex {
     String FLOAT_REGEX = IRegex.NUMBER_REGEX + IRegex.DOT_DELIMITER + IRegex.NUMBER_REGEX;
 
     String FUNCTION_POINTER = ANY + SPACES
-            + OPENING_PARETHENESS + SPACES + POINTER + SPACES + NAME_REGEX + SPACES + CLOSING_PARETHENESS + SPACES
+            + OPENING_PARETHENESS + POINTER + NAME_REGEX + CLOSING_PARETHENESS + SPACES
             + OPENING_PARETHENESS + ".*" + CLOSING_PARETHENESS;
 
 }

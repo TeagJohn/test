@@ -123,7 +123,7 @@ public class Metrics extends Section {
 
         List<TestCase> allTestCases = new ArrayList<>();
 
-//        ExecutorService es = Executors.newFixedThreadPool(Environment.getInstance().getMaxThreadCount());
+//        ExecutorService es = Executors.newFixedThreadPool(5);
 //        List<Callable<Table.Row>> tasks = new ArrayList<Callable<Table.Row>>();
 
         AtomicInteger index = new AtomicInteger();

@@ -3,10 +3,6 @@ package com.dse.environment.object;
 public class EnvironmentRootNode extends AbstractEnvironmentNode {
     private String environmentScriptPath;
 
-    public EnvironmentRootNode() {
-        super();
-    }
-
     @Override
     public String exportToFile() {
         StringBuilder output = new StringBuilder(new EnviroNewNode().exportToFile() + "\n");

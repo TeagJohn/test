@@ -84,25 +84,19 @@ public class ValueToTestcaseConverter_UnknownSize {
                     // update size of array/pointer
                     List<String> values = varToIndexes.get(nameVar);
                     for (int i = 0; i < indexes.size(); i++) {
-                        try {
-                            Long newIndexNum = Long.parseLong(indexes.get(i)) + 1;
-                            Long maxIndex;
-                            if (values.size() > i) {
-                                maxIndex = Long.parseLong(values.get(i));
-                                if (newIndexNum > maxIndex) {
-                                    values.remove(i);
-                                    values.add(i, newIndexNum + "");
-
-                                    varToIndexes.remove(nameVar);
-                                    varToIndexes.put(nameVar, values);
-                                }
-                            } else {
+                        Long newIndexNum = Long.parseLong(indexes.get(i)) + 1;
+                        Long maxIndex;
+                        if(values.size()>i) {
+                            maxIndex = Long.parseLong(values.get(i));
+                            if (newIndexNum > maxIndex) {
+                                values.remove(i);
                                 values.add(i, newIndexNum + "");
+
+                                varToIndexes.remove(nameVar);
                                 varToIndexes.put(nameVar, values);
                             }
-                        } catch (NumberFormatException e) {
-                            logger.error("Cannot convert " + indexes.get(i) + " to index");
-                            values.add(i, "1");
+                        }else{
+                            values.add(i, newIndexNum + "");
                             varToIndexes.put(nameVar, values);
                         }
                     }

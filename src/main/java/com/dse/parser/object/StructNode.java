@@ -48,17 +48,6 @@ public class StructNode extends StructOrClassNode {
 
     @Override
     public String toString() {
-        return this.getNewType();
-//        return /* "struct " + */ super.toString();
-    }
-
-    @Override
-    public INode clone() {
-        StructNode clone = new StructNode();
-        clone.setAST(getAST());
-        clone.setName(getName());
-        clone.setAbsolutePath(getAbsolutePath());
-        clone.setParent(getParent());
-        return clone;
+        return /* "struct " + */ super.toString();
     }
 }

@@ -86,10 +86,10 @@ public class SmtLibGeneration implements ISmtLibGeneration {
                 default:
                     SmtLibv2Normalizer2 normalizer = new SmtLibv2Normalizer2(
                             constraint_string
-//                                    .replace(
-//                                            ISymbolicVariable.SEPARATOR_BETWEEN_STRUCTURE_NAME_AND_ITS_ATTRIBUTES,
-//                                            "."
-//                                    )
+                                    .replace(
+                                            ISymbolicVariable.SEPARATOR_BETWEEN_STRUCTURE_NAME_AND_ITS_ATTRIBUTES,
+                                            "."
+                                    )
                     );
                     normalizer.normalize();
 
@@ -102,9 +102,10 @@ public class SmtLibGeneration implements ISmtLibGeneration {
                     }
                     break;
             }
+        }
 
-		}
         smtLib += ISmtLibGeneration.SOLVE_COMMAND;
+
         // UNDER CONSTRUCTION
         // Remove all brackets encapsulated a string
         smtLib = smtLib.replaceAll("\\(\"", "\"").replaceAll("\"\\)", "\"");

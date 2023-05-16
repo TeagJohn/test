@@ -1,11 +1,9 @@
 package com.dse.testcase_manager;
 
 //import auto_testcase_generation.testdatagen.FullBoundedTestGen;
-
 import com.dse.config.WorkspaceConfig;
 import com.dse.environment.Environment;
 import com.dse.guifx_v3.helps.CacheHelper;
-import com.dse.guifx_v3.helps.UILogger;
 import com.dse.guifx_v3.objects.TestCasesTreeItem;
 import com.dse.logger.AkaLogger;
 import com.dse.parser.dependency.IncludeHeaderDependency;
@@ -14,8 +12,6 @@ import com.dse.parser.object.ICommonFunctionNode;
 import com.dse.parser.object.INode;
 import com.dse.project_init.ProjectClone;
 import com.dse.search.Search2;
-import com.dse.testcasescript.object.ITestcaseNode;
-import com.dse.testcasescript.object.TestNormalSubprogramNode;
 import com.dse.testdata.DataTree;
 import com.dse.testdata.object.*;
 import com.dse.user_code.UserCodeManager;
@@ -263,22 +259,8 @@ public class TestCase extends AbstractTestCase implements IDataTestItem {
 
     public void updateToTestCasesNavigatorTree() {
         ICommonFunctionNode functionNode = this.getRootDataNode().getFunctionNode();
-        if (UILogger.getLogMode().equals(UILogger.MODE_GUI)) {
-            TestCasesTreeItem treeItem = CacheHelper.getFunctionToTreeItemMap().get(functionNode);
-            treeItem.addTestNewNode(treeItem, this);
-        } else {
-            ITestcaseNode root = Environment.getInstance().getTestcaseScriptRootNode();
-            root.getChildren().forEach(u -> {
-                u.getChildren().forEach(s -> {
-                    if (s instanceof TestNormalSubprogramNode && ((TestNormalSubprogramNode) s).getName().equals(functionNode.getAbsolutePath())) {
-                        if (!s.getChildren().contains(this)) {
-                            s.getChildren().add(this.getTestNewNode());
-                            this.getTestNewNode().setParent(s);
-                        }
-                    }
-                });
-            });
-        }
+        TestCasesTreeItem treeItem = CacheHelper.getFunctionToTreeItemMap().get(functionNode);
+        treeItem.addTestNewNode(treeItem, this);
 
         Environment.getInstance().saveTestcasesScriptToFile();
         logger.debug("Append the name of testcase " + this.getName() + " to " + Environment.getInstance().getTestcaseScriptRootNode().getAbsolutePath());
@@ -331,7 +313,8 @@ public class TestCase extends AbstractTestCase implements IDataTestItem {
         return String.format("-DAKA_TC_%s", defineName);
     }
 
-    public void combineWithTestCase(TestCase tc) {
+    public void combineWithTestCase(TestCase tc)
+    {
 
     }
 }

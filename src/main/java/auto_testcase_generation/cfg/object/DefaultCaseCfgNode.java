@@ -4,6 +4,9 @@ import org.eclipse.cdt.core.dom.ast.IASTNode;
 
 public class DefaultCaseCfgNode extends CaseCfgNode{
 
+    public DefaultCaseCfgNode() {
+    }
+
     public DefaultCaseCfgNode(IASTNode node) {
         super(node);
     }

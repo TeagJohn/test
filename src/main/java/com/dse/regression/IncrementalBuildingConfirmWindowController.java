@@ -10,6 +10,7 @@ import com.dse.guifx_v3.controllers.main_view.MenuBarController;
 import com.dse.guifx_v3.controllers.object.LoadingPopupController;
 import com.dse.guifx_v3.helps.UIController;
 import com.dse.parser.object.ProjectNode;
+import com.dse.regression.cia.WaveCIA;
 import com.dse.testcasescript.object.TestNameNode;
 import com.dse.testcase_manager.*;
 import com.dse.logger.AkaLogger;
@@ -83,25 +84,39 @@ public class IncrementalBuildingConfirmWindowController extends AbstractApplyCha
                 try {
                     ProjectNode projectRootNode = Environment.getInstance().getProjectNode();
 
-
+                    WaveCIA.getWaveCIA().refreshProject();
 
                     new WorkspaceCreation().exportSourcecodeFileNodeToWorkingDirectory(projectRootNode,
                             new WorkspaceConfig().fromJson().getElementDirectory(),
                             new WorkspaceConfig().fromJson().getDependencyDirectory());
-                    Platform.runLater(() -> UIController
-                            .showSuccessDialog("Dependency analyzer successes", "Dependency analyzer", "Success"));
+                    Platform.runLater(() -> {
+                        UIController.showSuccessDialog(
+                                "Dependency analyzer successes",
+                                "Dependency analyzer", "Success");
+                    });
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Platform.runLater(() -> UIController
-                            .showErrorDialog("Dependency analyzer caught an unexpected error", "Dependency analyzer", "Fail"));
+                    Platform.runLater(() -> {
+                        UIController.showErrorDialog(
+                                "Dependency analyzer caught an unexpected error",
+                                "Dependency analyzer", "Fail");
+                    });
                 }
 
                 // update source code file node on active source code tabs
                 UIController.updateActiveSourceCodeTabs();
+
                 if (listener != null)
                     Platform.runLater(() -> listener.onAllow());
             });
-            afterTask.setOnSucceeded(e -> loadingPopup.close());
+            afterTask.setOnSucceeded(e -> {
+                try {
+                    WaveCIA.getWaveCIA().runRegression();
+                } catch (Exception exp) {
+                    exp.printStackTrace();
+                }
+                loadingPopup.close();
+            });
 
             new AkaThread(afterTask).start();
         });

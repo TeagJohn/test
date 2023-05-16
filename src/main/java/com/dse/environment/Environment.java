@@ -9,12 +9,13 @@ import com.dse.config.WorkspaceConfig;
 import com.dse.environment.object.*;
 import com.dse.guifx_v3.controllers.CompoundTestCaseTreeTableViewController;
 import com.dse.guifx_v3.helps.InstructionMapping;
+import com.dse.make_build_system.BuildSystemHandler;
+import com.dse.make_build_system.MakeBuildSystemManager;
 import com.dse.parser.dependency.Dependency;
 import com.dse.parser.object.*;
 import com.dse.project_init.ProjectClone;
 import com.dse.search.Search;
 import com.dse.search.condition.SourcecodeFileNodeCondition;
-import com.dse.testcase_execution.ITestcaseExecution;
 import com.dse.testcasescript.TestcaseAnalyzer;
 import com.dse.testcasescript.object.ITestcaseNode;
 import com.dse.testcasescript.object.TestcaseRootNode;
@@ -33,7 +34,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class Environment {
 
@@ -60,7 +60,6 @@ public class Environment {
         return backupEnvironment;
     }
 
-
     // save the active source code tab
     private Map<Tab, INode> activeSourcecodeTabs = new HashMap<>();
 
@@ -79,11 +78,10 @@ public class Environment {
     private ProjectNode systemRoot;
     private INode userCodeRoot;
     private Compiler compiler;
+    private final MakeBuildSystemManager makeBuildSystemManager = new MakeBuildSystemManager();
     // save all resolved nodes to save loading cost
     private Map<String, INode> resolvedNodes = new HashMap<>();
     private static boolean coverageModeActive = false;
-
-    private int maxThreadCount = 5;
 
     // save the cfg of the project
     private static final Map<String, ICFG> cfgsForBranchAndStatement = new HashMap<>();
@@ -102,14 +100,6 @@ public class Environment {
 
     // key: path to source code file
     private InstructionMapping basicPathMapping = new InstructionMapping();
-
-    public void setMaxThreadCount(int maxThreadCount) {
-        this.maxThreadCount = maxThreadCount;
-    }
-
-    public int getMaxThreadCount() {
-        return maxThreadCount;
-    }
 
     public void setBasicPathMapping(InstructionMapping basicPathMapping) {
         this.basicPathMapping = basicPathMapping;
@@ -194,7 +184,7 @@ public class Environment {
 
     /**
      * Save the current Env
-     * <p>
+     *
      * Create a new Env and switch to the new env
      */
     public static void createNewEnvironment() {
@@ -253,14 +243,10 @@ public class Environment {
      */
     @Deprecated
     public void loadTestCasesScript(File scriptFile) {
-        // testcasesScriptFilePath = scriptFile.getAbsolutePath();
-        logger.debug("Analyzing " + scriptFile.getAbsolutePath() + " ...");
-        long startTime = System.nanoTime();
+        //testcasesScriptFilePath = scriptFile.getAbsolutePath();
         TestcaseAnalyzer analyzer = new TestcaseAnalyzer();
         ITestcaseNode root = analyzer.analyze(scriptFile);
         testcaseScriptRootNode = (TestcaseRootNode) root;
-        long endTime = System.nanoTime();
-        logger.debug("Analyzing " + scriptFile.getAbsolutePath() + " took " + (endTime - startTime) / 1000000000 + "s");
     }
 
     public synchronized void saveTestcasesScriptToFile() {
@@ -378,14 +364,12 @@ public class Environment {
      */
     public String getTypeofCoverage() {
         List<IEnvironmentNode> envNodes = EnvironmentSearch.searchNode(getEnvironmentRootNode(), new EnviroCoverageTypeNode());
-        envNodes = envNodes.stream().distinct().collect(Collectors.toList());
-
         if (envNodes.size() == 1) {
             EnviroCoverageTypeNode coverageNode = (EnviroCoverageTypeNode) envNodes.get(0);
             return coverageNode.getCoverageType();
         }
 
-        return EnviroCoverageTypeNode.STATEMENT; // unspecified type of coverage
+        return ""; // unspecified type of coverage
     }
 
     public boolean isOnWhiteBoxMode() {
@@ -501,41 +485,41 @@ public class Environment {
 
     public Compiler getCompiler() {
 //        if (compiler == null) {
-        List<IEnvironmentNode> envirCompilerNode = EnvironmentSearch
-                .searchNode(environmentRootNode, new EnviroCompilerNode());
+            List<IEnvironmentNode> envirCompilerNode = EnvironmentSearch
+                    .searchNode(environmentRootNode, new EnviroCompilerNode());
 
-        if (!envirCompilerNode.isEmpty()) {
-            compiler = importCompiler((EnviroCompilerNode) envirCompilerNode.get(0));
-        }
+            if (!envirCompilerNode.isEmpty()) {
+                compiler = importCompiler((EnviroCompilerNode) envirCompilerNode.get(0));
+            }
 
-        List<IEnvironmentNode> libraries = EnvironmentSearch
-                .searchNode(environmentRootNode, new EnviroLibraryIncludeDirNode());
+            List<IEnvironmentNode> libraries = EnvironmentSearch
+                    .searchNode(environmentRootNode, new EnviroLibraryIncludeDirNode());
 
-        for (IEnvironmentNode include : libraries) {
-            String path = ((EnviroLibraryIncludeDirNode) include).getLibraryIncludeDir();
-            compiler.getIncludePaths().add(path);
-        }
+            for (IEnvironmentNode include : libraries) {
+                String path = ((EnviroLibraryIncludeDirNode) include).getLibraryIncludeDir();
+                compiler.getIncludePaths().add(path);
+            }
 
-        List<IEnvironmentNode> typeHandles = EnvironmentSearch
-                .searchNode(environmentRootNode, new EnviroTypeHandledSourceDirNode());
+            List<IEnvironmentNode> typeHandles = EnvironmentSearch
+                    .searchNode(environmentRootNode, new EnviroTypeHandledSourceDirNode());
 
-        for (IEnvironmentNode include : typeHandles) {
-            String path = ((EnviroTypeHandledSourceDirNode) include).getTypeHandledSourceDir();
-            compiler.getIncludePaths().add(path);
-        }
+            for (IEnvironmentNode include : typeHandles) {
+                String path = ((EnviroTypeHandledSourceDirNode) include).getTypeHandledSourceDir();
+                compiler.getIncludePaths().add(path);
+            }
 
-        List<IEnvironmentNode> defines = EnvironmentSearch
-                .searchNode(environmentRootNode, new EnviroDefinedVariableNode());
+            List<IEnvironmentNode> defines = EnvironmentSearch
+                    .searchNode(environmentRootNode, new EnviroDefinedVariableNode());
 
-        for (IEnvironmentNode variable : defines) {
-            String definition = ((EnviroDefinedVariableNode) variable).getName();
-            String value = ((EnviroDefinedVariableNode) variable).getValue();
+            for (IEnvironmentNode variable : defines) {
+                String definition = ((EnviroDefinedVariableNode) variable).getName();
+                String value = ((EnviroDefinedVariableNode) variable).getValue();
 
-            if (value != null && !value.isEmpty())
-                definition = definition + "=" + value;
+                if (value != null && !value.isEmpty())
+                    definition = definition + "=" + value;
 
-            compiler.getDefines().add(definition);
-        }
+                compiler.getDefines().add(definition);
+            }
 //        }
 
         return compiler;
@@ -571,7 +555,6 @@ public class Environment {
         compiler.setOutputFlag(envNode.getOutputFlag());
         compiler.setDebugFlag(envNode.getDebugFlag());
         compiler.setOutputExtension(envNode.getOutputExt());
-        compiler.setUseGTest(envNode.isUseGTest());
 
         return compiler;
     }
@@ -637,5 +620,22 @@ public class Environment {
 
     public void setUserCodeRoot(INode userCodeRoot) {
         this.userCodeRoot = userCodeRoot;
+    }
+
+    public MakeBuildSystemManager getMakeBuildSystemManager() {
+        return makeBuildSystemManager;
+    }
+
+    public boolean isUsingMakeBuildSystem() {
+        List<IEnvironmentNode> nodes = EnvironmentSearch.searchNode(environmentRootNode, new EnviroMakeBuildSystemNode());
+        if (nodes.size() == 1) {
+            EnviroMakeBuildSystemNode node = (EnviroMakeBuildSystemNode) nodes.get(0);
+            BuildSystemHandler handler = makeBuildSystemManager.createNewHandler(node.getBuildSystem());
+            handler.importConfigFromNode(node);
+        } else {
+            makeBuildSystemManager.reset();
+        }
+
+        return makeBuildSystemManager.getCurrentBSHandler() != null;
     }
 }

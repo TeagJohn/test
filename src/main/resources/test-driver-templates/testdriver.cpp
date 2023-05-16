@@ -181,8 +181,6 @@ void AKA_tear_down();
 // Include akaignore file
 /*{{INSERT_CLONE_SOURCE_FILE_PATHS_HERE}}*/
 
-using namespace std;
-
 ////////////////////////////////////////
 //  BEGIN TEST SCRIPTS SECTION        //
 ////////////////////////////////////////

@@ -6,6 +6,8 @@ package auto_testcase_generation.cfg.object;
  * @author ducvu
  */
 public abstract class FlagCfgNode extends CfgNode {
+	public FlagCfgNode() {
+	}
 
 	@Override
 	public boolean isNormalNode() {

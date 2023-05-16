@@ -1,5 +1,8 @@
 package com.dse.regression;
 
+import com.dse.compiler.Compiler;
+import com.dse.compiler.message.ICompileMessage;
+import com.dse.config.CommandConfig;
 import com.dse.parser.dependency.RealParentDependencyGeneration;
 import com.dse.config.WorkspaceConfig;
 import com.dse.environment.DependencyFileTreeExporter;
@@ -10,17 +13,18 @@ import com.dse.parser.dependency.*;
 import com.dse.parser.object.*;
 import com.dse.project_init.LcovProjectClone;
 import com.dse.project_init.ProjectClone;
+import com.dse.regression.cia.WaveCIA;
 import com.dse.search.Search;
 import com.dse.search.condition.NodeCondition;
 import com.dse.testcasescript.TestcaseSearch;
 import com.dse.testcasescript.object.*;
+import com.dse.thread.task.CompileProjectTask;
 import com.dse.util.PathUtils;
 import com.dse.util.Utils;
 import com.dse.logger.AkaLogger;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Given a list of changes, we need to update {workspace}.
@@ -29,6 +33,9 @@ public class WorkspaceUpdater {
     final static AkaLogger logger = AkaLogger.get(WorkspaceUpdater.class);
 
     public void update() {
+        updateCompileCommands();
+        WaveCIA.getWaveCIA().refreshProject();
+        updateDependencies();
         ProjectClone.cloneEnvironment();
         LcovProjectClone.cloneLcovEnvironment();
 
@@ -40,11 +47,41 @@ public class WorkspaceUpdater {
         removeDeletedPathFromTestCaseScript();
         removeDependenciesRelatedToDeletedPaths();
 
-        updateDependencies();
 
         updateConfigFile();
         updateStructureFiles();
         updateDepdendencyFiles();
+    }
+
+    private void updateCompileCommands() {
+//        ICompileMessage message = null;
+//        Compiler compiler = Environment.getInstance().getCompiler();
+//        if (compiler == null) return;
+//        Map<String, String> compilationCommands = new CommandConfig().fromJson().getCompilationCommands();
+//        Set<ISourcecodeFileNode> fileNodeList = new HashSet<>();
+//        for (INode addedNode : WaveCIA.getWaveCIA().getAddedNodes()) {
+//            ISourcecodeFileNode sourcecodeFileNode = Utils.getSourcecodeFile(addedNode);
+//            if (!(sourcecodeFileNode instanceof HeaderNode)) fileNodeList.add(sourcecodeFileNode);
+//        }
+//        for (INode fildeNode : fileNodeList) {
+//            String filePath = fildeNode.getAbsolutePath();
+//            logger.debug("Compiling again added file " + filePath);
+//            message = compiler.compile(fildeNode);
+//            // save the compilation commands to file
+//            String relativePath = PathUtils.toRelative(filePath);
+//            if (!compilationCommands.containsKey(relativePath)) {
+//                compilationCommands.put(relativePath, message.getCompilationCommand());
+//            }
+//        }
+//        new CommandConfig().fromJson().setCompilationCommands(compilationCommands).exportToJson();
+
+        CompileProjectTask task = new CompileProjectTask(Environment.getInstance().getProjectNode());
+
+        try {
+           task.call();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void updateDepdendencyFiles() {
@@ -137,6 +174,7 @@ public class WorkspaceUpdater {
     private void addAddedNodesToTestCaseScript() {
         // update the environment with added nodes
         for (INode addedNode : ChangesBetweenSourcecodeFiles.addedNodes) {
+            boolean isAdded = false;
 
             // add new function in the test case script
             TestcaseRootNode testcaseScriptRoot = Environment.getInstance().getTestcaseScriptRootNode();
@@ -153,10 +191,22 @@ public class WorkspaceUpdater {
                             subprogramNode.setName(addedNode.getAbsolutePath());
                             subprogramNode.setParent(testcaseNode);
                             testcaseNode.getChildren().add(subprogramNode);
+                            isAdded = true;
                             logger.debug("Add " + addedNode.getAbsolutePath() + " to test case script");
                             break;
                         }
                     }
+                }
+            }
+
+            if (!isAdded) {
+                if (addedNode instanceof ISourcecodeFileNode) {
+                    TestUnitNode newUnitNode = new TestUnitNode();
+                    newUnitNode.setSrcNode((ISourcecodeFileNode) addedNode);
+                    newUnitNode.setName(addedNode.getAbsolutePath());
+                    testcaseScriptRoot.addChild(newUnitNode);
+                    newUnitNode.setParent(testcaseScriptRoot);
+                    newUnitNode.setSelectedInTestcaseNavigator(true);
                 }
             }
         }

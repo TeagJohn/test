@@ -1,7 +1,10 @@
 package auto_testcase_generation.testdatagen;
 
 import auto_testcase_generation.cfg.ICFG;
-import auto_testcase_generation.cfg.object.*;
+import auto_testcase_generation.cfg.object.AbstractConditionLoopCfgNode;
+import auto_testcase_generation.cfg.object.ConditionCfgNode;
+import auto_testcase_generation.cfg.object.EndFlagCfgNode;
+import auto_testcase_generation.cfg.object.ICfgNode;
 import auto_testcase_generation.cfg.testpath.FullTestpath;
 import auto_testcase_generation.testdatagen.se.PathConstraint;
 import auto_testcase_generation.testdatagen.se.PathConstraints;
@@ -134,12 +137,8 @@ public class BoundaryConditionTestDataGeneration extends AbstractAutomatedTestda
             ICfgNode trueNode = stm.getTrueNode();
             ICfgNode falseNode = stm.getFalseNode();
 
-            if (stm instanceof SwitchCfgNode) {
-                for (ICfgNode node : ((SwitchCfgNode) stm).getCases()) {
-                    traverseCFG(node, tp, variableNodes);
-                }
-            } else if (stm instanceof ConditionCfgNode || stm instanceof CaseCfgNode) {
-                IASTNode ast = ((NormalCfgNode) stm).getAst();
+            if (stm instanceof ConditionCfgNode) {
+                IASTNode ast = ((ConditionCfgNode) stm).getAst();
                 if (ast instanceof IASTBinaryExpression) {
                     IASTBinaryExpression astBin = (IASTBinaryExpression) ast;
                     IASTExpression operand1 = astBin.getOperand1();
@@ -941,8 +940,9 @@ public class BoundaryConditionTestDataGeneration extends AbstractAutomatedTestda
     private void createTestCase(List<RandomValue> boundDataValues) throws Exception {
         // create test case
         String postFix = ".cbound";
-        String nameOfTestcase = TestCaseManager
-                .generateContinuousNameOfTestcase(TestCaseManager.getFunctionName(fn) + postFix);
+
+        String nameOfTestcase = TestCaseManager.generateContinuousNameOfTestcase(
+                fn.getName() + postFix);
         TestCase testCase = TestCaseManager.createTestCase(nameOfTestcase, fn);
         if (testCase != null) {
             // generate Random values for unsupported type (array, class, struct, v.v.)

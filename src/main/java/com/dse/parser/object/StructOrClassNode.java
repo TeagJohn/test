@@ -7,13 +7,10 @@ import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTCompositeTypeSpecifier;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTDeclSpecifier;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTTemplateDeclaration;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTVisibilityLabel;
-import org.eclipse.cdt.core.parser.IToken;
 import org.eclipse.cdt.internal.core.dom.parser.cpp.CPPASTCompositeTypeSpecifier;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Queue;
 
 public abstract class StructOrClassNode extends StructureNode {
     protected boolean extendDependencyState = false;
@@ -23,8 +20,6 @@ public abstract class StructOrClassNode extends StructureNode {
     protected List<String> extendedNames = new ArrayList<>();
 
     protected ArrayList<ArrayList<INode>> extendPaths = new ArrayList<>();
-
-    protected boolean isAbstract = false;
 
     public boolean isTemplate() {
         return getAST().getParent() instanceof ICPPASTTemplateDeclaration;
@@ -79,7 +74,7 @@ public abstract class StructOrClassNode extends StructureNode {
                         visibility = ((ICPPASTVisibilityLabel) declaration).getVisibility();
                     else if (declaration instanceof IASTSimpleDeclaration) {
                         if (declaration == thisAst) {
-                            return visibility;
+                                return visibility;
                         }
                     }
                 }
@@ -238,43 +233,16 @@ public abstract class StructOrClassNode extends StructureNode {
         return extendDependencyState;
     }
 
-//    public boolean isAbstract() {
-//        for (INode child : getChildren()) {
-////            if (child instanceof ICommonFunctionNode) {
-////                String returnType = ((ICommonFunctionNode) child).getReturnType();
-////                if (returnType.contains("virtual ")) {
-////                    return true;
-////                }
-////            }
-//            if (child instanceof DefinitionFunctionNode) {
-//                try {
-//                    if (((DefinitionFunctionNode) child).getAST().getSyntax().getImage().equals("virtual")) {
-//                        IToken token = ((DefinitionFunctionNode) child).getAST().getSyntax();
-//                        if (token != null && token.getNext() != null && token.getNext().getNext() != null) {
-//                            while (token.getNext().getNext().getNext() != null) {
-//                                token = token.getNext();
-//                            }
-//
-//                        }
-//                        if (token.getImage().equals("=")
-//                                && token.getNext().getImage().equals("0")
-//                                && token.getNext().getNext().getImage().equals(";")) {
-//                            return true;
-//                        }
-//                    }
-//                } catch (ExpansionOverlapsBoundaryException e) {
-//                }
-//            }
-//        }
-//
-//        return false;
-//    }
-
-    public void setAbstract(boolean isAbstract) {
-        this.isAbstract = isAbstract;
-    }
-
     public boolean isAbstract() {
-        return isAbstract;
+        for (INode child : getChildren()) {
+            if (child instanceof ICommonFunctionNode) {
+                String returnType = ((ICommonFunctionNode) child).getReturnType();
+                if (returnType.contains("virtual ")) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 }

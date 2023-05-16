@@ -2,22 +2,21 @@ package com.dse.guifx_v3.objects;
 
 import com.dse.guifx_v3.controllers.TestCaseTreeTableController;
 import com.dse.guifx_v3.controllers.TestCasesNavigatorController;
+import com.dse.guifx_v3.helps.DataNodeIterationDialog;
 import com.dse.guifx_v3.helps.UIController;
 import com.dse.guifx_v3.objects.hint.Hint;
-import com.dse.parser.object.*;
+import com.dse.parser.object.NumberOfCallNode;
 import com.dse.report.converter.Converter;
 import com.dse.testcase_manager.IDataTestItem;
 import com.dse.testcase_manager.TestCaseManager;
 import com.dse.testdata.Iterator;
 import com.dse.testdata.gen.module.TreeExpander;
-import com.dse.testdata.gen.module.subtree.InitialArgTreeGen;
+import com.dse.testdata.gen.module.subtree.InitialStubTreeGen;
 import com.dse.testdata.object.*;
 import com.dse.testdata.object.GlobalRootDataNode;
-import com.dse.testdata.object.Gmock.ArgumentNode;
-import com.dse.testdata.object.Gmock.TimesNode;
-import com.dse.testdata.object.Gmock.WithNode;
 import com.dse.testdata.object.stl.ListBaseDataNode;
 import com.dse.logger.AkaLogger;
+import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableValue;
@@ -27,6 +26,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.CheckBoxTreeTableCell;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.Callback;
 
@@ -232,8 +232,7 @@ public class ParameterColumnCellFactory implements Callback<TreeTableColumn<Data
                     setContextMenu(contextMenu);
 
                 // Các node show checkbox
-                if (dataNode instanceof SubprogramNode  && !(dataNode instanceof IterationSubprogramNode)
-                        && (((SubprogramNode) dataNode).isStubable() || (((SubprogramNode) dataNode).isGMockSubprogram()))) {
+                if (dataNode instanceof SubprogramNode  && !(dataNode instanceof IterationSubprogramNode) && ((SubprogramNode) dataNode).isStubable()) {
                     CheckBox checkBox = new CheckBox();
                     checkBox.setAlignment(Pos.TOP_LEFT);
                     checkBox.addEventFilter(MouseEvent.MOUSE_PRESSED,
@@ -398,50 +397,9 @@ public class ParameterColumnCellFactory implements Callback<TreeTableColumn<Data
                 subprogram.getChildren().clear();
 
                 if (newValue) {
-                    NumberOfCallNode numberOfCall = new NumberOfCallNode();
+                    NumberOfCallNode numberOfCall = new NumberOfCallNode("Number of calls");
                     subprogram.addChild(numberOfCall);
                     numberOfCall.setParent(subprogram);
-                }
-
-                TestCaseTreeTableController.loadChildren(testCase, treeItem);
-
-                getTreeTableView().refresh();
-                logger.debug("Refreshed the current test case tab");
-
-                // save data tree to the test script
-                TestCaseManager.exportTestCaseToFile(testCase);
-            }
-
-            if (dataNode instanceof SubprogramNode && ((SubprogramNode) dataNode).isGMockSubprogram()) {
-                SubprogramNode subprogram = (SubprogramNode) dataNode;
-
-                subprogram.getChildren().clear();
-
-                if (newValue) {
-                    List<IVariableNode> oassingVariables = ((ICommonFunctionNode) subprogram.getFunctionNode()).getArguments();
-//                    WithNode with = new WithNode("With");
-                    for (INode passingVariable : oassingVariables) {
-                        /*ArgumentNode arg = new ArgumentNode();
-                        arg.setName(passingVariable.getName());
-                        with.addChild(arg);
-                        arg.setParent(with);*/
-                        try {
-                            new InitialArgTreeGen().genInitialTree((VariableNode) passingVariable, subprogram);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-                    TimesNode times = new TimesNode("Times");
-                    subprogram.addChild(times);
-                    times.setParent(subprogram);
-
-//                    if (with.getChildren().size() >= 2) {
-                    if (oassingVariables.size() >= 2) {
-                        WithNode with = new WithNode("With");
-                        subprogram.addChild(with);
-                        with.setParent(subprogram);
-                    }
                 }
 
                 TestCaseTreeTableController.loadChildren(testCase, treeItem);

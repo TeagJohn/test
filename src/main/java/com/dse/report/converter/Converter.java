@@ -1,7 +1,6 @@
 package com.dse.report.converter;
 
 import com.dse.report.element.Table;
-import com.dse.testcase_execution.result_trace.AssertionResult;
 import com.dse.testdata.object.*;
 import com.dse.testdata.object.RootDataNode;
 import com.dse.util.NodeType;
@@ -28,9 +27,6 @@ public abstract class Converter implements IHtmlConverter {
     }
 
     public static String getNodeValue(IDataNode node) {
-        if (node == null) {
-            return null;
-        }
         String value = null;
 
         if (node instanceof ValueDataNode) {
@@ -80,8 +76,4 @@ public abstract class Converter implements IHtmlConverter {
     }
 
     protected abstract boolean isShowInReport(IDataNode node);
-
-    public abstract Table execute(SubprogramNode subprogram);
-
-    public abstract AssertionResult getResults();
 }

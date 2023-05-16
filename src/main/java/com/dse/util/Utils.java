@@ -1,6 +1,5 @@
 package com.dse.util;
 
-import auto_testcase_generation.cfg.object.FriendFunctionNode;
 import auto_testcase_generation.instrument.FunctionInstrumentForLambda;
 import auto_testcase_generation.testdatagen.se.ExpressionRewriterUtils;
 import auto_testcase_generation.testdatagen.se.memory.IVariableNodeTable;
@@ -1140,32 +1139,22 @@ public class Utils implements IRegex {
     }
 
     /**
-     * Repeat a character n times
-     * @param c the character
-     * @param n number of times to repeat
-     * @return the repeated string
-     */
-    public static String repeatCharacter(char c, int n) {
-        char[] charArray = new char[n];
-        Arrays.fill(charArray, c);
-        return new String(charArray);
-    }
-
-    /**
      * @param expectedStartLine  the line where we want to put the content in, [1..]
      * @param expectedNodeOffset the offset where we want to put the content in
      * @param oldFunction        the content
      * @return
      */
     public static String insertSpaceToFunctionContent(int expectedStartLine, int expectedNodeOffset, String oldFunction) {
-        String addition = repeatCharacter('\n', expectedStartLine - 2);
-
-        int additionalOffset = expectedNodeOffset - addition.length() - 1;
-        addition += repeatCharacter(' ', additionalOffset);
-        
-        if (expectedStartLine > 1) {
+        String addition = "";
+        for (int i = 0; i < expectedStartLine - 2; i++) {
             addition += "\n";
         }
+        int additionalOffset = expectedNodeOffset - addition.length() - 1;
+        for (int i = 0; i < additionalOffset; i++) {
+            addition += " ";
+        }
+        if (expectedStartLine > 1)
+            addition += "\n";
         return addition + oldFunction;
     }
 
@@ -1202,8 +1191,9 @@ public class Utils implements IRegex {
                 // put the function in a class to void error when constructing ast
                 String className = functionNode.getParent().getName();
                 content = "class " + className + "{" + content + "};";
-                String newContent = Utils.insertSpaceToFunctionContent(startLine,
-                        startOffset - new String("class " + className + "{").length(), content);
+//                String newContent = Utils.insertSpaceToFunctionContent(startLine,
+//                        startOffset - new String("class " + className + "{").length(), content);
+                String newContent = content;
                 IASTTranslationUnit unit = sourcecodeFileParser.getIASTTranslationUnit(newContent.toCharArray());
                 //                logger.debug("Reconstructed tree: ");
 //                ASTUtils.printTreeFromAstNode(unit, "\t");
@@ -1211,9 +1201,10 @@ public class Utils implements IRegex {
                         getChildren()[0].getChildren()[1];
 
             } else {
-                String newContent = Utils.insertSpaceToFunctionContent(startLine, startOffset, content);
-                IASTTranslationUnit unit = sourcecodeFileParser.getIASTTranslationUnit(newContent.toCharArray());
-                output = (IASTFunctionDefinition) unit.getChildren()[0];
+//                String newContent = Utils.insertSpaceToFunctionContent(startLine, startOffset, content);
+//                IASTTranslationUnit unit = sourcecodeFileParser.getIASTTranslationUnit(newContent.toCharArray());
+//                output = (IASTFunctionDefinition) unit.getChildren()[0];
+                output = astFunctionNode;
             }
         } catch (Exception e) {
 //			e.printStackTrace();
@@ -1320,7 +1311,7 @@ public class Utils implements IRegex {
             //todo: Here, get function call for template function call
         }
 
-        if (realParent instanceof ISourcecodeFileNode || functionNode instanceof FriendFunctionNode) {
+        if (realParent instanceof ISourcecodeFileNode) {
             functionCall.append(functionNode.getSimpleName())
                     .append(generateCallOfArguments(functionNode));
 
@@ -1358,114 +1349,6 @@ public class Utils implements IRegex {
             }
 
             functionCall.append(generateCallOfArguments(functionNode));
-        }
-
-        return functionCall.toString();
-    }
-
-    public static StringBuilder generateArguments(ICommonFunctionNode functionNode) {
-        StringBuilder functionCall = new StringBuilder();
-        functionCall.append("(");
-        for (IVariableNode v : functionNode.getArguments())
-            if (VariableTypeUtilsForStd.isUniquePtr(v.getRawType()))
-                functionCall.append(String.format("std::move(%s),", v.getName()));
-
-            else if (VariableTypeUtils.isNullPtr(v.getRawType())) {
-                functionCall.append(NullPointerDataNode.NULL_PTR).append(",");
-
-            } else if (v.resolveCoreType() instanceof FunctionPointerTypeNode && v.getName().isEmpty())
-                functionCall.append(((FunctionPointerTypeNode) v.resolveCoreType()).getFunctionName()).append(",");
-            else
-                functionCall.append(v.getName()).append(",");
-        functionCall.append(")");
-        functionCall = new StringBuilder(
-                functionCall.toString()
-                        .replaceFirst("\\(",",")
-                        .replace(",)", ""));
-        return functionCall;
-    }
-    public static String getFunctionCallWithPredAssert(ICommonFunctionNode functionNode) {
-        INode realParent = functionNode.getParent();
-
-        if (functionNode instanceof IFunctionNode) {
-            INode tmpRealParent = ((IFunctionNode) functionNode).getRealParent();
-            if (tmpRealParent != null)
-                realParent = tmpRealParent;
-        }
-
-        while (realParent instanceof LinkageSpecificationDeclaration)
-            realParent = realParent.getParent();
-
-        StringBuilder functionCall = new StringBuilder();
-
-        if (functionNode instanceof LambdaFunctionNode) {
-            FunctionInstrumentForLambda instrument = new FunctionInstrumentForLambda((LambdaFunctionNode) functionNode);
-            functionCall.append(instrument.generateInstrumentedFunction());
-            functionCall.append(generateArguments(functionNode));
-
-            INode correspondingType = functionNode.getParent();
-            String type = Search.getScopeQualifier(correspondingType);
-
-            if (correspondingType instanceof ClassNode && ((ClassNode) correspondingType).isTemplate()) {
-                String[] templateParams = TemplateUtils.getTemplateParameters(correspondingType);
-                if (templateParams != null) {
-                    type += TemplateUtils.OPEN_TEMPLATE_ARG;
-
-                    for (String param : templateParams)
-                        type += param + ", ";
-
-                    type += TemplateUtils.CLOSE_TEMPLATE_ARG;
-                    type = type.replace(", >", ">");
-                }
-            }
-
-            String instanceVarName = type.replaceAll("[^\\w]", SpecialCharacter.UNDERSCORE);
-            instanceVarName = INSTANCE_VARIABLE + SpecialCharacter.UNDERSCORE + instanceVarName;
-
-            return functionCall.toString().replaceAll("this\\b", instanceVarName);
-        }
-        else if (functionNode.isTemplate()) {
-            //todo: Here, get function call for template function call
-        }
-
-        if (realParent instanceof ISourcecodeFileNode || functionNode instanceof FriendFunctionNode) {
-            functionCall.append(functionNode.getSimpleName())
-                    .append(generateArguments(functionNode));
-
-        } else if (realParent instanceof NamespaceNode) {
-            // find a list of namespace
-            INode namespaceRoot = realParent;
-            List<String> namespaces = new ArrayList<>();
-            while (namespaceRoot.getParent() != null && namespaceRoot.getParent() instanceof NamespaceNode) {
-                namespaces.add(namespaceRoot.getName());
-                namespaceRoot = namespaceRoot.getParent();
-            }
-            namespaces.add(namespaceRoot.getName());
-
-            // generate function call
-            StringBuilder scope = new StringBuilder();
-            for (String namespace : namespaces)
-                scope.insert(0, namespace + SpecialCharacter.STRUCTURE_OR_NAMESPACE_ACCESS);
-
-            functionCall.append(scope)
-                    .append(functionNode.getSimpleName())
-                    .append(generateArguments(functionNode));
-
-        } else if (realParent instanceof StructureNode) {
-            if (functionNode instanceof ConstructorNode) {
-                functionCall = new StringBuilder("new ");
-                String type = Search.getScopeQualifier(realParent);
-                functionCall.append(type);
-            } else {
-                String instanceVarName = Search.getScopeQualifier(realParent)
-                        .replaceAll("[^\\w]", SpecialCharacter.UNDERSCORE);
-                instanceVarName = INSTANCE_VARIABLE + SpecialCharacter.UNDERSCORE + instanceVarName;
-
-                functionCall = new StringBuilder(instanceVarName);
-                functionCall.append(SpecialCharacter.POINT_TO).append(functionNode.getSingleSimpleName());
-            }
-
-            functionCall.append(generateArguments(functionNode));
         }
 
         return functionCall.toString();
@@ -1838,5 +1721,16 @@ public class Utils implements IRegex {
             }
         }
         return macrosValue;
+    }
+
+    public static List<File> getAllFolderAndSubfolder(File rootFolder) {
+        List<File> folders = new ArrayList<>();
+        if (rootFolder.isDirectory()) {
+            folders.add(rootFolder);
+            for (File sub : rootFolder.listFiles()) {
+                folders.addAll(getAllFolderAndSubfolder(sub));
+            }
+        }
+        return folders;
     }
 }

@@ -14,6 +14,7 @@ import com.dse.util.Utils;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
@@ -75,15 +76,16 @@ public class CMakeBuilder {
             String buildScript = "cmake -G \"" + cmakeGenerator + "\" -S \"" + projectPath
                                     + "\" -B \"" + buildDirectory + "\"";
 
+            String[] buildScripts = {"cmake", "-G", cmakeGenerator, "-S", projectPath, "-B", buildDirectory};
+
             if (Utils.isUnix()) {
                 buildScript = "cmake -G " + cmakeGenerator + " -S " + projectPath + " -B " + buildDirectory;
             }
 
             logger.debug("Build directory: " + buildDirectory);
-            logger.debug("Build script: " + buildScript);
+            logger.debug("Build script: " + Arrays.stream(buildScripts).reduce("", (a, b) -> a + " " + b));
 
-
-            terminal = new Terminal(buildScript);
+            terminal = new Terminal(buildScripts);
 
             if (terminal.getStderr().contains("CMake Error")) {
                 logger.error(("Build project failed"));
@@ -108,13 +110,17 @@ public class CMakeBuilder {
             String buildDirectory = new WorkspaceConfig().fromJson().getInstrumentDirectory() + File.separator + CMAKE_BUILD_FOLDER_NAME;
             String compileScript = "cmake --build \"" + buildDirectory + "\"";
 
+            String[] compileScripts = {"cmake", "--build", buildDirectory};
+
             if (Utils.isUnix()) {
                 compileScript = "cmake --build " + buildDirectory;
             }
 
-            logger.debug("Generate executable file command: " + compileScript);
+            logger.debug(
+                    "Generate executable file command: "
+                            + Arrays.stream(compileScripts).reduce("", (a, b) -> a + " " + b));
 
-            terminal = new Terminal(compileScript);
+            terminal = new Terminal(compileScripts);
 
             if (terminal.getStderr().contains("CMake Error")) {
                 logger.error(("Project compiled failed"));

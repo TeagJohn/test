@@ -1,8 +1,5 @@
 package com.dse.report.csv;
 
-import auto_testcase_generation.cfg.ICFG;
-import auto_testcase_generation.cfg.object.ICfgNode;
-import com.dse.environment.object.EnviroCoverageTypeNode;
 import com.dse.guifx_v3.controllers.object.LoadingPopupController;
 import com.dse.guifx_v3.helps.UIController;
 import com.dse.parser.object.*;
@@ -10,17 +7,13 @@ import com.dse.search.Search2;
 import com.dse.testcase_manager.TestCase;
 import com.dse.testdata.Iterator;
 import com.dse.testdata.object.*;
-import com.dse.util.CFGUtils;
 import com.dse.util.Utils;
 import com.dse.util.UtilsCsv;
 import com.dse.util.VariableTypeUtils;
-import org.eclipse.cdt.core.dom.ast.*;
-import org.eclipse.cdt.internal.core.dom.parser.cpp.*;
+import org.eclipse.cdt.core.dom.ast.IASTNode;
 
 import java.io.File;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class CSVReport {
 
@@ -72,161 +65,8 @@ public class CSVReport {
 
     public CSVReport(IFunctionNode functionNode, List<TestCase> testCases) {
         setFunctionNode(functionNode);
-        getFeaturesOfFunction((FunctionNode) functionNode);
         setListTestcase(testCases);
         stubLine = "";
-    }
-    private Map<String, Set<String>> getFeaturesOfFunction (FunctionNode functionNode) {
-
-        CPPASTFunctionDefinition AST = (CPPASTFunctionDefinition)functionNode.getAST();
-        List<Node> param = functionNode.getChildren();
-        Set<String> variableRelativeToTemplate = new HashSet<>();
-        Map<String , Map<String, Set<String>>> mapping = new HashMap<>();
-        for (IASTNode iastNode: AST.getParent().getChildren()){
-            if (iastNode instanceof  CPPASTSimpleTypeTemplateParameter) {
-                Map<String, Set<String>> element = new HashMap<>();
-                element.put("attribute",new HashSet<>());
-                element.put("operator",new HashSet<>());
-                element.put("variable", new HashSet<>());
-                mapping.put(((CPPASTSimpleTypeTemplateParameter) iastNode).getName().getRawSignature(), element);
-        }}
-        for (Node node: param){
-            if(node instanceof VariableNode) {
-                String type = ((VariableNode) node).getCoreType();
-                if (mapping.containsKey(type) ){
-                    Set<String> set = mapping.get(type).get("variable");
-                    set.add(node.getName());
-                }
-            }
-        }
-
-        ASTVisitor astVisitor = new ASTVisitor() {
-            @Override
-            public int visit(IASTExpression expression) {
-                if(expression instanceof  CPPASTFunctionCallExpression) {
-                    System.out.println(expression.getRawSignature());
-                }
-                if(expression instanceof CPPASTBinaryExpression) {
-                    System.out.println("This is express: "+expression.getRawSignature());
-                    String statement = expression.getRawSignature().replaceAll("\\s+", " ");
-                    statement = statement.contains(" .")?statement.replace(" .", "."):statement;
-                    System.out.println("Convert to quy chuan:"+statement);
-                    System.out.println();
-
-
-
-                    IASTNode[] children = expression.getChildren();
-                    for (int i=0;i<children.length;i++) {
-                        String nameVariable = children[i].getRawSignature();
-                        int indexOfSquareBracket = nameVariable.indexOf("[");
-                        if (indexOfSquareBracket!=-1) nameVariable = nameVariable.substring(0,indexOfSquareBracket);
-                        for (Map.Entry<String, Map<String, Set<String>>> entry: mapping.entrySet()) {
-                            if (entry.getValue().get("variable").contains(nameVariable)) {
-                                entry.getValue().get("operator").add(String.valueOf(((CPPASTBinaryExpression) expression).getOperator()));
-                            }
-                        }
-                    }
-                }
-                return super.visit(expression);
-            }
-        };
-
-        ASTVisitor astVisitor1 =new ASTVisitor() {
-            @Override
-            public int visit(IASTDeclaration declaration) {
-                if(declaration instanceof CPPASTSimpleDeclaration) {
-                    System.out.println("This is declar: "+declaration.getRawSignature());
-                    String statement = declaration.getRawSignature().replaceAll("\\s+", " ");
-                    statement = statement.contains(" .")?statement.replace(" .", "."):statement;
-                    System.out.println("Convert to quy chuan:"+statement);
-                    System.out.println();
-                    String type = String.valueOf(((CPPASTSimpleDeclaration) declaration).getDeclSpecifier().getRawSignature());
-
-                    if(mapping.containsKey(type)) {
-                        IASTNode declarator = declaration.getChildren()[1];
-                        if (declarator instanceof CPPASTDeclarator) {
-                            String express1 = String.valueOf(declarator.getChildren()[0].getRawSignature());
-//                            String express2 = declarator.getChildren()[1].getRawSignature();
-                            variableRelativeToTemplate.add(express1);
-                            mapping.get(type).get("variable").add(express1);
-                        }
-                    }
-                }
-                return super.visit(declaration);
-            }
-        };
-        ASTVisitor astVisitor2 = new ASTVisitor() {
-            @Override
-            public int visit(IASTName name) {
-                if(name.getParent() instanceof  CPPASTFieldReference) {
-                    String fOwner = ((CPPASTFieldReference) name.getParent()).getFieldOwner().getRawSignature();
-                    int indexOfSquareBracket = fOwner.indexOf("[");
-                    if (indexOfSquareBracket!=-1) {
-                        fOwner = fOwner.substring(0,indexOfSquareBracket);
-                    }
-                    String fName = ((CPPASTFieldReference) name.getParent()).getFieldName().getRawSignature();
-                    for (Map.Entry<String, Map<String, Set<String>>> entry: mapping.entrySet()) {
-                        if (entry.getValue().get("variable").contains(fOwner)) {
-                            entry.getValue().get("attribute").add(fName);
-                        }
-                    }
-                }
-                return super.visit(name);
-            }
-        };
-        astVisitor.shouldVisitExpressions = true;
-        astVisitor1.shouldVisitDeclarations = true;
-        astVisitor2.shouldVisitNames = true;
-        AST.accept(astVisitor1);
-        AST.accept(astVisitor);
-        AST.accept(astVisitor2);
-
-
-//        try {
-//            ICFG cfg = CFGUtils.createCFG(functionNode, EnviroCoverageTypeNode.STATEMENT);
-//            cfg.setIdforAllNodes();
-//
-//            List<ICfgNode> list = cfg.getAllNodes();
-//            for (ICfgNode node: list){
-//                String statement = String.format("%s",node.getContent());
-//                statement = statement.replaceAll("\\s+", " ");
-//                statement = statement.contains(" .")?statement.replace(" .", "."):statement;
-//                System.out.print("This is statement exported from csv report file: ");
-//                System.out.print(statement+"\n");
-//
-//                String REGEX = "(((\\w+\\[\\w+\\])|(\\w+))\\.\\w+)";
-//
-//
-//
-//                Pattern pattern = Pattern.compile(REGEX);
-//                Matcher matcher = pattern.matcher(statement);
-//                while(matcher.find()) {
-//                    String substring = statement.substring(matcher.start(),matcher.end());
-//                    System.out.println(substring);
-//                    String frontDot = substring.split("\\.")[0];
-//                    System.out.println(frontDot);
-//                    for (Map.Entry<String, Map<String, Set<String>>> entry: mapping.entrySet()) {
-//                        int indexOfSquareBracket = frontDot.indexOf("[");
-//                        if (indexOfSquareBracket!=-1){
-//                            frontDot = frontDot.substring(0, indexOfSquareBracket);
-//                            System.out.print("abc"+statement+"\n");
-//                        }
-//
-//                        if(entry.getValue().get("variable").contains(frontDot)) {
-//                            entry.getValue().get("attribute").add(substring.split("\\.")[1]);
-//                        }
-//                    }
-//                }
-//            }
-////            System.out.println("This is feture final");
-////            System.out.println(Arrays.asList(listFeature));
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-
-        System.out.println("Set varibale found: "+variableRelativeToTemplate);
-        System.out.println("Mapping features:"+Arrays.asList(mapping));
-        return null;
     }
 
     public void setFunctionNode(IFunctionNode functionNode) {
@@ -254,7 +94,7 @@ public class CSVReport {
         File csvFile = new File(path);
         Utils.writeContentToFile(content, path);
         String stubCContent = generateStubCContentFile();
-        Utils.writeContentToFile(stubCContent, csvFile.getParent() + File.separator + "STUB_" + csvFile.getName().replaceAll(".csv", ".c"));
+        Utils.writeContentToFile(stubCContent, csvFile.getParent() + "\\STUB_" + csvFile.getName().replaceAll(".csv", ".c"));
 //        Utils.writeContentToFile();
     }
 
@@ -738,12 +578,10 @@ public class CSVReport {
     private void parseSutInput(TestCase currentTestcase, IDataNode root, CsvParameter parent) {
 
         List<IDataNode> list = new ArrayList<>();
+        IDataNode staticNode = Search2.findStaticRoot((RootDataNode) root);
         List<IDataNode> listArgNodes = Search2.findArgumentNodes((RootDataNode) root);
         list.addAll(listArgNodes);
-
-        IDataNode staticNode = Search2.findStaticRoot((RootDataNode) root);
-        if (staticNode != null && !staticNode.getChildren().isEmpty())
-            list.addAll(staticNode.getChildren());
+        if (!staticNode.getChildren().isEmpty()) list.addAll(staticNode.getChildren());
 
         for (int i = 0; i < listArgNodes.size(); i++) {
             IDataNode child = listArgNodes.get(i);
@@ -755,18 +593,13 @@ public class CSVReport {
 
         isArgInput = false;
 
-        if (staticNode != null) {
-            for (int i = 0; i < staticNode.getChildren().size(); i++) {
-                IDataNode child = staticNode.getChildren().get(i);
-                if (child instanceof ClassDataNode)
-                    continue;
-                int idParam = UtilsCsv.getSubProgramParameters(currentTestcase, functionNode)
-                    .indexOf(child.getName());
-                isStatics = true;
-                preOrderVariable(currentTestcase, child, idParam, CsvParameter._INPUT);
-            }
+        for (int i = 0; i < staticNode.getChildren().size(); i++) {
+            IDataNode child = staticNode.getChildren().get(i);
+            if (child instanceof ClassDataNode) continue;
+            int idParam = UtilsCsv.getSubProgramParameters(currentTestcase, functionNode).indexOf(child.getName());
+            isStatics = true;
+            preOrderVariable(currentTestcase, child, idParam, CsvParameter._INPUT);
         }
-
         isStatics = false;
     }
 

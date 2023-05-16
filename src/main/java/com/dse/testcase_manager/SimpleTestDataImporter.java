@@ -1,7 +1,6 @@
 package com.dse.testcase_manager;
 
 import auto_testcase_generation.testdatagen.VoidPtrTypeResolver;
-import com.dse.environment.Environment;
 import com.dse.exception.FunctionNodeNotFoundException;
 import com.dse.guifx_v3.controllers.TestCaseTreeTableController;
 import com.dse.logger.AkaLogger;
@@ -104,7 +103,7 @@ public class SimpleTestDataImporter {
                         && jsonObject.has("stub")) {
                     boolean stub = jsonObject.get("stub").getAsBoolean();
                     if (stub) {
-                        NumberOfCallNode numberOfCall = new NumberOfCallNode();
+                        NumberOfCallNode numberOfCall = new NumberOfCallNode("Number of calls");
                         dataNode.addChild(numberOfCall);
                         numberOfCall.setParent(dataNode);
                     }
@@ -143,19 +142,8 @@ public class SimpleTestDataImporter {
                         inputCellHandler.commitEdit(dataNode, constructorName);
                 }
             } else if (dataNode instanceof ClassDataNode) {
-                if (jsonObject.has("subclass")) {
+                if (!jsonObject.has("subclass")) {
                     String subClass = jsonObject.get("subclass").getAsString();
-                    inputCellHandler.commitEdit(dataNode, subClass);
-                }
-            } else if (dataNode instanceof SubStructDataNode) {
-                if (jsonObject.get("selectedConstructor") != null) {
-                    String constructorName = jsonObject.get("selectedConstructor").getAsString();
-                    if (constructorName != null)
-                        inputCellHandler.commitEdit(dataNode, constructorName);
-                }
-            } else if (dataNode instanceof StructDataNode) {
-                if (jsonObject.has("substruct")) {
-                    String subClass = jsonObject.get("substruct").getAsString();
                     inputCellHandler.commitEdit(dataNode, subClass);
                 }
             } else if (dataNode instanceof EnumDataNode) {
@@ -163,24 +151,10 @@ public class SimpleTestDataImporter {
                     String value = jsonObject.get("value").getAsString();
                     inputCellHandler.commitEdit(dataNode, value);
                 }
-            } else if (dataNode instanceof SubUnionDataNode) {
-                if (jsonObject.get("selectedConstructor") != null) {
-                    String constructorName = jsonObject.get("selectedConstructor").getAsString();
-                    if (constructorName != null)
-                        inputCellHandler.commitEdit(dataNode, constructorName);
-                }
             } else if (dataNode instanceof UnionDataNode) {
-                if (Environment.getInstance().isC()) {
-                    if (jsonObject.get("selectedField") != null) {
-                        String field = jsonObject.get("selectedField").getAsString();
-                        inputCellHandler.commitEdit(dataNode, field);
-                    }
-
-                } else {
-                    if (jsonObject.has("subunion")) {
-                        String subUnion = jsonObject.get("subunion").getAsString();
-                        inputCellHandler.commitEdit(dataNode, subUnion);
-                    }
+                if (jsonObject.get("selectedField") != null) {
+                    String field = jsonObject.get("selectedField").getAsString();
+                    inputCellHandler.commitEdit(dataNode, field);
                 }
             } else if (dataNode instanceof FunctionPointerDataNode) {
                 if (jsonObject.get("reference") != null) {

@@ -28,8 +28,8 @@ public class TemplateClassDataNode extends ClassDataNode {
      *
      * @return the real class data node
      */
-    public ISubStructOrClassDataNode getSubStructure() {
-        return subStructure;
+    public SubClassDataNode getSubClass() {
+        return subClass;
     }
 
     /**
@@ -105,19 +105,19 @@ public class TemplateClassDataNode extends ClassDataNode {
 //        return output;
 //    }
 
-//    /**
-//     * Set the sub class data node
-//     *
-//     * @param structureNode represent the real class type
-//     */
-//    public void setSubStructure(INode structureNode) {
-//        super.setSubStructure(structureNode);
+    /**
+     * Set the sub class data node
+     *
+     * @param classNode represent the real class type
+     */
+//    public void setSubClass(INode classNode) {
+//        super.setSubClass(classNode);
 //
-//        updateInstanceVariable(structureNode);
+////        updateInstanceVariable(classNode);
 //
 //        // Subprogram under test is method of current instance
 //        // then expand with corresponding template arguments
-//        if (isMethodOfInstance(structureNode)) {
+//        if (isMethodOfInstance(classNode)) {
 //            ICommonFunctionNode sut = getTestCaseRoot().getFunctionNode();
 //
 //            if (sut instanceof IFunctionNode) {
@@ -126,7 +126,7 @@ public class TemplateClassDataNode extends ClassDataNode {
 //                if (((IFunctionNode) sut).getRealParent() != null)
 //                    realParent = ((IFunctionNode) sut).getRealParent();
 //
-//                String prototype = generateMethodPrototype((IFunctionNode) sut, realParent, structureNode);
+//                String prototype = generateMethodPrototype((IFunctionNode) sut, realParent, classNode);
 //                expandTemplateMethod(prototype, (IFunctionNode) sut);
 //            }
 //        }
@@ -213,7 +213,7 @@ public class TemplateClassDataNode extends ClassDataNode {
     }
 
     @Override
-    protected ISubStructOrClassDataNode createSubStructureDataNode() {
+    protected SubClassDataNode createSubClassDataNode() {
         return new SubTemplateClassDataNode();
     }
 }

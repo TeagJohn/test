@@ -5,6 +5,8 @@ import org.eclipse.cdt.core.dom.ast.IASTBinaryExpression;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 
 public class ConditionDoCfgNode extends AbstractConditionLoopCfgNode {
+	public ConditionDoCfgNode() {
+	}
 
 	public ConditionDoCfgNode(IASTNode node) {
 		super(node);

@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * Represent real class variable
  */
-public class SubClassDataNode extends ClassDataNode implements IConstructorExpanableDataNode, ISubStructOrClassDataNode {
+public class SubClassDataNode extends ClassDataNode implements IConstructorExpanableDataNode {
     private final static AkaLogger logger = AkaLogger.get(SubClassDataNode.class);
     /**
      * Constructor ma user chon de nhap test data
@@ -47,29 +47,20 @@ public class SubClassDataNode extends ClassDataNode implements IConstructorExpan
     public void chooseConstructor(String constructorName) throws Exception {
 //        for (ICommonFunctionNode node: getConstructors()) {
         List<ICommonFunctionNode> constructors = getConstructorsOnlyInCurrentClass();
-        for (ICommonFunctionNode node : constructors) {
+            for (ICommonFunctionNode node: constructors) {
             // should not use equal because constructor name might have its scope "::"
-            if ((constructorName.endsWith(node.getName()) || node.getName().endsWith(constructorName)) && node instanceof ConstructorNode /* not Constructor declaration*/) {
+            if (constructorName.endsWith(node.getName()) && node instanceof ConstructorNode /* not Constructor declaration*/) {
                 chooseConstructor(node);
                 break;
             }
         }
     }
-
-
-    @Override
-    public void chooseConstructor() throws Exception {
-        List<ICommonFunctionNode> constructors = getConstructorsOnlyInCurrentClass();
-        constructors.removeIf(c -> (c instanceof ConstructorNode && ((ConstructorNode) c).isInAbstractClass()));
-        chooseConstructor(constructors.get(0));
-    }
-
     /**
      * Lay tat ca cac constructor cua mot class
      *
      * @return list cac constructor cua class
      */
-    public List<ICommonFunctionNode> getConstructorsOnlyInCurrentClass() {
+    public List<ICommonFunctionNode> getConstructorsOnlyInCurrentClass() throws Exception {
         List<ICommonFunctionNode> constructors = new ArrayList<>();
 
         INode correspondingType = getCorrespondingType();
@@ -95,7 +86,7 @@ public class SubClassDataNode extends ClassDataNode implements IConstructorExpan
             for (ICommonFunctionNode con : cons)
                 if (!constructors.contains(con))
 //                    if (!(con instanceof DefinitionFunctionNode))
-                    constructors.add(con);
+                        constructors.add(con);
 
             for (Dependency dependency : correspondingType.getDependencies())
                 if (dependency instanceof RealParentDependency)
@@ -134,7 +125,7 @@ public class SubClassDataNode extends ClassDataNode implements IConstructorExpan
         }
     }
 
-    public List<IDataNode> getAttributes() {
+    public List<IDataNode> getAttributes(){
         List<IDataNode> attributes = new ArrayList<>();
         for (IDataNode child : getChildren())
             if (!(child instanceof ConstructorDataNode))
@@ -151,43 +142,6 @@ public class SubClassDataNode extends ClassDataNode implements IConstructorExpan
     @Override
     public String generateInputToSavedInFile() {
         return getCorrespondingVar().getName() + "=" + getRawType();
-    }
-
-    /**
-     * lay method getInstance() trong Singleton class
-     * @return
-     */
-    public ICommonFunctionNode getInstanceMethodOnlyInCurrentClass() {
-        INode correspondingType = getCorrespondingType();
-        if (correspondingType != null) {
-            // Find the node corresponding to the current class
-            if (((ClassNode) correspondingType).isTemplate())
-                correspondingType = correspondingType.getChildren().get(0);
-
-            ICommonFunctionNode node = ((ClassNode) correspondingType).getInstaneMethod();
-
-            for (Dependency dependency : correspondingType.getDependencies())
-                if (dependency instanceof RealParentDependency)
-                    if (dependency.getEndArrow().getAbsolutePath().equals(correspondingType.getAbsolutePath())
-                            && dependency.getStartArrow().getName().endsWith(node.getName())) {
-                        return (ICommonFunctionNode) dependency.getStartArrow();
-                    }
-//                return ((ClassNode) correspondingType).getInstaneMethod();
-        } else {
-            logger.error("get null corresponding type");
-        }
-        return null;
-    }
-
-    public void chooseGetInstance(String intanceMethodName) throws Exception {
-        ICommonFunctionNode instanceMethod = getInstanceMethodOnlyInCurrentClass();
-        if (instanceMethod.getName().equals(intanceMethodName)) {
-            selectedContructor = instanceMethod;
-        } else throw new Exception("Instance method khong ton tai!");
-    }
-
-    public boolean isSingleton() {
-        return ((ClassNode) getCorrespondingVar().getCorrespondingNode()).isSingleton();
     }
 
 //    @Override

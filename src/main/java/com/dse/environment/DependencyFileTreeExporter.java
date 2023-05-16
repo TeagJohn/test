@@ -75,7 +75,7 @@ public class DependencyFileTreeExporter {
             // export dependencies to json object
             JsonArray dependenciesJson = new JsonArray();
             for (INode n : allNodes) {
-                for (Dependency dependency : n.onlyGetDependencies())
+                for (Dependency dependency : n.getDependencies())
                 if (dependency != null && dependency.getStartArrow() != null && dependency.getEndArrow() != null){
                     JsonObject jsonDependency = new JsonObject();
 

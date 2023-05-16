@@ -24,8 +24,6 @@ public interface INode {
 
     List<Dependency> getDependencies();
 
-    List<Dependency> onlyGetDependencies();
-
     void setDependencies(List<Dependency> dependencies);
 
     Icon getIcon();

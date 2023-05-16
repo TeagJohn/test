@@ -11,7 +11,6 @@ import auto_testcase_generation.testdatagen.se.normalization.UnnecessaryCharacte
 import com.dse.parser.object.IFunctionNode;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class PathConstraints extends ArrayList<PathConstraint> implements IPathConstraints {
 
@@ -233,14 +232,4 @@ public class PathConstraints extends ArrayList<PathConstraint> implements IPathC
 		return num;
 	}
 
-	public List<TypeCastConstraint> getAndRemoveAllTypeCastConstraints() {
-		List<TypeCastConstraint> typeCastConstraints = new ArrayList<>();
-		this.forEach(pathConstraint -> {
-			if (pathConstraint instanceof TypeCastConstraint) {
-				typeCastConstraints.add((TypeCastConstraint) pathConstraint);
-			}
-		});
-		this.removeAll(typeCastConstraints);
-		return typeCastConstraints;
-	}
 }

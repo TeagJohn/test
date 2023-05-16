@@ -1,5 +1,6 @@
 package com.dse.parser;
 
+import auto_testcase_generation.cfg.CFGExporter;
 import com.dse.parser.dependency.RealParentDependencyGeneration;
 import com.dse.environment.Environment;
 import com.dse.guifx_v3.helps.UILogger;
@@ -8,8 +9,8 @@ import com.dse.parser.object.*;
 import com.dse.search.Search;
 import com.dse.search.SearchCondition;
 import com.dse.search.condition.*;
-import com.dse.thread.task.ProjectTreeExpandTask;
 import com.dse.logger.AkaLogger;
+import com.dse.util.CFGUtils;
 import com.dse.util.Utils;
 
 import java.io.File;
@@ -41,13 +42,13 @@ public class ProjectParser {
     private boolean typedefDependency_enable = true;
 
     public static void main(String[] args) throws Exception {
-        // IASTNode ast = Utils.convertToIAST("Hello<int, float[]>*[5]");
+		// IASTNode ast = Utils.convertToIAST("Hello<int, float[]>*[5]");
 
-        // if (ast instanceof IASTDeclarationStatement)
-        // 	ast = ((IASTDeclarationStatement) ast).getDeclaration();
+		// if (ast instanceof IASTDeclarationStatement)
+		// 	ast = ((IASTDeclarationStatement) ast).getDeclaration();
 
-        // VariableNode variableNode = new VariableNode();
-        // variableNode.setAST(ast);
+		// VariableNode variableNode = new VariableNode();
+		// variableNode.setAST(ast);
 
         ProjectParser projectParser = new ProjectParser(new File("/mnt/e/akautauto/datatest/lamnt/macro/"));
 
@@ -62,22 +63,22 @@ public class ProjectParser {
 
         // INode type = ((VariableNode) foo).resolveCoreType();
 
-        // INode source = Utils.getSourcecodeFile(foo);
+		// INode source = Utils.getSourcecodeFile(foo);
 
-        // String content = Utils.readFileContent(source);
+		// String content = Utils.readFileContent(source);
 
-        // int offset = ((FunctionNode) foo).getAST().getFileLocation().getNodeOffset();
+		// int offset = ((FunctionNode) foo).getAST().getFileLocation().getNodeOffset();
 
-        // content = content.substring(0, offset) + "XSGVDV";
+		// content = content.substring(0, offset) + "XSGVDV";
 
-        // VariableSearchingSpace space = new VariableSearchingSpace(foo);
+		// VariableSearchingSpace space = new VariableSearchingSpace(foo);
 
-        // DeclSpecSearcher searcher = new DeclSpecSearcher("Pair<.+>", space.generateExtendSpaces(), false);
+		// DeclSpecSearcher searcher = new DeclSpecSearcher("Pair<.+>", space.generateExtendSpaces(), false);
 
-        // /*
-        //   Display tree of project
-        //  */
-        // System.out.println(new DependencyTreeDisplayer(projectRoot).getTreeInString());
+		// /*
+		//   Display tree of project
+		//  */
+		// System.out.println(new DependencyTreeDisplayer(projectRoot).getTreeInString());
     }
 
     public ProjectParser(ProjectNode root) {
@@ -113,10 +114,15 @@ public class ProjectParser {
 
                 if (sourcecodeTreeRoot != null && sourcecodeTreeRoot.getChildren() != null) {
                     for (Node sourcecodeItem : sourcecodeTreeRoot.getChildren()) {
-                        List<INode> nodes = Search.getCandidateNodesWithTrie(sourceCodeNode, new NodeCondition(), sourcecodeItem.getAbsolutePath());
+                        List<INode> nodes = Search.searchNodes(sourceCodeNode, new NodeCondition(), sourcecodeItem.getAbsolutePath());
                         if (nodes.isEmpty()) {
                             sourceCodeNode.getChildren().add(sourcecodeItem);
                             sourcecodeItem.setParent(sourceCodeNode);
+                            if (sourcecodeItem instanceof FunctionNode) {
+                                // export CFG of function into working-space, each function is a .json file which presenting its cfg in .cpp/.c file
+                                new CFGExporter().exportCFG((FunctionNode) sourcecodeItem);
+//                                System.out.println(CFGUtils.createCFGFunctionPath((FunctionNode) sourcecodeItem));
+                            }
                         } else {
                             nodes.removeIf(node -> !node.getClass().isInstance(sourcecodeItem));
                             if (nodes.isEmpty()) {
@@ -163,7 +169,7 @@ public class ProjectParser {
                 cppParser.setSourcecodeNode((ISourcecodeFileNode) sourceCodeNode);
                 INode sourcecodeTreeRoot = cppParser.generateTree();
                 fNode.setAST(cppParser.getTranslationUnit());
-                for (int i = sourceCodeNode.getChildren().size() - 1; i >= 0; i--) {
+                for (int i=sourceCodeNode.getChildren().size()-1; i>=0; i--){
                     boolean contain = false;
                     for (INode node1 : sourcecodeTreeRoot.getChildren()) {
                         if (sourceCodeNode.getChildren().get(i).equals(node1)) {
@@ -183,10 +189,9 @@ public class ProjectParser {
 
     public ProjectNode getRootTree() {
         if (root != null) {
-            ExecutorService executor = Executors.newFixedThreadPool(Environment.getInstance().getMaxThreadCount());
+            ExecutorService executor = Executors.newFixedThreadPool(5);
             List<INode> sourcecodeFileNodes = Search.searchNodes(root, new SourcecodeFileNodeCondition());
 
-            // NECESSARY STEP
             if (expandTreeuptoMethodLevel_enabled) {
                 uiLogger.log("calling expandTreeuptoMethodLevel");
                 logger.debug("calling expandTreeuptoMethodLevel");
@@ -208,7 +213,7 @@ public class ProjectParser {
                 }
             }
 
-            // NECESSARY STEP
+            // STEP
             if (cpptoHeaderDependencyGeneration_enabled) {
                 uiLogger.log("calling CpptoHeaderDependencyGeneration");
                 logger.debug("calling CpptoHeaderDependencyGeneration");
@@ -228,7 +233,7 @@ public class ProjectParser {
                 }
             }
 
-            // NECESSARY STEP
+            // STEP
             if (expandTreeuptoMethodLevel_enabled) {
                 uiLogger.log("calling expandTreeuptoMethodLevel");
                 logger.debug("calling expandTreeuptoMethodLevel");
@@ -250,9 +255,7 @@ public class ProjectParser {
                 }
             }
 
-            ProjectTreeExpandTask.getTypes(root, sourcecodeFileNodes);
-
-            // NECESSARY STEP
+            // STEP
             if (extendedDependencyGeneration_enabled) {
                 uiLogger.log("calling ExtendedDependencyGeneration");
                 logger.debug("calling ExtendedDependencyGeneration");
@@ -279,7 +282,7 @@ public class ProjectParser {
                 }
             }
 
-            // NECESSARY STEP
+            // STEP
             if (parentReconstructor_enabled) {
                 uiLogger.log("calling ParentReconstructor");
                 logger.debug("calling ParentReconstructor");
@@ -302,7 +305,7 @@ public class ProjectParser {
                 }
             }
 
-            // NECESSARY STEP
+            // STEP
             if (generateSetterandGetter_enabled) {
                 uiLogger.log("calling generateSetterandGetter");
                 logger.debug("calling generateSetterandGetter");
@@ -325,10 +328,8 @@ public class ProjectParser {
                 }
             }
 
+            // STEP
             List<INode> functionNodes = Search.searchNodes(root, new FunctionNodeCondition());
-
-            // NECESSARY STEP
-            funcCallDependencyGeneration_enabled = false;
             if (funcCallDependencyGeneration_enabled) {
                 uiLogger.log("calling funcCallDependencyGeneration");
                 logger.debug("calling funcCallDependencyGeneration");
@@ -337,7 +338,7 @@ public class ProjectParser {
                 for (INode node : functionNodes) {
                     if (node instanceof IFunctionNode) {
                         funcCallDependencyGenerationTasks.add(() -> {
-                            // logger.debug("Analyzing function " + node.getAbsolutePath());
+                            logger.debug("Analyzing function " + node.getAbsolutePath());
                             (new FunctionCallDependencyGeneration()).dependencyGeneration(node);
                             return "Done";
                         });
@@ -351,9 +352,7 @@ public class ProjectParser {
                 }
             }
 
-            // NECESSARY STEP
-            // IN PROGRESS: MOVE TO AFTER BUILD
-            globalVarDependencyGeneration_enabled = false;
+            // STEP
             if (globalVarDependencyGeneration_enabled) {
                 uiLogger.log("calling globalVarDependencyGeneration");
                 logger.debug("calling globalVarDependencyGeneration");
@@ -375,7 +374,7 @@ public class ProjectParser {
                 }
             }
 
-            // NECESSARY STEP
+            // STEP
             // Find dependency between arguments in a function: a pointer/array and its size
             if (isSizeOfDependencyGeneration_enabled()) {
                 uiLogger.log("calling sizeDependencyGeneration");
@@ -398,25 +397,21 @@ public class ProjectParser {
                 }
             }
 
-            // MAYBE UNNECESSARY STEP
-            typeDependency_enable = false;
+            // STEP
             if (typeDependency_enable) {
-                uiLogger.log("calling typeDependency");
-                logger.debug("calling typeDependency");
+                uiLogger.log("calling typeDpendency");
+                logger.debug("calling typeDpendency");
 
                 List<Callable<String>> typeDependencyTasks = new ArrayList<>();
                 for (INode node : functionNodes) {
                     if (node instanceof IFunctionNode) {
                         for (IVariableNode var : ((IFunctionNode) node).getArguments()) {
-//                            typeDependencyTasks.add(() -> {
-//                                CTypeDependencyGeneration gen = new CTypeDependencyGeneration();
-//                                gen.setAddToTreeAutomatically(true);
-//                                gen.dependencyGeneration(var);
-//                                return "Done";
-//                            });
-                            CTypeDependencyGeneration gen = new CTypeDependencyGeneration();
-                            gen.setAddToTreeAutomatically(true);
-                            gen.dependencyGeneration(var);
+                            typeDependencyTasks.add(() -> {
+                                CTypeDependencyGeneration gen = new CTypeDependencyGeneration();
+                                gen.setAddToTreeAutomatically(true);
+                                gen.dependencyGeneration(var);
+                                return "Done";
+                            });
                         }
                     }
                 }
@@ -428,7 +423,6 @@ public class ProjectParser {
                 }
             }
 
-            // NECESSARY STEP
             if (typedefDependency_enable) {
                 uiLogger.log("calling typedefDependency");
                 logger.debug("calling typedefDependency");

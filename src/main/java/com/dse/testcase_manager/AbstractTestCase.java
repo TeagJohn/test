@@ -163,7 +163,7 @@ public abstract class AbstractTestCase extends TestItem implements ITestCase {
             Compiler compiler = Environment.getInstance().getCompiler();
 
             // if it is not cmake project, skip these 2 steps, we only need exe path
-            if (!compiler.isCmakeProject()) {
+            if (!Environment.getInstance().isUsingMakeBuildSystem()) {
                 // step 1: generate compilation command
                 String relativePath = PathUtils.toRelative(getSourceCodeFile());
                 String outfilePath = relativePath + compiler.getOutputExtension();

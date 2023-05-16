@@ -1,6 +1,5 @@
 package com.dse.testdata.object;
 
-import com.dse.testdata.comparable.gtest.IStringComparison;
 import com.dse.util.SpecialCharacter;
 import com.dse.util.VariableTypeUtils;
 import org.apache.commons.math3.random.RandomDataGenerator;
@@ -8,7 +7,7 @@ import org.apache.commons.math3.random.RandomDataGenerator;
 import java.util.HashMap;
 import java.util.Map;
 
-public class NormalStringDataNode extends NormalDataNode implements IStringComparison {
+public class NormalStringDataNode extends NormalDataNode {
     private long allocatedSize;
 
     @Deprecated
@@ -115,5 +114,4 @@ public class NormalStringDataNode extends NormalDataNode implements IStringCompa
     public void setAllocatedSize(long allocatedSize) {
         this.allocatedSize = allocatedSize;
     }
-
 }

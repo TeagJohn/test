@@ -1,6 +1,5 @@
 package com.dse.logger;
 
-import com.dse.guifx_v3.helps.UILogger;
 import javafx.application.Platform;
 import javafx.scene.control.TextArea;
 
@@ -35,15 +34,13 @@ public class MessagesPaneLogger extends CliLogger {
     }
 
     private void print(String message) {
-        if (UILogger.getLogMode().equals(UILogger.MODE_GUI)) {
-            try {
-                Platform.runLater(() -> {
-                    textArea.appendText(message);
-                });
+        try {
+            Platform.runLater(() -> {
+                textArea.appendText(message);
+            });
 //            os.write(message.getBytes(CHARSET));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

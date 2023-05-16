@@ -10,6 +10,7 @@ import org.eclipse.cdt.core.dom.ast.IASTNode;
  */
 public class ConditionIfCfgNode extends ConditionCfgNode {
 
+	public ConditionIfCfgNode(){super();}
 	public ConditionIfCfgNode(IASTNode node) {
 		super(node);
 	}

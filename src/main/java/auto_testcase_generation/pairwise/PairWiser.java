@@ -1,5 +1,11 @@
 package auto_testcase_generation.pairwise;
 
+import com.dse.parser.object.FunctionNode;
+import com.dse.parser.object.INode;
+import com.dse.parser.SourcecodeFileParser;
+import org.reactfx.value.Val;
+
+import java.io.File;
 import java.util.*;
 
 public class PairWiser {

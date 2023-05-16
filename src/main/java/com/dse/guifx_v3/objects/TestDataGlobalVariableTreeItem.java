@@ -12,13 +12,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TestDataGlobalVariableTreeItem extends TestDataTreeItem{
-    protected final static AkaLogger logger = AkaLogger.get(TestDataGlobalVariableTreeItem.class);
-    protected ValueDataNode inputDataNode;
-    protected ValueDataNode expectedOutputDataNode;
-    protected List<TreeItem<DataNode>> inputChildren = new ArrayList<>();
-    protected List<TreeItem<DataNode>> expectedOutputChildren = new ArrayList<>();
+    private final static AkaLogger logger = AkaLogger.get(TestDataGlobalVariableTreeItem.class);
+    private ValueDataNode inputDataNode;
+    private ValueDataNode expectedOutputDataNode;
+    private List<TreeItem<DataNode>> inputChildren = new ArrayList<>();
+    private List<TreeItem<DataNode>> expectedOutputChildren = new ArrayList<>();
 
-    protected TestDataTreeItem.ColumnType selectedColumn = TestDataTreeItem.ColumnType.INPUT;
+    private TestDataTreeItem.ColumnType selectedColumn = TestDataTreeItem.ColumnType.INPUT;
 
     public TestDataGlobalVariableTreeItem(ValueDataNode dataNode) {
         super(dataNode);
@@ -69,15 +69,15 @@ public class TestDataGlobalVariableTreeItem extends TestDataTreeItem{
         return inputDataNode;
     }
 
-//    public void setInputDataNode(ValueDataNode inputDataNode) {
-//        this.inputDataNode = inputDataNode;
-//    }
+    public void setInputDataNode(ValueDataNode inputDataNode) {
+        this.inputDataNode = inputDataNode;
+    }
 
     public ValueDataNode getExpectedOutputDataNode() {
         return expectedOutputDataNode;
     }
 
-//    public void setExpectedOutputDataNode(ValueDataNode expectedOutputDataNode) {
-//        this.expectedOutputDataNode = expectedOutputDataNode;
-//    }
+    public void setExpectedOutputDataNode(ValueDataNode expectedOutputDataNode) {
+        this.expectedOutputDataNode = expectedOutputDataNode;
+    }
 }

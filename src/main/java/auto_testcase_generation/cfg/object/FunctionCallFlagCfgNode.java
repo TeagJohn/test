@@ -13,6 +13,9 @@ public abstract class FunctionCallFlagCfgNode extends FlagCfgNode {
 	protected IASTFunctionCallExpression expr;
 	protected IFunctionNode function;
 
+	public FunctionCallFlagCfgNode() {
+	}
+
 	public IASTFunctionCallExpression getExpr() {
 		return expr;
 	}

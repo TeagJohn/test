@@ -10,6 +10,9 @@ public class SwitchCfgNode extends NormalCfgNode{
         super(node);
     }
 
+    public SwitchCfgNode() {
+    }
+
     public List<ICfgNode> getCases() {
         return getListTarget();
     }

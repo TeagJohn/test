@@ -83,7 +83,7 @@ public class InitialStubTreeGen extends AbstractInitialTreeGen {
         return true;
     }
 
-    public void addSubprogram(SubprogramNode node) throws Exception {
+    public void addSubprogram(IterationSubprogramNode node) throws Exception {
         INode fn = node.getFunctionNode();
 
         if (fn instanceof ICommonFunctionNode) {

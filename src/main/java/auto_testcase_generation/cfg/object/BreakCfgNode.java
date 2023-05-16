@@ -8,6 +8,9 @@ public class BreakCfgNode extends NormalCfgNode {
 		super(node);
 	}
 
+	public BreakCfgNode() {
+	}
+
 	@Override
 	public Object clone() throws CloneNotSupportedException {
 		BreakCfgNode cloneNode = (BreakCfgNode) super.clone();

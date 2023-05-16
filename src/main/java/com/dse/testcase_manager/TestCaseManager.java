@@ -6,7 +6,6 @@ import com.dse.exception.FunctionNodeNotFoundException;
 import com.dse.environment.Environment;
 import com.dse.guifx_v3.helps.UIController;
 import com.dse.logger.AkaLogger;
-import com.dse.parser.object.ClassNode;
 import com.dse.parser.object.ICommonFunctionNode;
 import com.dse.parser.object.IFunctionNode;
 import com.dse.testcase_execution.result_trace.AssertionResult;
@@ -58,7 +57,7 @@ public class TestCaseManager {
 
                     functionToTestCasesMap.put(functionNode, testCaseNames);
 
-                } catch (FunctionNodeNotFoundException fe) {
+                } catch(FunctionNodeNotFoundException fe){
                     logger.error("Function node not found");
                 }
             }
@@ -137,15 +136,18 @@ public class TestCaseManager {
         }
     }
 
-    public static void addTestCaseFromCte(TestCase testCase) {
+    public static void addTestCaseFromCte(TestCase testCase)
+    {
         Set<String> testcaseSet = functionToTestCasesMap.get(testCase.getFunctionNode());
         if (testcaseSet != null) {
             String tmpName = testCase.getName();
             String name = new String(tmpName);
             List<String> testcaseNames = new ArrayList<>(testcaseSet);
-            for (int i = 0; i < testcaseNames.size(); i++) {
-                if (testcaseNames.get(i).equals(tmpName)) {
-                    tmpName += ("_1");
+            for(int i = 0; i < testcaseNames.size(); i++)
+            {
+                if(testcaseNames.get(i).equals(tmpName))
+                {
+                    tmpName +=("_1");
                     int num = 2;
                     String result = checkName(tmpName, testcaseNames, num);
                     name = new String(result);
@@ -170,12 +172,15 @@ public class TestCaseManager {
         exportBreakpointsToFile(testCase);
     }
 
-    private static String checkName(String oName, List<String> nameList, int index) {
+    private static String checkName(String oName, List<String> nameList, int index )
+    {
         String result = new String();
-        for (int i = 0; i < nameList.size(); i++) {
-            if (nameList.get(i).equals(oName)) {
-                result = oName.substring(0, oName.lastIndexOf("_") + 1) + index;
-                int tmpInd = index + 1;
+        for(int i = 0; i < nameList.size(); i++)
+        {
+            if(nameList.get(i).equals(oName))
+            {
+                result = oName.substring(0, oName.lastIndexOf("_")+1) + index;
+                int tmpInd = index+1;
                 return checkName(result, nameList, tmpInd);
             }
         }
@@ -207,7 +212,7 @@ public class TestCaseManager {
         if (nameTestcase != null || nameTestcase.length() > 0)
             testCaseName = AbstractTestCase.removeSpecialCharacter(nameTestcase);
         else {
-            testCaseName = TestCaseManager.generateContinuousNameOfTestcase(TestCaseManager.getFunctionName(functionNode));
+            testCaseName = TestCaseManager.generateContinuousNameOfTestcase(functionNode.getName());
         }
         testCase = createTestCase(testCaseName, functionNode);
         return testCase;
@@ -219,7 +224,7 @@ public class TestCaseManager {
         if (name != null || name.length() > 0)
             testCaseName = AbstractTestCase.removeSpecialCharacter(name);
         else {
-            testCaseName = TestCaseManager.generateContinuousNameOfTestcase(TestCaseManager.getFunctionName(functionNode));
+            testCaseName = TestCaseManager.generateContinuousNameOfTestcase(functionNode.getName());
         }
         testCase = createPrototype(testCaseName, functionNode);
         return testCase;
@@ -229,7 +234,7 @@ public class TestCaseManager {
         if (functionNode == null)
             return null;
         String testCaseName = TestCaseManager.
-                generateContinuousNameOfTestcase(TestCaseManager.getFunctionName(functionNode) + ITestCase.POSTFIX_TESTCASE_BY_USER);
+                generateContinuousNameOfTestcase(functionNode.getName() + ITestCase.POSTFIX_TESTCASE_BY_USER);
         TestCase testCase = createTestCase(testCaseName, functionNode);
         return testCase;
     }
@@ -999,7 +1004,7 @@ public class TestCaseManager {
         if (clone != null) {
             ICommonFunctionNode functionNode = clone.getRootDataNode().getFunctionNode();
             if (functionNode != null) {
-                String testCaseName = generateContinuousNameOfTestcase(TestCaseManager.getFunctionName(functionNode));
+                String testCaseName = generateContinuousNameOfTestcase(functionNode.getName());
                 clone.setName(testCaseName);
                 exportBasicTestCaseToFile(clone);
 
@@ -1075,14 +1080,6 @@ public class TestCaseManager {
         }
     }
 
-    public static String getFunctionName(ICommonFunctionNode functionNode) {
-        if (functionNode.getParent() instanceof ClassNode) {
-            return functionNode.getParent().getName() + SpecialCharacter.UNDERSCORE + functionNode.getName();
-        } else {
-            return functionNode.getName();
-        }
-    }
-
     public static List<TestCase> getTestCasesByFunction(ICommonFunctionNode functionNode) {
         List<TestCase> testCases = new ArrayList<>();
         List<String> names = new ArrayList<>(functionToTestCasesMap.get(functionNode));
@@ -1110,10 +1107,10 @@ public class TestCaseManager {
 
 //    public static List<String> generatedTestcaseNames = new ArrayList<>();
 
-    public synchronized static String generateContinuousNameOfTestcase(String testCaseNamePrefix) {
+    public synchronized static String generateContinuousNameOfTestcase(String testCaseNamePrefix){
         logger.debug("Generate name of test case name");
 
-        for (int i = 0; i < RANDOM_BOUND; i++) {
+        for (int i = 0; i < RANDOM_BOUND; i++){
             String candidateName = testCaseNamePrefix + ITestCase.AKA_SIGNAL + i;
 
             // to create unique name temporarily

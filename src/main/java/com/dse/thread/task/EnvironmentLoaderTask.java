@@ -9,8 +9,10 @@ import com.dse.environment.Environment;
 import com.dse.guifx_v3.controllers.object.LoadingPopupController;
 import com.dse.guifx_v3.helps.InstructionMapping;
 import com.dse.guifx_v3.helps.UIController;
+import com.dse.parser.object.INode;
 import com.dse.regression.ChangesBetweenSourcecodeFiles;
 import com.dse.regression.WorkspaceUpdater;
+import com.dse.regression.cia.WaveCIA;
 import com.dse.testcase_manager.TestCaseManager;
 import com.dse.thread.AbstractAkaTask;
 import com.dse.thread.AkaThread;
@@ -68,6 +70,18 @@ public class EnvironmentLoaderTask extends AbstractEnvironmentLoadTask {
                                 MenuBarController.addEnvironmentToHistory(environmentFile);
                                 // re-compute the number of statements/branches
 
+                                WaveCIA regression = WaveCIA.getWaveCIA();
+                                regression.refreshProject();
+                                // load modified node
+                                for (INode node : ChangesBetweenSourcecodeFiles.modifiedNodes) {
+                                    regression.addModifiedNode(node);
+                                    regression.addImpactedNode(node, WaveCIA.getLEVEL());
+                                }
+                                // load added node
+                                for (INode node : ChangesBetweenSourcecodeFiles.modifiedNodes) {
+                                    regression.addAddedNode(node);
+                                }
+                                regression.runRegression();
                                 return null;
                             }
                         }).start();

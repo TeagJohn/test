@@ -595,25 +595,6 @@ public class ASTUtils {
 		return ids;
 	}
 
-	public static <T extends IASTArraySubscriptExpression> List<T> getArraySubscriptExpressionRecursive(IASTNode ast) {
-		List<T> ids = new ArrayList<>();
-
-		ASTVisitor visitor = new ASTVisitor() {
-			@Override
-			public int visit(IASTExpression expression) {
-				if (expression instanceof ICPPASTArraySubscriptExpression) {
-					ids.add((T) expression);
-				}
-					return ASTVisitor.PROCESS_CONTINUE;
-			}
-		};
-
-		visitor.shouldVisitExpressions = true;
-
-		ast.accept(visitor);
-		return ids;
-	}
-
 	/**
 	 * Ex: (a>0 && a==1)
 	 *

@@ -15,9 +15,7 @@ import com.google.gson.JsonParser;
 import org.eclipse.cdt.dsf.mi.service.command.output.*;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.lang.String;
 
 import static com.dse.debugger.gdb.analyzer.OutputSyntax.*;
 
@@ -27,7 +25,6 @@ public class OutputAnalyzer extends AbstractOutputAnalyzer {
 
     @Override
     public GDBStatus analyze(String output, String command) {
-
         if (output != null) {
             String removedOutput = removeUnnecessary(output);
             if (removedOutput.contains("*stopped,") && !removedOutput.contains("reason=")) {
@@ -40,15 +37,10 @@ public class OutputAnalyzer extends AbstractOutputAnalyzer {
                 json = json.replace("id:\"2\",group-id:\"i1\"", "");
             }
             logger.debug("Parsing the result of command " +  command +":\n" + json);
-            if (json.contains("test-drivers") && command.equals(GDB.GDB_NEXT_LINE)) {
-                return GDBStatus.EXIT;
-            }
             JsonObject jsonOb = JsonParser.parseString(json).getAsJsonObject();
             GDBStatus res;
             if (jsonOb.get("reason") != null) {
                 String reason = jsonOb.get("reason").getAsString();
-
-
                 if (reason.equals(EXIT_HIT.getSyntax())) {
                     res = GDBStatus.EXIT;
                     res.setReason(reason);
@@ -77,27 +69,8 @@ public class OutputAnalyzer extends AbstractOutputAnalyzer {
     @Override
     public ArrayList<GDBFrame> analyzeFrames(String output, String command) {
         String removeOutput = removeUnnecessary(output);
-
-        //modify to remove test-driver from frame
-        String[] path = removeOutput.split("}");
-        List <String> list = new ArrayList <String>(Arrays.asList(path));
-        for (int i = 0; i < list.size(); i++) {
-            if (list.get(i).contains("test-drivers")) {
-                list.remove(list.get(i));
-                i--;
-            }
-        }
-        String res = "";
-        for (int i = 0; i < list.size()-1; i++) {
-            res += list.get(i) + "}";
-        }
-        res += list.get(list.size()-1);
-        removeOutput = res;
-
         String json = parseOutputToJson(removeOutput, command);
         JsonObject jsonOb = JsonParser.parseString(json).getAsJsonObject();
-
-
         if (command.equals(GDB.GDB_FRAME_LIST))
             return extractFrame(jsonOb.getAsJsonArray("stack"));
         return null;

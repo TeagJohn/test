@@ -3,6 +3,9 @@ package auto_testcase_generation.cfg.object;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 
 public class ConditionElementIfCfgNode extends ConditionIfCfgNode implements IConditionElementCfgNode {
+	public ConditionElementIfCfgNode() {
+		super();
+	}
 
 	public ConditionElementIfCfgNode(IASTNode node) {
 		super(node);

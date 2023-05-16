@@ -145,11 +145,9 @@ public class UtilsCsv {
         for (IVariableNode variableNode : functionNode.getArguments()) {
             list.add(variableNode.getName());
         }
-        IDataNode staticNode = Search2.findStaticRoot(currentTestcase.getRootDataNode());
-        if (staticNode != null) {
-            for (IDataNode node : staticNode.getChildren()) {
-                list.add(node.getName());
-            }
+        IDataNode staticNode = Search2.findStaticRoot((RootDataNode) currentTestcase.getRootDataNode());
+        for (IDataNode node : staticNode.getChildren()) {
+            list.add(node.getName());
         }
         return list;
     }
@@ -203,10 +201,8 @@ public class UtilsCsv {
 
         // static var
         RootDataNode staticRoot = Search2.findStaticRoot(currentTestcase.getRootDataNode());
-        if (staticRoot != null) {
-            for (IDataNode staticNode : staticRoot.getChildren()) {
-                outputs.add(staticNode.getName());
-            }
+        for (IDataNode staticNode : staticRoot.getChildren()) {
+            outputs.add(staticNode.getName());
         }
 
         // global var: static global first

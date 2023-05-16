@@ -69,7 +69,7 @@ public class DFSAutomatedTestdataGeneration extends ConcolicAutomatedTestdataGen
     }
 
     @Override
-    protected int generateDirectly(List<TestCase> testCases, ICommonFunctionNode functionNode, String cov,
+    public int generateDirectly(List<TestCase> testCases, ICommonFunctionNode functionNode, String cov,
                                         List<String> generatedTestcases, List<String> analyzedTestpathMd5) {
         // update dfs stack
         if (isHaveNewTestCase){
@@ -191,6 +191,6 @@ public class DFSAutomatedTestdataGeneration extends ConcolicAutomatedTestdataGen
     }
 
     protected String getTestCaseNamePrefix(ICommonFunctionNode fn) {
-        return fn.getName() + ITestCase.POSTFIX_TESTCASE_BY_DIRECTED_METHOD;
+        return fn.getSimpleName() + ITestCase.POSTFIX_TESTCASE_BY_DIRECTED_METHOD;
     }
 }

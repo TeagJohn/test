@@ -6,6 +6,8 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 
 <AnchorPane prefHeight="520.0" prefWidth="570.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dse.guifx_v3.controllers.build_environment.LocateSourceFilesController">
@@ -18,15 +20,14 @@
                </padding>
             </Label>
             <CheckBox fx:id="chbUseRelativePath" layoutX="15.0" layoutY="20.0" mnemonicParsing="false" onAction="#useRelativePath" text="Use relative path" AnchorPane.leftAnchor="15.0" />
-            <Button fx:id="bAddSubDir" layoutX="347.0" layoutY="16.0" mnemonicParsing="false" onAction="#addOnlySubDir" prefWidth="40.0" text="Ad3" AnchorPane.rightAnchor="165.0" />
             <Button fx:id="bAddRecursive" layoutX="369.0" layoutY="16.0" mnemonicParsing="false" onAction="#addRecursiveFolders" prefWidth="40.0" text="Ad2" AnchorPane.rightAnchor="115.0" />
             <Button fx:id="bAdd" layoutX="438.0" layoutY="16.0" mnemonicParsing="false" onAction="#addTheRootFolder" prefWidth="40.0" text="Ad1" AnchorPane.rightAnchor="65.0" />
             <Button fx:id="bDelete" layoutX="485.0" layoutY="16.0" mnemonicParsing="false" onAction="#delete" prefWidth="40.0" text="Del" AnchorPane.rightAnchor="15.0" />
-            <ListView fx:id="lvPaths" layoutX="53.0" layoutY="95.0" prefHeight="318.0" prefWidth="520.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" />
+            <ListView fx:id="lvPaths" layoutX="15.0" layoutY="92.0" prefHeight="330.0" prefWidth="519.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="16.0" />
             <CheckBox disable="true" layoutX="16.0" layoutY="428.0" mnemonicParsing="false" text="Source files have not changed" AnchorPane.leftAnchor="15.0" />
             <CheckBox disable="true" layoutX="16.0" layoutY="461.0" mnemonicParsing="false" text="Make these paths the defaults for the Wizard" AnchorPane.leftAnchor="15.0" />
             <Button disable="true" layoutX="399.0" layoutY="457.0" mnemonicParsing="false" text="Clear Dependecy Data" AnchorPane.rightAnchor="15.0" />
-            <TextField fx:id="tfCmakeProjDirectory" disable="true" layoutX="184.0" layoutY="55.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="26.0" prefWidth="270.0" AnchorPane.bottomAnchor="420.0" AnchorPane.rightAnchor="105.0" AnchorPane.topAnchor="55.0">
+            <TextField fx:id="tfProjectDirectory" layoutX="126.0" layoutY="55.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="27.0" prefWidth="311.0" AnchorPane.bottomAnchor="420.0" AnchorPane.leftAnchor="135.0" AnchorPane.rightAnchor="65.0" AnchorPane.topAnchor="55.0">
                <opaqueInsets>
                   <Insets left="10.0" right="10.0" />
                </opaqueInsets>
@@ -34,8 +35,57 @@
                   <Insets left="10.0" right="10.0" />
                </padding>
             </TextField>
-            <Label fx:id="lDirectory" disable="true" layoutX="16.0" layoutY="60.0" text="CMake project directory:" AnchorPane.leftAnchor="15.0" />
-            <Button fx:id="bBrowse" disable="true" layoutX="472.0" layoutY="56.0" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#addCmakeProjectDirectory" prefWidth="80.0" text="Browse .." wrapText="true" AnchorPane.rightAnchor="15.0" />
+            <Label fx:id="lProjectDirectory" layoutX="16.0" layoutY="60.0" text="Project directory:" AnchorPane.leftAnchor="15.0" />
+            <Button fx:id="bBrowse" contentDisplay="GRAPHIC_ONLY" layoutX="455.0" layoutY="56.0" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onBrowseProjectDirectory" prefHeight="24.0" prefWidth="40.0" text="Browse" wrapText="true" AnchorPane.rightAnchor="15.0">
+               <graphic>
+                  <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../icons/file/folder.png" />
+                     </image>
+                  </ImageView>
+               </graphic></Button>
+            <Button fx:id="bShowIncludeAndSource" layoutX="14.0" layoutY="396.0" mnemonicParsing="false" text="Show include and source path" AnchorPane.leftAnchor="15.0" />
+            <AnchorPane fx:id="apIncludeSourceDirectory" layoutX="151.0" layoutY="90.0" prefHeight="113.0" prefWidth="520.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="95.0">
+               <children>
+                  <Label layoutX="16.0" layoutY="29.0" text="Include directory:" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="5.0" />
+                  <Label layoutX="17.0" layoutY="84.0" text="Source directory:" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="45.0" />
+                  <TextField fx:id="tfIncludeDirectory" disable="true" layoutX="122.0" layoutY="24.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="27.0" prefWidth="349.0" AnchorPane.leftAnchor="120.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="0.0">
+                     <opaqueInsets>
+                        <Insets left="10.0" right="10.0" />
+                     </opaqueInsets>
+                     <padding>
+                        <Insets left="10.0" right="10.0" />
+                     </padding>
+                  </TextField>
+                  <Button fx:id="bBrowseInclude" contentDisplay="GRAPHIC_ONLY" graphicTextGap="0.0" layoutX="454.0" layoutY="26.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onChooseIncludeDirectory" prefHeight="25.0" prefWidth="40.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <graphic>
+                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../icons/file/folder.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </Button>
+                  <TextField fx:id="tfSourceDirectory" disable="true" layoutX="122.0" layoutY="87.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="27.0" prefWidth="311.0" AnchorPane.leftAnchor="120.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="40.0">
+                     <opaqueInsets>
+                        <Insets left="10.0" right="10.0" />
+                     </opaqueInsets>
+                     <padding>
+                        <Insets left="10.0" right="10.0" />
+                     </padding>
+                  </TextField>
+                  <Button fx:id="bBrowseSource" contentDisplay="GRAPHIC_ONLY" graphicTextGap="0.0" layoutX="454.0" layoutY="88.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onChooseSourceDirectory" prefHeight="25.0" prefWidth="40.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="40.0">
+                     <graphic>
+                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../icons/file/folder.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </Button>
+                  <Button fx:id="bSaveAndShowDirs" contentDisplay="RIGHT" layoutX="349.0" layoutY="80.0" mnemonicParsing="false" text="Save and show directories" AnchorPane.rightAnchor="0.0" />
+               </children>
+            </AnchorPane>
          </children>
       </AnchorPane>
    </children>

@@ -9,7 +9,6 @@ import com.dse.config.IFunctionConfigBound;
 import com.dse.config.UndefinedBound;
 import com.dse.guifx_v3.controllers.ChooseRealTypeController;
 import com.dse.environment.Environment;
-import com.dse.guifx_v3.helps.UIController;
 import com.dse.guifx_v3.objects.AbstractTableCell;
 import com.dse.logger.AkaLogger;
 import com.dse.parser.ProjectParser;
@@ -29,11 +28,11 @@ import com.dse.testdata.object.stl.*;
 import com.dse.util.*;
 import org.apache.commons.math3.random.RandomDataGenerator;
 import org.apache.log4j.Level;
-import org.eclipse.cdt.core.dom.ast.ExpansionOverlapsBoundaryException;
-import org.eclipse.cdt.core.dom.ast.IASTInitializerClause;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
-import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTConstructorChainInitializer;
-import org.eclipse.cdt.internal.core.dom.parser.cpp.*;
+import org.eclipse.cdt.internal.core.dom.parser.cpp.CPPASTDeclarationStatement;
+import org.eclipse.cdt.internal.core.dom.parser.cpp.CPPASTQualifiedName;
+import org.eclipse.cdt.internal.core.dom.parser.cpp.CPPASTTemplateId;
+import org.eclipse.cdt.internal.core.dom.parser.cpp.CPPASTTypeId;
 
 import java.io.File;
 import java.util.*;
@@ -198,10 +197,12 @@ public class RandomInputGeneration {
         else if (TemplateUtils.isTemplateTypeDefinedByUser(type, functionConfig.getFunctionNode())) {
             logger.debug(type + ": isTemplateTypeDefinedByUser");
             handleTemplateTypeDefinedByUser(input, prefixName, argument, type, functionConfig);
-
         }
+//        else if (VariableTypeUtils.isTemplateStructureSimple(type)) {
+//
+//        }
         // Macro
-        else if (argument.getRawType().equals(MacroFunctionNode.MACRO_UNDEFINE_TYPE)) {
+        else if (argument.getRawType().equals(MacroFunctionNode.MACRO_UNDEFINE_TYPE)){
             logger.debug(type + ": handleMacroTypeDefinedByUser");
             handleTemplateTypeDefinedByUser(input, prefixName, argument, type, functionConfig);
         }
@@ -374,7 +375,7 @@ public class RandomInputGeneration {
         }
     }
 
-    boolean isDefinedType(String varName) {
+    boolean isDefinedType(String varName){
         for (String genericVarName : realTypeMapping.keySet())
             if (genericVarName.equals(varName)) {
                 return true;
@@ -419,7 +420,7 @@ public class RandomInputGeneration {
                  * Choose "int"
                  */
                 selectedCoreType = VariableTypeUtils.BASIC.NUMBER.INTEGER.INT;
-                for (INode n : allPrimitiveNodes) {
+                for (INode n: allPrimitiveNodes) {
                     if (n.getName().equals(selectedCoreType)) {
                         selectedCoreTypeNode = n;
                         break;
@@ -572,11 +573,11 @@ public class RandomInputGeneration {
         if (Environment.getInstance().getCompiler().isGPlusPlusCommand())
             ran = new Random().nextInt(9);
         switch (ran) {
-            case PRIMITIVE_TYPE: {
+            case PRIMITIVE_TYPE:{
                 input.add(new RandomValueForAssignment(prefixName + argument.getName(),
                         // a random value
                         "void* " + argument.getName() + " = " +
-                                new RandomDataGenerator().nextInt(-999999, 999999) + ";"));
+                                new RandomDataGenerator().nextInt(-999999, 999999) +";"));
                 break;
             }
 
@@ -729,15 +730,15 @@ public class RandomInputGeneration {
                 size = BasicTypeRandom.random(lower, upper);
             } else {
                 if (type.endsWith("*")) {
-                    size = BasicTypeRandom.random((long) functionConfig.getBoundOfPointer().getLowerAsDouble(),
-                            (long) functionConfig.getBoundOfPointer().getUpperAsDouble());
+                    size = BasicTypeRandom.random((long)functionConfig.getBoundOfPointer().getLowerAsDouble(),
+                            (long)functionConfig.getBoundOfPointer().getUpperAsDouble());
                 } else {
                     List<String> indexes = Utils.getIndexOfArray(type);
                     if (indexes.size() >= 1 && Utils.toInt(indexes.get(0)) != Utils.UNDEFINED_TO_INT)
                         size = Utils.toInt(indexes.get(0)); // return the first size
                     else
-                        size = BasicTypeRandom.random((long) functionConfig.getBoundOfArray().getLowerAsDouble(),
-                                (long) functionConfig.getBoundOfArray().getUpperAsDouble());
+                        size = BasicTypeRandom.random((long)functionConfig.getBoundOfArray().getLowerAsDouble(),
+                                (long)functionConfig.getBoundOfArray().getUpperAsDouble());
                 }
             }
         } else {
@@ -745,16 +746,16 @@ public class RandomInputGeneration {
             if (indexes.size() >= 1 && Utils.toInt(indexes.get(0)) != Utils.UNDEFINED_TO_INT)
                 size = Utils.toInt(indexes.get(0)); // return the first size
             else
-                size = BasicTypeRandom.random((long) functionConfig.getBoundOfArray().getLowerAsDouble(),
-                        (long) functionConfig.getBoundOfArray().getUpperAsDouble());
+                size = BasicTypeRandom.random((long)functionConfig.getBoundOfArray().getLowerAsDouble(),
+                        (long)functionConfig.getBoundOfArray().getUpperAsDouble());
         }
         return size;
     }
 
     private long getFirstSizeOfPointer(IFunctionConfig functionConfig) {
         return BasicTypeRandom.random(
-                (long) functionConfig.getBoundOfPointer().getLowerAsDouble(),
-                (long) functionConfig.getBoundOfPointer().getUpperAsDouble());
+                (long)functionConfig.getBoundOfPointer().getLowerAsDouble(),
+                (long)functionConfig.getBoundOfPointer().getUpperAsDouble());
     }
 
     private void handleString(List<RandomValue> input, String prefixName, IVariableNode argument, String type, IFunctionConfig functionConfig) {
@@ -802,119 +803,41 @@ public class RandomInputGeneration {
         if (correspondingNode == null)
             correspondingNode = argument.resolveCoreType();
 
-        if ((correspondingNode instanceof StructNode) && Environment.getInstance().isC()) {
+        if (correspondingNode instanceof StructNode) {
             logger.debug("Defined in " + correspondingNode.getAbsolutePath());
 //            input.add(new RandomValueForAssignment(prefixName + argument.getName(), correspondingNode.getName()));
             input.addAll(constructRandomInput(((StructNode) correspondingNode).getAttributes(),
                     functionConfig, prefixName + argument.getName() + DELIMITER_BETWEEN_STRUCT_INSTANCE_AND_ATTRIBUTE));
 
-        } else if (correspondingNode instanceof StructOrClassNode) {
+        } else if (correspondingNode instanceof ClassNode) {
             logger.debug("Defined in " + correspondingNode.getAbsolutePath());
             if (this.selectedConstructor == null) {
                 // choose an inheritance class or this class
-                StructOrClassNode correspondingVar = (StructOrClassNode) correspondingNode;
-                if (correspondingNode instanceof ClassNode && ((ClassNode) correspondingNode).isTemplate()) {
-                    correspondingVar = (StructOrClassNode) correspondingNode.getChildren().get(0);
-                }
+                ClassNode correspondingVar =  (((ClassNode) correspondingNode).isTemplate()) ? (ClassNode) correspondingNode.getChildren().get(0) : (ClassNode) correspondingNode;
                 List<INode> derivedNodes = correspondingVar.getDerivedNodes();
-                derivedNodes.removeIf(c -> ((StructOrClassNode) c).isAbstract());
                 int randomDerivedNodes = new Random().nextInt(derivedNodes.size());
 
                 // choose a constructor among constructors
-                ArrayList<ICommonFunctionNode> constructors = ((StructOrClassNode) derivedNodes.get(randomDerivedNodes))
-                        .getConstructors();
+                ArrayList<ICommonFunctionNode> constructors = ((ClassNode) derivedNodes.get(randomDerivedNodes)).getConstructors();
                 logger.debug("There are " + constructors.size() + " candidate constructors");
-                if (constructors.size() > 0) {
-                    int randomConstructor = new Random().nextInt(constructors.size());
+                int randomConstructor = new Random().nextInt(constructors.size());
 
-                    String nameUsedInExpansion = prefixName + argument.getName();
-                    String value = constructors.get(randomConstructor).getName();
-                    logger.debug("Choose constructor " + value);
+                String nameUsedInExpansion = prefixName + argument.getName();
+                String value = constructors.get(randomConstructor).getName();
+                logger.debug("Choose constructor " + value);
 
-                    input.add(new RandomValueForAssignment(nameUsedInExpansion, value));
-                    input.addAll(constructRandomInput(constructors.get(randomConstructor).getArguments(),
-                            functionConfig, prefixName + argument.getName() + DELIMITER_BETWEEN_CONSTRUCTOR_OF_STRUCTURE_AND_ARGUMENT));
-                } else {
-                    UIController.showErrorDialog("Cannot create instance of abstract class", "Aka Automation Tool", "Error");
-                    Thread.currentThread().stop();
-                }
-            } else if (this.selectedConstructor.isInAbstractClass()) {
-                List<INode> derivedNodes = ((StructOrClassNode) correspondingNode).getDerivedNodes();
-                derivedNodes.removeIf(c -> ((StructOrClassNode) c).isAbstract());
-                int randomDerivedNodes = new Random().nextInt(derivedNodes.size());
-
-                ArrayList<ICommonFunctionNode> constructors = new ArrayList<>();
-                ICommonFunctionNode constructor = null;
-                derivedNodes.forEach(derivedNode -> constructors.addAll(((StructOrClassNode) derivedNode).getConstructors()));
-                findConstructor:
-                for (ICommonFunctionNode c: constructors) {
-                    if (((ConstructorNode) c).getAST() instanceof CPPASTFunctionDefinition) {
-                        ICPPASTConstructorChainInitializer[] constructorChainInitializers
-                                = ((CPPASTFunctionDefinition) ((ConstructorNode) c)
-                                .getAST()).getMemberInitializers();
-                        for (ICPPASTConstructorChainInitializer cci : constructorChainInitializers) {
-                            try {
-                                if (cci.getMemberInitializerId().getSyntax().getImage().equals(type.split("::")[1])) {
-                                    String baseConstructorName = cci.getRawSignature();
-                                    IASTInitializerClause[] args = ((CPPASTConstructorInitializer) cci.getInitializer()).getArguments();
-                                    for (IASTInitializerClause arg : args) {
-                                        for (Node var : c.getChildren()) {
-                                            if (arg.getRawSignature().equals(var.getName())) {
-                                                if (var instanceof InternalVariableNode) {
-                                                    baseConstructorName = baseConstructorName.replaceAll(arg.getRawSignature(), ((InternalVariableNode) var).getRawType());
-                                                }
-                                            }
-                                        }
-                                    }
-                                    baseConstructorName = baseConstructorName.replaceAll("\\s+", "");
-                                    String selectedConstructorName = this.selectedConstructor.getName();
-                                    if (selectedConstructorName.contains("::")) {
-                                        selectedConstructorName = selectedConstructorName.split("::")[1];
-                                    }
-                                    if (baseConstructorName.equals(selectedConstructorName)) {
-                                        constructor = c;
-                                        break findConstructor;
-                                    } else {
-                                        if (args.length == this.selectedConstructor.getArguments().size()) {
-                                            constructor = c;
-                                            break;
-                                        }
-                                    }
-                                }
-                            } catch (ExpansionOverlapsBoundaryException e) {
-//                                throw new RuntimeException(e);
-                            }
-                        }
-                    }
-                }
-//                logger.debug("There are " + constructors.size() + " candidate constructors");
-                if (constructor != null) {
-
-                    String nameUsedInExpansion = prefixName + argument.getName();
-                    String value = constructor.getName();
-                    logger.debug("Choose constructor " + value);
-
-                    input.add(new RandomValueForAssignment(nameUsedInExpansion, value));
-                    input.addAll(constructRandomInput(constructor.getArguments(),
-                            functionConfig, prefixName + argument.getName() + DELIMITER_BETWEEN_CONSTRUCTOR_OF_STRUCTURE_AND_ARGUMENT));
-                } else {
-                    UIController.showErrorDialog("Cannot create instance of abstract class", "Aka Automation Tool", "Error");
-                    Thread.currentThread().stop();
-                }
-
+                input.add(new RandomValueForAssignment(nameUsedInExpansion, value));
+                input.addAll(constructRandomInput(constructors.get(randomConstructor).getArguments(),
+                        functionConfig, prefixName + argument.getName() + DELIMITER_BETWEEN_CONSTRUCTOR_OF_STRUCTURE_AND_ARGUMENT));
             } else {
                 String nameUsedInExpansion = prefixName + argument.getName();
                 String value = this.selectedConstructor.getName();
                 input.add(new RandomValueForAssignment(nameUsedInExpansion, value));
-                List<IVariableNode> arguments = this.selectedConstructor.getArguments();
+                List<IVariableNode>  arguments = this.selectedConstructor.getArguments();
                 this.selectedConstructor = null; // reset
                 input.addAll(constructRandomInput(arguments,
                         functionConfig, prefixName + argument.getName() + DELIMITER_BETWEEN_CONSTRUCTOR_OF_STRUCTURE_AND_ARGUMENT));
-
             }
-
-            input.addAll(constructRandomInput(((StructOrClassNode) correspondingNode).getPublicAttributes(), functionConfig,
-                    prefixName + argument.getName() + DELIMITER_BETWEEN_CONSTRUCTOR_OF_STRUCTURE_AND_ARGUMENT));
 
         } else if (correspondingNode instanceof EnumNode) {
             List<String> possibleValues = ((EnumNode) correspondingNode).getAllNameEnumItems();
@@ -922,57 +845,23 @@ public class RandomInputGeneration {
             input.add(new RandomValueForAssignment(prefixName + argument, chosenValue));
 
         } else if (correspondingNode instanceof UnionNode) {
-            if (Environment.getInstance().isC()) {
-                // choose a random attribute in union
-                List<Node> possibleValues = correspondingNode.getChildren();
-                IVariableNode chosenValue = (IVariableNode) possibleValues.get(new Random().nextInt(possibleValues.size()));
-                input.add(new RandomValueForAssignment(prefixName + argument, chosenValue.getName()));
+            // choose a random attribue in union
+            List<Node> possibleValues = correspondingNode.getChildren();
+            IVariableNode chosenValue = (IVariableNode) possibleValues.get(new Random().nextInt(possibleValues.size()));
+            input.add(new RandomValueForAssignment(prefixName + argument, chosenValue.getName()));
 
-                // generate value for attribute
-                TmpVariableNode tmpvar = new TmpVariableNode();
-                String insideType = chosenValue.getRawType();
-                tmpvar.setRawType(insideType);
-                tmpvar.setName(chosenValue.getName());
-                tmpvar.setCoreType(insideType);
-                tmpvar.setReducedRawType(insideType);
-                tmpvar.setParent(argument.getParent());
-                tmpvar.setAbsolutePath(argument.getAbsolutePath());
+            // generate value for attribute
+            TmpVariableNode tmpvar = new TmpVariableNode();
+            String insideType = chosenValue.getRawType();
+            tmpvar.setRawType(insideType);
+            tmpvar.setName(chosenValue.getName());
+            tmpvar.setCoreType(insideType);
+            tmpvar.setReducedRawType(insideType);
+            tmpvar.setParent(argument.getParent());
+            tmpvar.setAbsolutePath(argument.getAbsolutePath());
 
-                input.addAll(constructRandomInput(tmpvar,
-                        functionConfig, prefixName + argument.getName() + "."));
-
-            } else {
-                logger.debug("Defined in " + correspondingNode.getAbsolutePath());
-                if (this.selectedConstructor == null) {
-
-                    // choose a constructor among constructors
-                    ArrayList<ICommonFunctionNode> constructors = ((UnionNode) correspondingNode).getConstructors();
-                    logger.debug("There are " + constructors.size() + " candidate constructors");
-                    if (constructors.size() > 0) {
-                        int randomConstructor = new Random().nextInt(constructors.size());
-
-                        String nameUsedInExpansion = prefixName + argument.getName();
-                        String value = constructors.get(randomConstructor).getName();
-                        logger.debug("Choose constructor " + value);
-
-                        input.add(new RandomValueForAssignment(nameUsedInExpansion, value));
-                        input.addAll(constructRandomInput(constructors.get(randomConstructor).getArguments(),
-                                functionConfig, prefixName + argument.getName() + DELIMITER_BETWEEN_CONSTRUCTOR_OF_STRUCTURE_AND_ARGUMENT));
-                    } else {
-                        UIController.showErrorDialog("Cannot create instance of this class", "Aka Automation Tool", "Error");
-                        Thread.currentThread().stop();
-                    }
-                } else {
-                    String nameUsedInExpansion = prefixName + argument.getName();
-                    String value = this.selectedConstructor.getName();
-                    input.add(new RandomValueForAssignment(nameUsedInExpansion, value));
-                    List<IVariableNode> arguments = this.selectedConstructor.getArguments();
-                    this.selectedConstructor = null; // reset
-                    input.addAll(constructRandomInput(arguments,
-                            functionConfig, prefixName + argument.getName() + DELIMITER_BETWEEN_CONSTRUCTOR_OF_STRUCTURE_AND_ARGUMENT));
-
-                }
-            }
+            input.addAll(constructRandomInput(tmpvar,
+                    functionConfig, prefixName + argument.getName() + "."));
         } else {
             logger.debug("not found definition of " + type);
         }
@@ -1155,8 +1044,8 @@ public class RandomInputGeneration {
     }
 
     private void handleStdStack(List<RandomValue> input, String prefix, IVariableNode var, String type, IFunctionConfig functionConfig) {
-        long size = BasicTypeRandom.generateInt((long) getFunctionNode().getFunctionConfig().getBoundOfArray().getLowerAsDouble()
-                , (long) getFunctionNode().getFunctionConfig().getBoundOfArray().getUpperAsDouble());
+        long size = BasicTypeRandom.generateInt((long)getFunctionNode().getFunctionConfig().getBoundOfArray().getLowerAsDouble()
+                , (long)getFunctionNode().getFunctionConfig().getBoundOfArray().getUpperAsDouble());
         String nameUsedInExpansion = prefix + var.getName();
         String value = size + "";
         input.add(new RandomValueForAssignment(nameUsedInExpansion, value));
@@ -1186,8 +1075,8 @@ public class RandomInputGeneration {
     }
 
     private void handleStdSet(List<RandomValue> input, String prefix, IVariableNode var, String type, IFunctionConfig functionConfig) {
-        long size = BasicTypeRandom.generateInt((long) getFunctionNode().getFunctionConfig().getBoundOfArray().getLowerAsDouble()
-                , (long) getFunctionNode().getFunctionConfig().getBoundOfArray().getUpperAsDouble());
+        long size = BasicTypeRandom.generateInt((long)getFunctionNode().getFunctionConfig().getBoundOfArray().getLowerAsDouble()
+                , (long)getFunctionNode().getFunctionConfig().getBoundOfArray().getUpperAsDouble());
         String nameUsedInExpansion = prefix + var.getName();
         String value = size + "";
         input.add(new RandomValueForAssignment(nameUsedInExpansion, value));
@@ -1220,8 +1109,8 @@ public class RandomInputGeneration {
     }
 
     private void handleStdList(List<RandomValue> input, String prefix, IVariableNode var, String type, IFunctionConfig functionConfig) {
-        long size = BasicTypeRandom.generateInt((long) getFunctionNode().getFunctionConfig().getBoundOfArray().getLowerAsDouble()
-                , (long) getFunctionNode().getFunctionConfig().getBoundOfArray().getUpperAsDouble());
+        long size = BasicTypeRandom.generateInt((long)getFunctionNode().getFunctionConfig().getBoundOfArray().getLowerAsDouble()
+                , (long)getFunctionNode().getFunctionConfig().getBoundOfArray().getUpperAsDouble());
         String nameUsedInExpansion = prefix + var.getName();
         String value = size + "";
         input.add(new RandomValueForAssignment(nameUsedInExpansion, value));
@@ -1254,8 +1143,8 @@ public class RandomInputGeneration {
     }
 
     private void handleStdVector(List<RandomValue> input, String prefix, IVariableNode var, String type, IFunctionConfig functionConfig) {
-        long size = BasicTypeRandom.generateInt((long) getFunctionNode().getFunctionConfig().getBoundOfArray().getLowerAsDouble()
-                , (long) getFunctionNode().getFunctionConfig().getBoundOfArray().getUpperAsDouble());
+        long size = BasicTypeRandom.generateInt((long)getFunctionNode().getFunctionConfig().getBoundOfArray().getLowerAsDouble()
+                , (long)getFunctionNode().getFunctionConfig().getBoundOfArray().getUpperAsDouble());
         String nameUsedInExpansion = prefix + var.getName();
         String value = size + "";
         input.add(new RandomValueForAssignment(nameUsedInExpansion, value));
@@ -1279,8 +1168,8 @@ public class RandomInputGeneration {
     }
 
     private void handleStdQueue(List<RandomValue> input, String prefix, IVariableNode var, String type, IFunctionConfig functionConfig) {
-        long size = BasicTypeRandom.generateInt((long) getFunctionNode().getFunctionConfig().getBoundOfArray().getLowerAsDouble()
-                , (long) getFunctionNode().getFunctionConfig().getBoundOfArray().getUpperAsDouble());
+        long size = BasicTypeRandom.generateInt((long)getFunctionNode().getFunctionConfig().getBoundOfArray().getLowerAsDouble()
+                , (long)getFunctionNode().getFunctionConfig().getBoundOfArray().getUpperAsDouble());
         String nameUsedInExpansion = prefix + var.getName();
         String value = size + "";
         input.add(new RandomValueForAssignment(nameUsedInExpansion, value));
@@ -1310,8 +1199,8 @@ public class RandomInputGeneration {
     }
 
     private void handleStdMap(List<RandomValue> input, String prefix, IVariableNode var, String type, IFunctionConfig functionConfig) {
-        long size = BasicTypeRandom.generateInt((long) getFunctionNode().getFunctionConfig().getBoundOfArray().getLowerAsDouble()
-                , (long) getFunctionNode().getFunctionConfig().getBoundOfArray().getUpperAsDouble());
+        long size = BasicTypeRandom.generateInt((long)getFunctionNode().getFunctionConfig().getBoundOfArray().getLowerAsDouble()
+                , (long)getFunctionNode().getFunctionConfig().getBoundOfArray().getUpperAsDouble());
         String nameUsedInExpansion = prefix + var.getName();
         String value = size + "";
         input.add(new RandomValueForAssignment(nameUsedInExpansion, value));
@@ -1536,9 +1425,9 @@ public class RandomInputGeneration {
     }
 
     @Deprecated
-    private String refactorType(String type) {
+    private String refactorType(String type){
         final String[] newType = {type};
-        if (selectedPrototype != null) {
+        if(selectedPrototype != null ) {
             Map<String, String> realTypeMapping = new HashMap<>();
             SubprogramNode sut = Search2.findSubprogramUnderTest(selectedPrototype.getRootDataNode());
             if (sut instanceof TemplateSubprogramDataNode) {

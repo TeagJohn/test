@@ -19,8 +19,6 @@ public class PointerSymbolicVariable extends SymbolicVariable {
      */
     protected Reference reference;
 
-    protected ISymbolicVariable pointTo;
-
     /**
      * Size of the variable. Ex: char* s = new char[100];
      */
@@ -120,13 +118,5 @@ public class PointerSymbolicVariable extends SymbolicVariable {
         }
 
         return false;
-    }
-
-    public void setPointTo(ISymbolicVariable pointTo) {
-        this.pointTo = pointTo;
-    }
-
-    public ISymbolicVariable getPointTo() {
-        return pointTo;
     }
 }

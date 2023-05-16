@@ -2,11 +2,6 @@ package com.dse.testcase_execution;
 
 import com.dse.config.CommandConfig;
 import com.dse.coverage.gcov.LcovWorkspaceConfig;
-import com.dse.parser.object.ClassNode;
-import com.dse.parser.object.INode;
-import com.dse.parser.object.ISourcecodeFileNode;
-import com.dse.project_init.ProjectClone;
-import com.dse.search.Search2;
 import com.dse.testcase_execution.testdriver.*;
 import com.dse.config.CommandConfig;
 import com.dse.environment.Environment;
@@ -15,16 +10,10 @@ import com.dse.parser.object.ICommonFunctionNode;
 import com.dse.stub_manager.StubManager;
 import com.dse.testcase_manager.ITestCase;
 import com.dse.testcase_manager.TestCase;
-import com.dse.testdata.comparable.gmock.GmockUtils;
-import com.dse.testdata.comparable.gmock.IGmockSpecialWords;
-import com.dse.testdata.object.Gmock.GmockObjectNode;
-import com.dse.testdata.object.IDataNode;
-import com.dse.testdata.object.SubprogramNode;
 import com.dse.util.Utils;
 import javafx.scene.control.Alert;
 
-import java.io.*;
-import java.util.*;
+import java.io.File;
 
 import static com.dse.testcase_manager.ITestCase.STATUS_RUNTIME_ERR;
 
@@ -52,9 +41,6 @@ public class TestcaseExecution extends AbstractTestcaseExecution {
         }
         logger.debug("Start generating test driver for the test case " + getTestCase().getPath());
 
-        // add ifdef into file chứa hàm cần test
-        addIfdefIntoFile(testCase);
-
         // create the right version of test driver generation
 //        UILogger.getUiLogger().log("Generating test driver of test case " + testCase.getPath());
         testDriverGen = generateTestDriver(testCase);
@@ -67,8 +53,8 @@ public class TestcaseExecution extends AbstractTestcaseExecution {
             CommandConfig testCaseCommandConfig = new CommandConfig().fromJson(testCase.getCommandConfigFile());
 
             IDriverGenMessage compileAndLinkMessage;
-            if (Environment.getInstance().getCompiler().isCmakeProject())
-                compileAndLinkMessage = compileAndLinkByCMake(testCase.getSourceCodeFile());
+            if (Environment.getInstance().isUsingMakeBuildSystem())
+                compileAndLinkMessage = compileAndLinkByMakeBuildSystem(testCase.getSourceCodeFile());
             else
                 compileAndLinkMessage = compileAndLink(testCaseCommandConfig);
 //            logger.debug(String.format("Compile & Link Message:\n%s\n", compileAndLinkMessage));
@@ -94,9 +80,9 @@ public class TestcaseExecution extends AbstractTestcaseExecution {
                             logger.debug(msg);
 //                            if (/*getMode() == IN_EXECUTION_WITHOUT_GTEST_MODE
 //                                ||*/ getMode() == IN_EXECUTION_WITH_FRAMEWORK_TESTING_MODE) {
-                            testCase.setStatus(STATUS_RUNTIME_ERR);
+                                testCase.setStatus(STATUS_RUNTIME_ERR);
 //                                TestCaseManager.exportBasicTestCaseToFile(testCase);
-                            return;
+                                return;
 //                            }
                         }
 
@@ -159,74 +145,17 @@ public class TestcaseExecution extends AbstractTestcaseExecution {
         }
     }
 
-    private void addIfdefIntoFile(ITestCase testCase) {
-        String output = "";
-        List<IDataNode> listMockObj = Search2.searchNodes(((TestCase) testCase).getRootDataNode(), GmockObjectNode.class);
-        HashMap<ClassNode, Boolean> classNodeMap = new HashMap<>();
-        for (IDataNode node : listMockObj) {
-            if (!node.getChildren().isEmpty() && ((GmockObjectNode) node).isMocked()) {
-                classNodeMap.put((ClassNode) ((SubprogramNode) node.getChildren().get(0)).getFunctionNode().getParent(), false);
-            }
-        }
-        Set<ClassNode> classNodeSet = classNodeMap.keySet();
-        INode srcNode = function;
-        while (!(srcNode instanceof ISourcecodeFileNode)) {
-            srcNode = srcNode.getParent();
-        }
-        File file = new File(ProjectClone.getClonedFilePath(srcNode.getAbsolutePath()));
-        try {
-            BufferedReader reader = new BufferedReader(new FileReader(file));
-            String line = reader.readLine();
-            String includeMockFile = IGmockSpecialWords.AKA_INCLUDE_MOCK_FILE
-                    .replace(IGmockSpecialWords.INCLUDE_MOCK_FILE, GmockUtils.includeMockFile(testCase));
-            String ifndefInclude = includeMockFile.split("\n")[0];
-            boolean isIncludeMockFile = false;
-            while (line != null) {
-                for (ClassNode classNode : classNodeSet) {
-                    String ifdef = "#ifdef " + IGmockSpecialWords.AKA_GMOCK + classNode.getName();
-                    if (line.startsWith(ifdef)) {
-                        classNodeMap.put(classNode, true);
-                    }
-                }
-                if (line.startsWith(ifndefInclude)) {
-                    isIncludeMockFile = true;
-                }
-                output += line + "\n";
-                line = reader.readLine();
-            }
-            String ifdefs = "";
-            for (ClassNode classNode : classNodeSet) {
-                if (!classNodeMap.get(classNode)) {
-                    ifdefs += IGmockSpecialWords.IFDEF_GMOCK.replace(IGmockSpecialWords.NAME_CLASS, classNode.getName());
-                }
-            }
-            if (!isIncludeMockFile) {
-                output = includeMockFile + ifdefs + output;
-            } else {
-                int index = output.indexOf("#endif\n\n") + 8;
-                output = output.substring(0, index) + ifdefs + output.substring(index);
-            }
-            FileWriter writer = new FileWriter(ProjectClone.getClonedFilePath(srcNode.getAbsolutePath()));
-            BufferedWriter bufferedWriter = new BufferedWriter(writer);
-            bufferedWriter.write(output);
-            bufferedWriter.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     public TestDriverGeneration generateTestDriver(ITestCase testCase) throws Exception {
         TestDriverGeneration testDriver = null;
 
         // create the right version of test driver generation
         switch (getMode()) {
             case IN_AUTOMATED_TESTDATA_GENERATION_MODE:
-                /*case IN_EXECUTION_WITHOUT_GTEST_MODE: */
-            {
+
+            case IN_EXECUTION_WITH_FRAMEWORK_TESTING_MODE:
+                /*case IN_EXECUTION_WITHOUT_GTEST_MODE: */{
                 initializeCommandConfigToRunTestCase(testCase);
-                if (Environment.getInstance().isC()) {
+                if (Environment.getInstance().isC()){
 //                if (Utils.getSourcecodeFile(function) instanceof CFileNode) {
                     testDriver = new TestDriverGenerationForC();
 
@@ -236,21 +165,9 @@ public class TestcaseExecution extends AbstractTestcaseExecution {
                 break;
             }//                    testDriver = new TestDriverGenerationforCWithGoogleTest();
 
-            case IN_EXECUTION_WITH_FRAMEWORK_TESTING_MODE:
-                initializeCommandConfigToRunTestCase(testCase);
-                if (Environment.getInstance().isC()) {
-                    testDriver = new TestDriverGenerationForC();
-                } else {
-                    if (Environment.getInstance().getCompiler().isUseGTest()) {
-                        testDriver = new GTestDriverGenerationForCpp();
-                    } else {
-                        testDriver = new TestDriverGenerationForCpp();
-                    }
-                }
-                break;
             case IN_DEBUG_MODE: {
                 initializeCommandConfigToRunTestCase(testCase);
-                if (Environment.getInstance().isC()) {
+                if (Environment.getInstance().isC()){
 //                if (Utils.getSourcecodeFile(function) instanceof CFileNode) {
                     testDriver = new TestDriverGenerationForCDebugger();
                 } else {
@@ -268,7 +185,7 @@ public class TestcaseExecution extends AbstractTestcaseExecution {
 
 //            if (testCase.getAdditionalHeaders() != null && testCase.getAdditionalHeaders().length() > 0) {
 //                testdriverContent = testdriverContent.replace(ITestDriverGeneration.ADDITIONAL_HEADERS, testCase.getAdditionalHeaders());
-            Utils.writeContentToFile(testdriverContent, testCase.getSourceCodeFile());
+                Utils.writeContentToFile(testdriverContent, testCase.getSourceCodeFile());
 //            } else {
 //                testdriverContent = testdriverContent.replace(ITestDriverGeneration.ADDITIONAL_HEADERS, "");
 //                Utils.writeContentToFile(testdriverContent, testCase.getSourceCodeFile());
@@ -277,29 +194,6 @@ public class TestcaseExecution extends AbstractTestcaseExecution {
         }
 
         return testDriver;
-    }
-
-    protected String refactorExecutionWithGTestMessageLog(String messageLog) throws IOException {
-        if (getMode() == IN_EXECUTION_WITH_FRAMEWORK_TESTING_MODE) {
-            String[] messages = messageLog.split("AKA_assert_result_start\n");
-            StringBuilder stringBuilder = new StringBuilder();
-            for (int i = 0; i < messages.length; i++) {
-                if (i == 0) {
-                    continue;
-                }
-                stringBuilder.append("{\n\"assertStm\": \"");
-                String[] assertResults = messages[i].split(":\n", 2);
-                stringBuilder.append(assertResults[0]);
-                stringBuilder.append("\",\n\"message\": \"");
-                stringBuilder.append(assertResults[1].split("\nAKA_assert_result_end")[0]);
-                stringBuilder.append("\"\n},\n");
-            }
-            FileWriter fileWriter = new FileWriter(getTestCase().getExecutionResultFile().replace(".xml", ".trc"));
-            fileWriter.write(String.valueOf(stringBuilder));
-            fileWriter.close();
-            return messages[0];
-        }
-        return messageLog;
     }
 
     public ICommonFunctionNode getFunction() {

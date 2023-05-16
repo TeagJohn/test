@@ -2,9 +2,7 @@ package com.dse.environment;
 
 import com.dse.config.AkaConfig;
 import com.dse.parser.VectorCastProjectLoader;
-import com.dse.parser.object.ISourcecodeFileNode;
-import com.dse.parser.object.Node;
-import com.dse.parser.object.ProjectNode;
+import com.dse.parser.object.*;
 import com.dse.parser.object.ISourcecodeFileNode;
 import com.dse.util.PathUtils;
 import com.dse.util.Utils;
@@ -68,7 +66,7 @@ public class PhysicalTreeExporter {
         public JsonElement serialize(Node node, Type type, JsonSerializationContext jsonSerializationContext) {
             JsonObject json = new JsonObject();
 
-            if (new File(node.getAbsolutePath()).exists()) {
+            if (new File(node.getAbsolutePath()).exists() && !(node instanceof UnspecifiedDeclaration)) {
                 String absolutePath = node.getAbsolutePath();
                 String relativePath = PathUtils.toRelative(absolutePath);
                 json.addProperty("path", relativePath);

@@ -7,7 +7,6 @@ import java.util.Arrays;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 public class Terminal {
     private String stdOut = SpecialCharacter.EMPTY;
@@ -28,14 +27,6 @@ public class Terminal {
 
     public Terminal(String[] script, String directory) throws IOException, InterruptedException {
         exec(directory, script);
-    }
-
-    public Terminal(String[] script, String directory, boolean containWhitespaceInDirectory) throws IOException, InterruptedException {
-        if (containWhitespaceInDirectory){
-            exec(directory, true, script);
-        } else {
-            exec(directory, script);
-        }
     }
 
     public Terminal(String script, String directory) throws IOException, InterruptedException {
@@ -59,46 +50,6 @@ public class Terminal {
                 process = Runtime.getRuntime().exec(script, null, new File(directory));
         } else {
             if (script.length == 1)
-                process = Runtime.getRuntime().exec(script[0]);
-            else
-                process = Runtime.getRuntime().exec(script);
-        }
-
-        StreamReader inputStreamReader = new StreamReader(process.getInputStream());
-        StreamReader errorStreamReader = new StreamReader(process.getErrorStream());
-
-        ExecutorService executorService = Executors.newFixedThreadPool(2);
-        try {
-            executorService.invokeAll(Arrays.asList(errorStreamReader, inputStreamReader),100, TimeUnit.MILLISECONDS);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        executorService.shutdown();
-
-        process.waitFor();
-
-        long after = System.nanoTime();
-
-        time = (double) (after - before) / 1000000000.f;
-
-        stdErr = errorStreamReader.getResponse();
-        stdOut = inputStreamReader.getResponse();
-    }
-
-    private void exec(String directory, boolean containWhitespaceInDirectory, String... script) throws IOException, InterruptedException {
-        for (int i = 0; i < script.length; i++)
-            script[i] = script[i].trim();
-
-        long before = System.nanoTime();
-
-        if (directory != null) {
-            if (script.length == 1 && !containWhitespaceInDirectory)
-                process = Runtime.getRuntime().exec(script[0], null, new File(directory));
-            else
-                process = Runtime.getRuntime().exec(script, null, new File(directory));
-        } else {
-            if (script.length == 1 && !containWhitespaceInDirectory)
                 process = Runtime.getRuntime().exec(script[0]);
             else
                 process = Runtime.getRuntime().exec(script);

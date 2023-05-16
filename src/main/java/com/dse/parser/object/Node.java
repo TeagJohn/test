@@ -15,7 +15,7 @@ import java.util.List;
  */
 public abstract class Node implements INode {
 
-    protected String name = "";
+    private String name = "";
 
     private int id;
 
@@ -88,11 +88,6 @@ public abstract class Node implements INode {
 
     @Override
     public List<Dependency> getDependencies() {
-        return dependencies;
-    }
-
-    @Override
-    public List<Dependency> onlyGetDependencies() {
         return dependencies;
     }
 

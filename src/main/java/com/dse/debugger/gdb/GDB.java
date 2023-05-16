@@ -305,7 +305,6 @@ public class GDB extends AbstractAkaTask<Object> implements IGDBMI {
     }
 
     public GDBStatus nextLine() {
-
         logger.debug("[GDB thread] Pressing next line");
         String output = executeAndLog(GDB_NEXT_LINE);
         return new OutputAnalyzer().analyze(output, GDB_NEXT_LINE);
@@ -368,21 +367,8 @@ public class GDB extends AbstractAkaTask<Object> implements IGDBMI {
      */
     public TreeItem<GDBVar> addNormalWatch(String exp) {
         logger.debug("[GDB Thread] Add normal watch point");
-        String out;
-        GDBVar var;
-        if(exp.contains("*")) {
-            int firstId = exp.indexOf('(');
-            int secondId = exp.indexOf(')');
-            int size = Integer.parseInt(exp.substring(firstId + 1, secondId));
-            exp = exp.replace("*", "").substring(0,firstId-1);
-            out = executeAndLog(GDB_CREATE_VARIABLE + exp + GDB_END_STRING);
-            var = new OutputAnalyzer().analyzeInternalVariable(out);
-            var.setSize(size);
-        } else {
-            out = executeAndLog(GDB_CREATE_VARIABLE + exp + GDB_END_STRING);
-            var = new OutputAnalyzer().analyzeInternalVariable(out);
-        }
-
+        String out = executeAndLog(GDB_CREATE_VARIABLE + exp + GDB_END_STRING);
+        GDBVar var = new OutputAnalyzer().analyzeInternalVariable(out);
         if (var != null) {
             var.setRealName(exp);
             return createItem(var);
@@ -561,11 +547,7 @@ public class GDB extends AbstractAkaTask<Object> implements IGDBMI {
             String output = executeAndLog(GDB_CREATE_VARIABLE + castName + GDB_END_STRING);
             GDBVar newVar = new OutputAnalyzer().analyzeInternalVariable(output);
             newVar.setWatchPoint(var.getWatchPoint());
-            if (var.getType().contains("*")) {
-                newVar.setRealName(castName);
-            } else {
-                newVar.setRealName(realName);
-            }
+            newVar.setRealName(realName);
             newVar.setStartIdx(var.getStartIdx());
             newVar.setEndIdx(var.getEndIdx());
             res = createTreeItem(newVar);

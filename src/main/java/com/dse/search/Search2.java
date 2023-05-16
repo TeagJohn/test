@@ -1,11 +1,9 @@
 package com.dse.search;
 
-import com.dse.environment.Environment;
 import com.dse.logger.AkaLogger;
 import com.dse.parser.object.*;
 import com.dse.parser.object.INode;
 import com.dse.search.condition.AbstractFunctionNodeCondition;
-import com.dse.testcase_execution.ITestcaseExecution;
 import com.dse.testdata.object.*;
 import com.dse.testdata.object.GlobalRootDataNode;
 import com.dse.testdata.object.RootDataNode;
@@ -368,25 +366,13 @@ public class Search2 {
     public static List<IDataNode> findArgumentNodes(RootDataNode root) {
         List<IDataNode> vars = new ArrayList<>();
         SubprogramNode subprogramNode = findSubprogramUnderTest(root);
-        if (subprogramNode != null) {
-            for (IDataNode child : subprogramNode.getChildren())
-                if (child instanceof ValueDataNode)
-                    if (!child.getName().equals(INameRule.RETURN_VARIABLE_NAME_PREFIX))
-                        vars.add(child);
-        }
+        for (IDataNode child : subprogramNode.getChildren())
+            if (child instanceof ValueDataNode)
+                if (!child.getName().equals(INameRule.RETURN_VARIABLE_NAME_PREFIX))
+                    vars.add(child);
         return vars;
     }
 
-    public static ValueDataNode findReturnNode(RootDataNode root) {
-        SubprogramNode subprogramNode = findSubprogramUnderTest(root);
-        if (subprogramNode != null) {
-            for (IDataNode child : subprogramNode.getChildren())
-                if (child instanceof ValueDataNode)
-                    if (child.getName().equals(INameRule.RETURN_VARIABLE_NAME_PREFIX))
-                        return (ValueDataNode) child;
-        }
-        return null;
-    }
 
     public static SubprogramNode findSubprogramUnderTest(RootDataNode root) {
         ICommonFunctionNode functionNode = root.getFunctionNode();
@@ -527,16 +513,6 @@ public class Search2 {
         List<INode> completeVariables = Search.searchNodes(root, new AbstractFunctionNodeCondition());
         for (INode variable : completeVariables) {
             if (variable.getId() == id) {
-                return variable;
-            }
-        }
-        return null;
-    }
-
-    public static INode findNodeByName(INode root, String name, SearchCondition nodeType) {
-        List<INode> completeVariables = Search.searchNodes(root, nodeType);
-        for (INode variable : completeVariables) {
-            if (variable.getName().equals(name)) {
                 return variable;
             }
         }

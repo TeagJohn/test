@@ -1,12 +1,10 @@
 package com.dse.testcase_manager;
 
-import com.dse.environment.Environment;
 import com.dse.parser.object.*;
 import com.dse.testdata.Iterator;
 import com.dse.testdata.comparable.AssertMethod;
 import com.dse.testdata.object.*;
 import com.dse.testdata.object.GlobalRootDataNode;
-import com.dse.testdata.object.Gmock.*;
 import com.dse.testdata.object.RootDataNode;
 import com.dse.testdata.object.stl.*;
 import com.dse.user_code.objects.UsedParameterUserCode;
@@ -76,8 +74,7 @@ public class TestCaseDataExporter {
             json.addProperty("name", node.getName());
             json.addProperty("virtual_name", (node.getVituralName() == null) ? "" : node.getVituralName());
 
-            if (node instanceof ValueDataNode || node instanceof NumberOfCallNode
-                    || node instanceof GMockValueDataNode) {
+            if (node instanceof ValueDataNode || node instanceof NumberOfCallNode) {
                 ValueDataNode valueNode = (ValueDataNode) node;
 
                 json.addProperty("dataType", valueNode.getRawType());
@@ -92,14 +89,6 @@ public class TestCaseDataExporter {
                         JsonObject assertUserCode = parseUserCodeToJsonObject(valueNode.getAssertUserCode());
                         json.add("assertUserCode", assertUserCode);
                     }
-                } else if (Environment.getInstance().getCompiler().isUseGTest()) {
-                    json.addProperty("assertMethod", valueNode.getAssertMethod());
-
-                    if (AssertMethod.USER_CODE.equals(valueNode.getAssertMethod())
-                            && valueNode.getAssertUserCode() != null) {
-                        JsonObject assertUserCode = parseUserCodeToJsonObject(valueNode.getAssertUserCode());
-                        json.add("assertUserCode", assertUserCode);
-                    }
                 }
 
                 // Xử lí trường hợp riêng cho NumberOfCallNode
@@ -107,15 +96,6 @@ public class TestCaseDataExporter {
                     ((NumberOfCallNode) node).setRawType("int");
                     ((NumberOfCallNode) node).setRealType("int");
                     json.addProperty("value", ((NumberOfCallNode) node).getValue());
-                    json.addProperty("dataType", valueNode.getRawType());
-                    json.addProperty("realType", valueNode.getRealType());
-                }
-
-                if (node instanceof GMockValueDataNode) {
-                    ((GMockValueDataNode) node).setRawType("");
-                    ((GMockValueDataNode) node).setRealType("");
-
-                    json.addProperty("value", ((GMockValueDataNode) node).getValue());
                     json.addProperty("dataType", valueNode.getRawType());
                     json.addProperty("realType", valueNode.getRealType());
                 }
@@ -157,13 +137,6 @@ public class TestCaseDataExporter {
                 UnitNode unit = (UnitNode) node;
                 String relativePath = PathUtils.toRelative(unit.getSourceNode().getAbsolutePath());
                 json.addProperty("sourceNode", relativePath);
-
-                if (node instanceof GmockObjectNode) {
-                    GmockObjectNode gmockObjectNode = (GmockObjectNode) node;
-                    json.addProperty("typeObj", gmockObjectNode.getTypeObj());
-                    json.addProperty("nameObj", gmockObjectNode.getNameObj());
-                    json.addProperty("nameClass", gmockObjectNode.getNameClass());
-                }
 //
             } else if (node instanceof ConstructorDataNode) {
                 INode functionNode = ((ConstructorDataNode) node).getFunctionNode();
@@ -229,23 +202,17 @@ public class TestCaseDataExporter {
                 // if SubprogramNode is subprogram under test
                 // then export Expected Output if not existed yet
                 ICommonFunctionNode sut = testCase.getFunctionNode();
-                if (node instanceof IterationSubprogramNode) {
-                    JsonArray reArray = new JsonArray();
-                    for (IDataNode reDataNode : ((IterationSubprogramNode) node).getParamInputs()) {
-                        reArray.add(jsonSerializationContext.serialize(reDataNode, DataNode.class));
-                    }
-                    if (reArray.size() > 0) {
-                        json.add("paramStubInputs", reArray);
-                    }
-                } else if (sut.equals(((SubprogramNode) node).getFunctionNode())) {
+                if (sut.equals(((SubprogramNode) node).getFunctionNode())
+                        || (node instanceof IterationSubprogramNode
+                                && !node.getChildren().isEmpty()
+                                && node.getChildren().get(0) instanceof PointerDataNode
+                )) {
                     if (node.getChildren().size() > 0) {
                         JsonArray eoArray = new JsonArray();
                         for (IDataNode eoDataNode : ((SubprogramNode) node).getParamExpectedOuputs()) {
                             eoArray.add(jsonSerializationContext.serialize(eoDataNode, DataNode.class));
                         }
-                        if (eoArray.size() > 0) {
-                            json.add("paramExpectedOuputs", eoArray);
-                        }
+                        json.add("paramExpectedOuputs", eoArray);
                     }
                 }
 
@@ -323,13 +290,13 @@ public class TestCaseDataExporter {
                 json.addProperty("fixedSize", dataNode.isFixedSize());
 
 //                if (dataNode.isSetSize()) {
-                int[] sizes = dataNode.getSizes();
-                StringBuilder sizesInString = new StringBuilder();
-                for (int i = 0; i < sizes.length - 1; i++)
-                    sizesInString.append(sizes[i]).append(", ");
-                sizesInString.append(sizes[sizes.length - 1]);
+                    int[] sizes = dataNode.getSizes();
+                    StringBuilder sizesInString = new StringBuilder();
+                    for (int i = 0; i < sizes.length - 1; i++)
+                        sizesInString.append(sizes[i]).append(", ");
+                    sizesInString.append(sizes[sizes.length - 1]);
 
-                json.addProperty("size", sizesInString.toString());
+                    json.addProperty("size", sizesInString.toString());
 //                }
 
             } else if (node instanceof SubClassDataNode) {
@@ -355,46 +322,6 @@ public class TestCaseDataExporter {
                 }
 //                }
 
-            } else if (node instanceof SubStructDataNode) {
-                SubStructDataNode dataNode = (SubStructDataNode) node;
-
-                String varRelativePath = PathUtils.toRelative(dataNode.getCorrespondingVar().getAbsolutePath());
-                json.addProperty("correspondingVar", varRelativePath);
-
-                INode correspondingType = dataNode.getCorrespondingType();
-
-                String typeRelativePath = PathUtils.toRelative(correspondingType.getAbsolutePath());
-                json.addProperty("correspondingType", typeRelativePath);
-
-                json.addProperty("rawType", dataNode.getRawType());
-
-                ConstructorDataNode constructorDataNode = dataNode.getConstructorDataNode();
-                if (constructorDataNode != null) {
-                    String constructor = constructorDataNode.getName();
-                    json.addProperty("selectedConstructor", constructor);
-                    String variableType = dataNode.getRawType();
-                    json.addProperty("variableType", variableType);
-                }
-            } else if (node instanceof SubUnionDataNode) {
-                SubUnionDataNode dataNode = (SubUnionDataNode) node;
-
-                String varRelativePath = PathUtils.toRelative(dataNode.getCorrespondingVar().getAbsolutePath());
-                json.addProperty("correspondingVar", varRelativePath);
-
-                INode correspondingType = dataNode.getCorrespondingType();
-
-                String typeRelativePath = PathUtils.toRelative(correspondingType.getAbsolutePath());
-                json.addProperty("correspondingType", typeRelativePath);
-
-                json.addProperty("rawType", dataNode.getRawType());
-
-                ConstructorDataNode constructorDataNode = dataNode.getConstructorDataNode();
-                if (constructorDataNode != null) {
-                    String constructor = constructorDataNode.getName();
-                    json.addProperty("selectedConstructor", constructor);
-                    String variableType = dataNode.getRawType();
-                    json.addProperty("variableType", variableType);
-                }
             } else if (node instanceof ClassDataNode) {
 //                if (!((ClassDataNode) node).isUseUserCode()) {
                 ClassDataNode dataNode = (ClassDataNode) node;
@@ -423,32 +350,20 @@ public class TestCaseDataExporter {
                 json.addProperty("correspondingType", typeRelativePath);
 
             } else if (node instanceof UnionDataNode) {
-                if (Environment.getInstance().isC()) {
 //                if (!((UnionDataNode) node).isUseUserCode()) {
-                    UnionDataNode dataNode = (UnionDataNode) node;
+                UnionDataNode dataNode = (UnionDataNode) node;
 
-                    if (dataNode.getSelectedField() != null) {
-                        json.addProperty("selectedField", dataNode.getSelectedField());
-                    }
-
-                    String varRelativePath = PathUtils.toRelative(dataNode.getCorrespondingVar().getAbsolutePath());
-                    json.addProperty("correspondingVar", varRelativePath);
-
-                    INode correspondingType = dataNode.getCorrespondingType();
-                    String typeRelativePath = PathUtils.toRelative(correspondingType.getAbsolutePath());
-                    json.addProperty("correspondingType", typeRelativePath);
-//                }
-
-                } else {
-                    UnionDataNode dataNode = (UnionDataNode) node;
-
-                    String varRelativePath = PathUtils.toRelative(dataNode.getCorrespondingVar().getAbsolutePath());
-                    json.addProperty("correspondingVar", varRelativePath);
-
-                    INode correspondingType = dataNode.getCorrespondingType();
-                    String typeRelativePath = PathUtils.toRelative(correspondingType.getAbsolutePath());
-                    json.addProperty("correspondingType", typeRelativePath);
+                if (dataNode.getSelectedField() != null) {
+                    json.addProperty("selectedField", dataNode.getSelectedField());
                 }
+
+                String varRelativePath = PathUtils.toRelative(dataNode.getCorrespondingVar().getAbsolutePath());
+                json.addProperty("correspondingVar", varRelativePath);
+
+                INode correspondingType = dataNode.getCorrespondingType();
+                String typeRelativePath = PathUtils.toRelative(correspondingType.getAbsolutePath());
+                json.addProperty("correspondingType", typeRelativePath);
+//                }
 
             } else if (node instanceof StructDataNode) {
 //                if (!((StructDataNode) node).isUseUserCode()) {

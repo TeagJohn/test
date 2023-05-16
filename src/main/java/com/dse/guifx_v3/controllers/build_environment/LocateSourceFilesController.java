@@ -10,14 +10,19 @@ import com.dse.guifx_v3.helps.UIController;
 import com.dse.guifx_v3.objects.PersistentDirectoryChooser;
 import com.dse.guifx_v3.objects.hint.Hint;
 import com.dse.guifx_v3.objects.hint.HintContent;
+import com.dse.make_build_system.BuildSystemHandler;
+import com.dse.make_build_system.CMakeHandler;
+import com.dse.make_build_system.GNUMakeHandler;
 import com.dse.project_init.ProjectClone;
 
-import javafx.event.ActionEvent;
+import com.dse.regression.cia.WaveCIA;
+import com.dse.util.PathUtils;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 
@@ -25,13 +30,12 @@ import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class LocateSourceFilesController extends AbstractCustomController implements Initializable {
     @FXML
-    private TextField tfCmakeProjDirectory;
-    @FXML
-    private Label lDirectory;
+    private TextField tfProjectDirectory, tfIncludeDirectory, tfSourceDirectory;
     @FXML
     private ListView<SourcePath> lvPaths; // contain all added source code files
     @FXML
@@ -43,9 +47,13 @@ public class LocateSourceFilesController extends AbstractCustomController implem
     @FXML
     private Button bAddRecursive;
     @FXML
-    private Button bAddSubDir;
+    private Button bBrowse, bBrowseSource, bBrowseInclude, bSaveAndShowDirs, bShowIncludeAndSource;
     @FXML
-    private Button bBrowse;
+    private AnchorPane apIncludeSourceDirectory;
+    @FXML
+    private Label lProjectDirectory;
+
+    private String buildSystem = "";
 
     private final List<String> absolutePaths = new ArrayList<>();
 
@@ -53,58 +61,60 @@ public class LocateSourceFilesController extends AbstractCustomController implem
         lvPaths.setCellFactory(new LocateSourceFilesCellFactory());
         bAdd.setText(null);
         Hint.tooltipNode(bAdd, HintContent.EnvBuilder.SrcLocation.ADD);
-        Image add = new Image(Factory.class.getResourceAsStream("/icons/add.png"));
+        Image add = new Image(Objects.requireNonNull(Factory.class.getResourceAsStream("/icons/add.png")));
         bAdd.setGraphic(new ImageView(add));
         bDelete.setText(null);
         Hint.tooltipNode(bDelete, HintContent.EnvBuilder.SrcLocation.DELETE);
-        Image delete = new Image(Factory.class.getResourceAsStream("/icons/delete.png"));
+        Image delete = new Image(Objects.requireNonNull(Factory.class.getResourceAsStream("/icons/delete.png")));
         bDelete.setGraphic(new ImageView(delete));
         bAddRecursive.setText(null);
         Hint.tooltipNode(bAddRecursive, HintContent.EnvBuilder.SrcLocation.ADD_RECURSIVE);
-        Image addRecursive = new Image(Factory.class.getResourceAsStream("/icons/addRecursive.png"));
+        Image addRecursive = new Image(Objects.requireNonNull(Factory.class.getResourceAsStream("/icons/addRecursive.png")));
         bAddRecursive.setGraphic(new ImageView(addRecursive));
-        bAddSubDir.setText(null);
-        Hint.tooltipNode(bAddSubDir, HintContent.EnvBuilder.SrcLocation.ADD_SUB_DIR);
-        Image addSubDirImage = new Image(Factory.class.getResourceAsStream("/icons/addSubDir.png"));
-        bAddSubDir.setGraphic(new ImageView(addSubDirImage));
 
-        lDirectory.setDisable(true);
-        tfCmakeProjDirectory.setDisable(true);
-        bBrowse.setDisable(true);
         Hint.tooltipNode(bBrowse, HintContent.EnvBuilder.SrcLocation.BROWSE);
 
         Hint.tooltipNode(chbUseRelativePath, HintContent.EnvBuilder.SrcLocation.VIEW_RELATED);
-        instance = this;
-    }
 
-    public File showChooseFolderDialog() {
-        DirectoryChooser directoryChooser = PersistentDirectoryChooser.getInstance();
-        Stage envBuilderStage = UIController.getEnvironmentBuilderStage();
-        File file = null;
-        try {
-            file = directoryChooser.showDialog(envBuilderStage);
-        } catch (Exception e) {
-            directoryChooser = PersistentDirectoryChooser.getNewInstance();
-            file = directoryChooser.showDialog(envBuilderStage);
-        }
-        if (file != null) {
-            directoryChooser.setInitialDirectory(file);
-        }
-        return file;
+        apIncludeSourceDirectory.setVisible(false);
+        bShowIncludeAndSource.setOnMouseClicked(event -> {
+            apIncludeSourceDirectory.setVisible(true);
+            lvPaths.setVisible(false);
+            bShowIncludeAndSource.setVisible(false);
+        });
+        bSaveAndShowDirs.setOnMouseClicked(event -> {
+            addRecursive(new File(tfProjectDirectory.getText()));
+            apIncludeSourceDirectory.setVisible(false);
+            lvPaths.setVisible(true);
+            bShowIncludeAndSource.setVisible(true);
+        });
+
+        for (String path : WaveCIA.paths_Folder_Demo) addToListViewPaths(path);
     }
 
     @FXML
     public void addTheRootFolder() {
-        File file = showChooseFolderDialog();
+        DirectoryChooser directoryChooser = PersistentDirectoryChooser.getInstance();
+        Stage envBuilderStage = UIController.getEnvironmentBuilderStage();
+        File file = directoryChooser.showDialog(envBuilderStage);
+        if (file != null) {
+            directoryChooser.setInitialDirectory(file);
+        }
         if (file != null) {
             addToListViewPaths(file.getAbsolutePath());
         }
+
         validate();
     }
 
     @FXML
     public void addRecursiveFolders() {
-        File file = showChooseFolderDialog();
+        DirectoryChooser directoryChooser = PersistentDirectoryChooser.getInstance();
+        Stage envBuilderStage = UIController.getEnvironmentBuilderStage();
+        File file = directoryChooser.showDialog(envBuilderStage);
+        if (file != null) {
+            directoryChooser.setInitialDirectory(file);
+        }
         addRecursive(file);
         validate();
     }
@@ -116,30 +126,6 @@ public class LocateSourceFilesController extends AbstractCustomController implem
                 SourcePath item = new SourcePath(absolutePath);
                 item.setType(SourcePath.SEARCH_DIRECTORY); // by default
                 lvPaths.getItems().add(item);
-            }
-        }
-    }
-
-    @FXML
-    public void addOnlySubDir() {
-        DirectoryChooser directoryChooser = PersistentDirectoryChooser.getInstance();
-        Stage envBuilderStage = UIController.getEnvironmentBuilderStage();
-        File file = directoryChooser.showDialog(envBuilderStage);
-        if (file != null) {
-            directoryChooser.setInitialDirectory(file);
-        }
-        addSubDir(file);
-        validate();
-    }
-
-    @FXML
-    private void addSubDir(File parentDir) {
-        if (parentDir != null) {
-            File[] listFiles = parentDir.listFiles(File::isDirectory);
-            if (listFiles != null) {
-                for (File file : listFiles) {
-                    addRecursive(file);
-                }
             }
         }
     }
@@ -185,7 +171,7 @@ public class LocateSourceFilesController extends AbstractCustomController implem
         EnvironmentRootNode root = Environment.getInstance().getEnvironmentRootNode();
         List<IEnvironmentNode> children = Environment.getInstance().getEnvironmentRootNode().getChildren();
 
-        if (Environment.getInstance().getCompiler().isCmakeProject()) {
+        if (Environment.getInstance().isUsingMakeBuildSystem()) {
             List<IEnvironmentNode> cmakeProjectDirectoryNodes =
                     EnvironmentSearch.searchNode(root, new EnviroCMakeProjDirectoryNode());
             children.removeAll(cmakeProjectDirectoryNodes);
@@ -206,10 +192,19 @@ public class LocateSourceFilesController extends AbstractCustomController implem
         System.out.println(Environment.getInstance().getCompiler().toString());
 
         // Get all new search directories
-        if (Environment.getInstance().getCompiler().isCmakeProject()) {
-            EnviroCMakeProjDirectoryNode newCMakeProjectDirectoryNode = new EnviroCMakeProjDirectoryNode();
-            newCMakeProjectDirectoryNode.setDirectoryPath(tfCmakeProjDirectory.getText());
-            Environment.getInstance().getEnvironmentRootNode().addChild(newCMakeProjectDirectoryNode);
+        if (Environment.getInstance().isUsingMakeBuildSystem()) {
+            EnviroMakeBuildSystemNode makeBuildSystemNode = (EnviroMakeBuildSystemNode) EnvironmentSearch.searchNode(root,
+                    new EnviroMakeBuildSystemNode()).get(0);
+            BuildSystemHandler handler = Environment.getInstance().getMakeBuildSystemManager().getCurrentBSHandler();
+            makeBuildSystemNode.setProjectDirectory(tfProjectDirectory.getText());
+            handler.setProjectDirectory(tfProjectDirectory.getText());
+
+            if (handler instanceof GNUMakeHandler && makeBuildSystemNode.getGnuMakeBuildType() == 2) {
+                ((GNUMakeHandler) handler).setIncludeDirectory(tfIncludeDirectory.getText());
+                ((GNUMakeHandler) handler).setSourceDirectory(tfSourceDirectory.getText());
+                makeBuildSystemNode.setGnuMakeIncludeDirectory(tfIncludeDirectory.getText());
+                makeBuildSystemNode.setGnuMakeSourceDirectory(tfSourceDirectory.getText());
+            }
         }
 
         List<IEnvironmentNode> newSearchListNodes = new ArrayList<>();
@@ -278,25 +273,19 @@ public class LocateSourceFilesController extends AbstractCustomController implem
         EnvironmentRootNode root = Environment.getInstance().getEnvironmentRootNode();
 
         // Get CMake project directory
-        if (Environment.getInstance().getCompiler().isCmakeProject()) {
-            List<IEnvironmentNode> cmakeProjectDirectoryNodes =
-                    EnvironmentSearch.searchNode(root, new EnviroCMakeProjDirectoryNode());
-            if (cmakeProjectDirectoryNodes.size() > 0) {
-                EnviroCMakeProjDirectoryNode cmakeProjectDirectoryNode =
-                        (EnviroCMakeProjDirectoryNode) cmakeProjectDirectoryNodes.get(0);
-                tfCmakeProjDirectory.setText(cmakeProjectDirectoryNode.getDirectoryPath());
-                lDirectory.setDisable(false);
-                tfCmakeProjDirectory.setDisable(false);
-                bBrowse.setDisable(false);
-            } else {
-                tfCmakeProjDirectory.setText("");
-                UIController.showErrorDialog("CMake project directory is not set", "Error", "Locate Source Files");
+        if (Environment.getInstance().isUsingMakeBuildSystem()) {
+            EnviroMakeBuildSystemNode makeBuildSystemNode = (EnviroMakeBuildSystemNode) EnvironmentSearch.searchNode(root,
+                    new EnviroMakeBuildSystemNode()).get(0);
+            BuildSystemHandler handler = Environment.getInstance().getMakeBuildSystemManager().getCurrentBSHandler();
+            tfProjectDirectory.setText(makeBuildSystemNode.getProjectDirectory());
+            handler.setProjectDirectory(makeBuildSystemNode.getProjectDirectory());
+
+            if (handler instanceof GNUMakeHandler && makeBuildSystemNode.getGnuMakeBuildType() == 2) {
+                tfIncludeDirectory.setText(makeBuildSystemNode.getGnuMakeIncludeDirectory());
+                tfSourceDirectory.setText(makeBuildSystemNode.getGnuMakeSourceDirectory());
+                ((GNUMakeHandler) handler).setIncludeDirectory(makeBuildSystemNode.getGnuMakeIncludeDirectory());
+                ((GNUMakeHandler) handler).setSourceDirectory(makeBuildSystemNode.getGnuMakeSourceDirectory());
             }
-        } else {
-            tfCmakeProjDirectory.setText("");
-            lDirectory.setDisable(true);
-            tfCmakeProjDirectory.setDisable(true);
-            bBrowse.setDisable(true);
         }
 
         // get search nodes and add to screen
@@ -347,58 +336,125 @@ public class LocateSourceFilesController extends AbstractCustomController implem
         return true;
     }
 
-    private boolean validateCMakeProjDirectory() {
-        if (Environment.getInstance().getCompiler().isCmakeProject()) {
-            if (tfCmakeProjDirectory.getText().isEmpty())
-                return false;
-            return new File(tfCmakeProjDirectory.getText()).isDirectory();
+    private boolean validateProjectDirectory() {
+        if (Environment.getInstance().isUsingMakeBuildSystem()) {
+            BuildSystemHandler handler = Environment.getInstance().getMakeBuildSystemManager().getCurrentBSHandler();
+            if (handler instanceof GNUMakeHandler) {
+                if (tfProjectDirectory.getText() == null || tfIncludeDirectory.getText() == null
+                        || tfSourceDirectory.getText() == null)
+                    return false;
+            } else {
+                return tfProjectDirectory.getText() != null;
+            }
         }
         return true;
     }
 
     public void validate() {
-        setValid(validateLVPaths() && validateCMakeProjDirectory());
+        setValid(validateLVPaths() && validateProjectDirectory());
 
         // highlight the label of this dialog if we found any error
         highlightInvalidStep();
     }
 
-    public void switchCMakeMode(boolean isCMakeMode) {
-        lDirectory.setDisable(!isCMakeMode);
-        tfCmakeProjDirectory.setDisable(!isCMakeMode);
-        bBrowse.setDisable(!isCMakeMode);
-    }
+    /**
+     * Update locate source files UI base on selected option from Choose Compiler window.
+     */
+    public void update() {
+        boolean isUsingMakeBuildSystem = Environment.getInstance().isUsingMakeBuildSystem();
+        lProjectDirectory.setVisible(isUsingMakeBuildSystem);
+        lvPaths.setLayoutY(60);
+        lvPaths.setVisible(true);
+        apIncludeSourceDirectory.setVisible(false);
+        tfProjectDirectory.setVisible(isUsingMakeBuildSystem);
+        tfProjectDirectory.setText("");
+        tfSourceDirectory.setText("");
+        tfIncludeDirectory.setText("");
+        bBrowse.setVisible(isUsingMakeBuildSystem);
+        bSaveAndShowDirs.setDisable(!isUsingMakeBuildSystem);
+        bShowIncludeAndSource.setVisible(false);
+        if (isUsingMakeBuildSystem) {
+            lvPaths.setLayoutY(90);
+            EnviroMakeBuildSystemNode node = (EnviroMakeBuildSystemNode) EnvironmentSearch.searchNode(
+                    Environment.getInstance().getEnvironmentRootNode(), new EnviroMakeBuildSystemNode()).get(0);
+            System.out.println(buildSystem + " " + node.getBuildSystem());
+            System.out.println(lvPaths.getItems());
+            if (buildSystem.equals("") || node.getBuildSystem().equals(buildSystem))
+                tfProjectDirectory.setText(node.getProjectDirectory());
+            else lvPaths.getItems().clear();
 
-    public void addCmakeProjectDirectory() {
-        File file = showChooseFolderDialog();
-        if (file != null) {
-            if (findCMakeListsFile(file)) {
-                tfCmakeProjDirectory.setText(file.getAbsolutePath());
-                addRecursive(file, "build");
-                validate();
-            } else {
-                UIController.showErrorDialog("The directory does not contain CMakeLists.txt file", "Error", "Locate Source Files");
+            if (node.getBuildSystem().equals("GNU Make") && node.getGnuMakeBuildType() == 2) {
+                apIncludeSourceDirectory.setVisible(true);
+                lvPaths.setVisible(false);
+                if (node.getBuildSystem().equals(buildSystem)) {
+                    tfIncludeDirectory.setText(node.getGnuMakeIncludeDirectory());
+                    tfSourceDirectory.setText(node.getGnuMakeSourceDirectory());
+                }
+                bSaveAndShowDirs.setDisable(true);
             }
+
+            buildSystem = node.getBuildSystem();
+        } else {
+            lvPaths.setLayoutY(60);
+            lvPaths.setPrefHeight(330);
         }
     }
 
-    private boolean findCMakeListsFile(File projectDirectory) {
-        if (projectDirectory != null) {
-            File[] files = projectDirectory.listFiles();
-            if (files != null) {
-                for (File file : files) {
-                    if (file.getName().equals("CMakeLists.txt")) {
-                        return true;
-                    }
+    public void onBrowseProjectDirectory() {
+        DirectoryChooser directoryChooser = PersistentDirectoryChooser.getInstance();
+        Stage envBuilderStage = UIController.getEnvironmentBuilderStage();
+        File file = directoryChooser.showDialog(envBuilderStage);
+        if (file != null) {
+            BuildSystemHandler handler = Environment.getInstance().getMakeBuildSystemManager().getCurrentBSHandler();
+            if (handler.findBuildFile(file, true)) {
+                tfProjectDirectory.setText(file.getAbsolutePath());
+                if (handler instanceof CMakeHandler)
+                    addRecursive(file);
+                else {
+                    lvPaths.setVisible(false);
+                    tfIncludeDirectory.setText(null);
+                    tfSourceDirectory.setText(null);
                 }
             }
         }
-        return false;
     }
 
-    private static LocateSourceFilesController instance;
+    public void onChooseSourceDirectory() {
+        File file = chooseChildDirectoryOfParentFolder(tfProjectDirectory.getText());
+        if (file != null) {
+            String sourceDir = file.getAbsolutePath().replace(tfProjectDirectory.getText(), "");
+            sourceDir = sourceDir.replaceFirst("/", "");
+            tfSourceDirectory.setText(file.getAbsolutePath().replace(tfProjectDirectory.getText(), ""));
+        }
+        verifyIncludeAndSourceDirectoryChosen();
+    }
 
-    public static LocateSourceFilesController getInstance() {
-        return instance;
+    public void onChooseIncludeDirectory() {
+        File file = chooseChildDirectoryOfParentFolder(tfProjectDirectory.getText());
+        if (file != null) {
+            String includeDir = file.getAbsolutePath().replace(tfProjectDirectory.getText(), "");
+            includeDir = includeDir.replaceFirst("/", "");
+            tfIncludeDirectory.setText(includeDir);
+        }
+        verifyIncludeAndSourceDirectoryChosen();
+    }
+
+    private void verifyIncludeAndSourceDirectoryChosen() {
+        bSaveAndShowDirs.setDisable(tfSourceDirectory.getText() == null || tfIncludeDirectory.getText() == null);
+    }
+
+    private File chooseChildDirectoryOfParentFolder(String parentPath) {
+        DirectoryChooser directoryChooser = PersistentDirectoryChooser.getInstance();
+        Stage envBuilderStage = UIController.getEnvironmentBuilderStage();
+        File file = directoryChooser.showDialog(envBuilderStage);
+        if (file != null && !PathUtils.isParentFolderContainsChild(parentPath, file.getAbsolutePath())) {
+            logger.error("The " + file.getAbsolutePath() + " is not a child of " + tfProjectDirectory.getText());
+            UIController.showErrorDialog("The " + file.getAbsolutePath() + " is not a child of " + tfProjectDirectory.getText(),
+                    "Error", "Locate Source Files");
+
+            return null;
+        }
+
+        return file;
     }
 }

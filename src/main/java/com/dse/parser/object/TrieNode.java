@@ -1,11 +1,11 @@
 package com.dse.parser.object;
 
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class TrieNode {
-    private Map<Character, TrieNode> children = new LinkedHashMap<>();
+    private Map<Character, TrieNode> children = new HashMap<>();
     private boolean isNode = false;
     private INode node = null;
 

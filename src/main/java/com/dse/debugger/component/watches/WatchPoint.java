@@ -39,8 +39,4 @@ public class WatchPoint {
     public void setNull(boolean aNull) {
         isNull = aNull;
     }
-
-    public void setExp(String exp) {
-        this.exp = exp;
-    }
 }

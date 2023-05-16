@@ -1,10 +1,5 @@
 package com.dse.testdata.object;
 
-import com.dse.environment.Environment;
-import com.dse.parser.object.ICommonFunctionNode;
-import com.dse.project_init.ProjectClone;
-import com.dse.testdata.comparable.gtest.*;
-import com.dse.util.SourceConstant;
 import com.dse.util.SpecialCharacter;
 import com.dse.util.Utils;
 import com.dse.util.VariableTypeUtils;
@@ -13,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class OneDimensionCharacterDataNode extends OneDimensionDataNode implements IStringComparison {
+public class OneDimensionCharacterDataNode extends OneDimensionDataNode {
     private String generateDetailedInputforDisplay() throws Exception {
         StringBuilder input = new StringBuilder();
         for (IDataNode child : this.getChildren())
@@ -83,7 +78,7 @@ public class OneDimensionCharacterDataNode extends OneDimensionDataNode implemen
                     break;
 
                 case 39:
-                    /* nhay don */
+                /* nhay don */
                     input.append("\\'");
                     break;
 
@@ -165,7 +160,7 @@ public class OneDimensionCharacterDataNode extends OneDimensionDataNode implemen
                 return getUserCodeContent();
         }
 
-        if (!isPassingVariable() || (isPassingVariable() && isDeclared)) {
+        if(!isPassingVariable() || (isPassingVariable() && isDeclared) ) {
             // get type
             String type = VariableTypeUtils
                     .deleteStorageClassesExceptConst(this.getRawType().replace(IDataNode.REFERENCE_OPERATOR, ""));
@@ -196,7 +191,7 @@ public class OneDimensionCharacterDataNode extends OneDimensionDataNode implemen
                         declaration += String.format("%s *%s = NULL" + SpecialCharacter.END_OF_STATEMENT, coreType,
                                 this.getVituralName());
                     }
-                } else if (isSutExpectedArgument() || isGlobalExpectedValue()) {
+                }  else if (isSutExpectedArgument() || isGlobalExpectedValue()) {
 //                    String firstIndex = indexes.get(0);
                     if (getSize() > 0) {
                         declaration += String.format("%s %s%s" + SpecialCharacter.END_OF_STATEMENT, coreType,
@@ -245,43 +240,5 @@ public class OneDimensionCharacterDataNode extends OneDimensionDataNode implemen
             // Handle later;
             return "";
         }
-    }
-
-    @Override
-    public String getBinaryComparisonAssertion() {
-        return new BinaryComparisonStatementGenerator(this).getBinaryComparisonAssertion();
-    }
-
-    @Override
-    public String getAssertion() {
-        StringBuilder assertion = new StringBuilder();
-        if (getAssertMethod() != null) {
-            if (Environment.getInstance().getCompiler().isUseGTest()) {
-                assertion.append(getAssertStm() + "\n");
-            }
-        }
-
-        for (IDataNode child : this.getChildren()) {
-            if (child instanceof ValueDataNode) {
-                String childAssertion = ((ValueDataNode) child).getAssertion() + SpecialCharacter.LINE_BREAK;
-                assertion.append(childAssertion);
-            }
-        }
-
-        return assertion.toString();
-    }
-
-    @Override
-    public String getAssertStm() {
-        String assertMethod = getAssertMethod();
-        if (assertMethod != null) {
-            if (Environment.getInstance().getCompiler().isUseGTest()) {
-                assertMethod = assertMethod.split(": ", 2)[0];
-                if (IBinaryComparison.assertMethods.contains(assertMethod) || IStringComparison.assertMethods.contains(assertMethod)) {
-                    return this.getBinaryComparisonAssertion();
-                }
-            }
-        }
-        return SpecialCharacter.EMPTY;
     }
 }

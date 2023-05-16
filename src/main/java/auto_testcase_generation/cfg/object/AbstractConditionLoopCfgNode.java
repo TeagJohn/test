@@ -9,6 +9,8 @@ import org.eclipse.cdt.internal.core.dom.parser.cpp.CPPASTBinaryExpression;
 
 public abstract class AbstractConditionLoopCfgNode extends ConditionCfgNode implements IConditionLoopCfgNode {
 
+    public AbstractConditionLoopCfgNode() {
+    }
 
     public AbstractConditionLoopCfgNode(IASTNode node) {
         super(node);

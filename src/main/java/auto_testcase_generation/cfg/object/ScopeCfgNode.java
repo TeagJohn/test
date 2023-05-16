@@ -6,6 +6,8 @@ public class ScopeCfgNode extends CfgNode {
 
     public static final String SCOPE_CLOSE = "}";
 
+    public ScopeCfgNode(){}
+
     public ScopeCfgNode(String content) {
         super(content);
     }

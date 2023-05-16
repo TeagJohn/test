@@ -17,20 +17,12 @@ import com.dse.thread.AkaThread;
 import com.dse.thread.task.BuildEnvironmentResult;
 import com.dse.thread.task.BuildNewEnvironmentTask;
 import com.dse.parser.object.IProjectNode;
-import com.dse.parser.object.TrieNodeManager;
 import com.dse.testcase_manager.TestCaseManager;
 import com.dse.thread.task.PreUpdateEnvironmentTask;
 import com.dse.user_code.UserCodeManager;
 import com.dse.logger.AkaLogger;
 import com.dse.util.SpecialCharacter;
 import com.dse.util.Utils;
-
-import java.io.File;
-import java.net.URL;
-import java.time.Duration;
-import java.time.Instant;
-import java.util.*;
-import java.util.concurrent.ExecutionException;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -45,11 +37,12 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import java.io.File;
+import java.net.URL;
+import java.util.*;
+import java.util.concurrent.ExecutionException;
 
 import static com.dse.guifx_v3.helps.UIController.getPrimaryStage;
-
-import java.time.Duration;
-import java.time.Instant;
 
 public class BaseController implements Initializable {
 
@@ -199,6 +192,10 @@ public class BaseController implements Initializable {
 
     private void selectStep() {
         switch (currentStep) {
+            case LOCATE_SOURCE_CODE_FILE_WINDOW_INDEX:
+                updateLocateSourceFile();
+                break;
+
             case USER_CODE_WINDOW_INDEX:
                 updateUserCode();
                 break;
@@ -274,9 +271,13 @@ public class BaseController implements Initializable {
         ((SummaryController) stepSummary.getController()).update();
     }
 
+    public void updateLocateSourceFile() {
+        Step stepLocateSourceFile = map.get(LOCATE_SOURCE_CODE_FILE_WINDOW_INDEX);
+        ((LocateSourceFilesController) stepLocateSourceFile.getController()).update();
+    }
+
     @FXML
     public void buildEnvironment(ActionEvent actionEvent) {
-        TrieNodeManager.newInstance();
         String dir = new AkaConfig().fromJson().getWorkingDirectory();
         String name = Environment.getInstance().getName();
         if (AbstractCustomController.ENVIRONMENT_STATUS != AbstractCustomController.STAGE.UPDATING_ENV_FROM_OPENING_ENV) {
@@ -309,7 +310,6 @@ public class BaseController implements Initializable {
 
     private void buildNewEnvironment(ActionEvent actionEvent, LoadingPopupController loadingPopup, boolean shouldCompile) {
         BuildNewEnvironmentTask task = new BuildNewEnvironmentTask(shouldCompile);
-        Instant start = Instant.now();
         new AkaThread(task).start();
 
         task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
@@ -376,30 +376,8 @@ public class BaseController implements Initializable {
 
                     File envFile = new File(new WorkspaceConfig().fromJson().getEnvironmentFile());
                     MenuBarController.addEnvironmentToHistory(envFile);
-                    
-                    Instant end = Instant.now();
-                    Duration timeElapsed = Duration.between(start, end);
-                    String buildTime = "";
-                    long seconds = timeElapsed.getSeconds()%60;
-                    if (seconds > 9) {
-                        buildTime = seconds + buildTime;
-                    } else {
-                        buildTime = "0" + seconds + buildTime;
-                    }
-                    if (timeElapsed.toMinutes() > 9) {
-                        buildTime = timeElapsed.toMinutes() + ":" + buildTime;
-                    } else {
-                        buildTime = "0" + timeElapsed.toMinutes() + ":" + buildTime;
-                    }
-                    if (timeElapsed.toHours() > 9) {
-                        buildTime = timeElapsed.toHours() + ":" + buildTime;
-                    } else {
-                        buildTime = "0" + timeElapsed.toHours() + ":" + buildTime;
-                    }
 
-                    logger.debug("Build the environment successfully in " + buildTime);
-                    UIController.showSuccessDialog("Build the environment successfully\nBuild time: " + buildTime,
-                            "Build environment", "Success");
+                    UIController.showSuccessDialog("Build the environment successfully", "Build environment", "Success");
                 }
             }
         });

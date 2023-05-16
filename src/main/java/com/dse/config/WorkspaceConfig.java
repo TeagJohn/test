@@ -53,6 +53,8 @@ public class WorkspaceConfig {
     public static final String INSTRUMENT_SOURCE_FOLDER_NAME = "instruments";
     public static final String CTE_FOLDER_NAME = "cte";
 
+    public static final String CFG_FOLDER_NAME = "cfg";
+
     public static final String ENV_EXTENSION = ".env";
 
     @Expose
@@ -192,6 +194,17 @@ public class WorkspaceConfig {
 
     @Expose
     private String cteFolder = "";
+
+    @Expose
+    private String cfgDirectory = "";
+    public String getCfgDirectory() {
+        return cfgDirectory;
+    }
+
+    public void setCfgDirectory(String cfgDirectory) {
+        this.cfgDirectory = cfgDirectory;
+        init(cfgDirectory);
+    }
 
     public WorkspaceConfig() {
     }

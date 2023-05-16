@@ -1,16 +1,13 @@
 package com.dse.guifx_v3.objects;
 
-import com.dse.environment.Environment;
 import com.dse.guifx_v3.controllers.TestCaseTreeTableController;
 import com.dse.guifx_v3.helps.UIController;
 import com.dse.logger.AkaLogger;
 import com.dse.search.Search2;
-import com.dse.testcase_execution.ITestcaseExecution;
 import com.dse.testcase_manager.IDataTestItem;
 import com.dse.testcase_manager.TestCaseManager;
 import com.dse.testdata.Iterator;
 import com.dse.testdata.comparable.AssertMethod;
-import com.dse.testdata.comparable.gtest.IGTestAssertMethod;
 import com.dse.testdata.object.*;
 import javafx.css.PseudoClass;
 import javafx.scene.control.*;
@@ -149,6 +146,23 @@ public class ExpectedOutputColumnCellFactory implements Callback<TreeTableColumn
                     // commit edit new value
                     else {
                         onRetrieveValue(expectedNode, newValue);
+//                        if (dataNode instanceof PointerDataNode && dataNode.getParent() instanceof IterationSubprogramNode) {
+//                            onRetrieveValue(((IterationSubprogramNode) dataNode.getParent()).getInputToExpectedOutputMap().get(actualNode), newValue);
+//                        }
+//                        if (dataNode.getParent() instanceof PointerDataNode && dataNode.getParent().getParent() instanceof IterationSubprogramNode) {
+//                            IterationSubprogramNode grandParentNode = (IterationSubprogramNode) dataNode.getParent().getParent();
+//                            for ( Object key : ((HashMap) ((IterationSubprogramNode) grandParentNode).getInputToExpectedOutputMap()).keySet() ) {
+//                                if(((PointerDataNode) key).getName().equals(dataNode.getParent().getName())) {
+//                                  for (Object valueDataNode: grandParentNode.getInputToExpectedOutputMap().get(key).getChildren().toArray()) {
+//                                      if (((ValueDataNode) valueDataNode).getName().equals(dataNode.getName())) {
+//                                          onRetrieveValue((ValueDataNode) valueDataNode, newValue);
+//                                          break;
+//                                      }
+//                                  }
+//                                  break;
+//                                }
+//                            }
+//                        }
                     }
 
                     // reload các con của tree item
@@ -156,29 +170,11 @@ public class ExpectedOutputColumnCellFactory implements Callback<TreeTableColumn
                         TreeItem<DataNode> treeItem = row.getTreeItem();
                         TestCaseTreeTableController.loadChildren(testCase, treeItem);
                     } else {
-                        if (Environment.getInstance().getCompiler().isUseGTest()) {
-                            expectedNode.getIterators().forEach(i -> {
-                                if (i.getDataNode().getAssertMethod() == null || i.getDataNode().getAssertMethod().equals("")) {
-                                    i.getDataNode().setAssertMethod(IGTestAssertMethod.EXPECT_EQ);
-                                }
-                            });
-                        } else {
-                            expectedNode.getIterators().forEach(i -> i.getDataNode().setAssertMethod(AssertMethod.ASSERT_EQUAL));
-                        }
+                        expectedNode.getIterators().forEach(i -> i.getDataNode().setAssertMethod(AssertMethod.ASSERT_EQUAL));
 //                        expectedNode.setAssertMethod(AssertMethod.ASSERT_EQUAL);
-                        if (actualNode != null) {
-                            if (Environment.getInstance().getCompiler().isUseGTest()) {
-                                actualNode.getIterators().forEach(i -> {
-                                    if (i.getDataNode().getAssertMethod() == null || i.getDataNode().getAssertMethod().equals("")) {
-                                        i.getDataNode().setAssertMethod(IGTestAssertMethod.EXPECT_EQ);
-                                    }
-                                });
-                            } else {
-                                actualNode.getIterators().forEach(i -> i.getDataNode().setAssertMethod(AssertMethod.ASSERT_EQUAL));
-                            }
+                        if (actualNode != null)
+                            actualNode.getIterators().forEach(i -> i.getDataNode().setAssertMethod(AssertMethod.ASSERT_EQUAL));
 //                            actualNode.setAssertMethod(AssertMethod.ASSERT_EQUAL);
-
-                        }
                     }
 
                 } catch (Exception ex) {

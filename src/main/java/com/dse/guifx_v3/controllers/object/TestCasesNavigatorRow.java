@@ -7,7 +7,6 @@ import auto_testcase_generation.cte.booleanChangeListen.BooleanChangeListener;
 import auto_testcase_generation.testdatagen.RandomAutomatedTestdataGeneration;
 import auto_testcase_generation.testdatagen.templateType.TestDataPrototypeAutomatedGenerationForTemplate;
 import com.dse.coverage.gcov.GcovInfo;
-import com.dse.debugger.gdb.GDB;
 import com.dse.environment.Environment;
 import com.dse.exception.FunctionNodeNotFoundException;
 import com.dse.coverage.gcov.LCOVTestReportGeneration;
@@ -15,8 +14,6 @@ import com.dse.parser.dependency.Dependency;
 import com.dse.parser.dependency.FunctionCallDependency;
 import com.dse.report.excel_report.ExcelReport;
 import com.dse.report.csv.CSVReport;
-import com.dse.testcase_execution.ITestcaseExecution;
-import com.dse.testdata.comparable.gmock.GmockUtils;
 import com.dse.thread.task.GenerateTestdataTask;
 import com.dse.thread.task.OpenWorkspaceTask;
 import com.dse.thread.task.testcase.InsertCompoundTestCaseTask;
@@ -58,7 +55,6 @@ import com.dse.thread.AkaThread;
 import com.dse.thread.AkaThreadManager;
 import com.dse.logger.AkaLogger;
 import com.dse.util.Utils;
-import com.dse.winams.UI.ExportCsvSettingsController;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import javafx.application.Platform;
@@ -69,7 +65,6 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Region;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
@@ -158,7 +153,7 @@ public class TestCasesNavigatorRow extends CheckBoxTreeTableRow<ITestcaseNode> {
 //            addExecuteOption(node);
             addOpenSourceOption(node);
             addDeleteOption(node);
-            addCteOption(node, item);
+            addCteOption(node,item);
 //                addExpandAllChildrenOption(node);
 //                addCollapseAllChildrenOption(node);
 //                addDeselectCoverageOption(node);
@@ -166,7 +161,6 @@ public class TestCasesNavigatorRow extends CheckBoxTreeTableRow<ITestcaseNode> {
             addAutomatedTestdataGenerationOptionForAFunction(node, item);
             addStopAutomatedTestdataGenerationOption(node, item);
             addGenerateCSVReport((TestNormalSubprogramNode) node);
-            addViewTestCaseManagementReport(node);
             addViewTestCasesExecution(node);
             addSelectAllChildren(node);
             addDeselectAllChildren(node);
@@ -590,11 +584,7 @@ public class TestCasesNavigatorRow extends CheckBoxTreeTableRow<ITestcaseNode> {
         getContextMenu().getItems().add(miExecMultiWithGoogleTest);
         miExecMultiWithGoogleTest.setOnAction(event -> {
             System.out.println("--------------------Print 1--------------------");
-            if (Environment.getInstance().getCompiler().isUseGTest()) {
-                executeMultiTestcase(ITestcaseExecution.IN_EXECUTION_WITH_FRAMEWORK_TESTING_MODE);
-            } else {
-                executeMultiTestcase(ITestcaseExecution.IN_AUTOMATED_TESTDATA_GENERATION_MODE);
-            }
+            executeMultiTestcase(TestcaseExecution.IN_EXECUTION_WITH_FRAMEWORK_TESTING_MODE);
         });
         if (UIController.getMode().equals(UIController.MODE_EDIT))
             miExecMultiWithGoogleTest.setDisable(true);
@@ -976,27 +966,13 @@ public class TestCasesNavigatorRow extends CheckBoxTreeTableRow<ITestcaseNode> {
         }
 
         if (testCase != null) {
-            String message = GmockUtils.getMessageWithNode(testCase);
-            if (!message.equals("")) {
-                Alert alert = new Alert(Alert.AlertType.INFORMATION, message, ButtonType.OK);
-                alert.setTitle("With Error");
-                alert.setHeaderText("Have not entered value for Matcher");
-                alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
-                alert.show();
-                return;
-            }
             LoadingPopupController loadingPopup = LoadingPopupController.newInstance("Run " + testCase.getName());
             loadingPopup.initOwnerStage(UIController.getPrimaryStage());
             loadingPopup.show();
 
             testCase.deleteOldDataExceptValue();
             TestCaseExecutionThread task = new TestCaseExecutionThread(testCase);
-            if (Environment.getInstance().getCompiler().isUseGTest()) {
-                task.setExecutionMode(com.dse.testcase_execution.ITestcaseExecution.IN_EXECUTION_WITH_FRAMEWORK_TESTING_MODE);
-
-            } else {
-                task.setExecutionMode(ITestcaseExecution.IN_AUTOMATED_TESTDATA_GENERATION_MODE);
-            }
+            task.setExecutionMode(com.dse.testcase_execution.ITestcaseExecution.IN_EXECUTION_WITH_FRAMEWORK_TESTING_MODE);
 
             task.setOnPreSucceededEvent(new EventHandler<WorkerStateEvent>() {
                 @Override
@@ -1179,7 +1155,8 @@ public class TestCasesNavigatorRow extends CheckBoxTreeTableRow<ITestcaseNode> {
         List<TestPrototype> prototypes = new ArrayList<>();
         try {
             prototypes = RandomAutomatedTestdataGeneration.getAllPrototypesOfTemplateFunction(functionNode);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -1189,7 +1166,6 @@ public class TestCasesNavigatorRow extends CheckBoxTreeTableRow<ITestcaseNode> {
             prototypes.addAll(template.getStructurePrototype());
         }
 
-//        List<TestPrototzype> prototypes = RandomAutomatedTestdataGeneration.getAllPrototypesOfTemplateFunction(functionNode);
         if (prototypes.size() == 0)
             UIController.showErrorDialog("Not find out any prototypes of this template function. Please right click > Insert a prototype",
                     "Autogen for a function", "Fail");
@@ -1388,7 +1364,6 @@ public class TestCasesNavigatorRow extends CheckBoxTreeTableRow<ITestcaseNode> {
 //        });
     }
 
-
     private TestCase getTestCaseByTestNewNode(TestNewNode testNewNode) {
         List<ITestcaseNode> names = TestcaseSearch.searchNode(testNewNode, new TestNameNode());
         if (names.size() == 1) {
@@ -1530,7 +1505,7 @@ public class TestCasesNavigatorRow extends CheckBoxTreeTableRow<ITestcaseNode> {
 //                            .getParentFile();
         String projectName = projectNode.getName();
         excelReport.setProjectName("< " + projectName + " >");
-        Map<String, TestCase> testcases = testCaseMap;
+        Map<String , TestCase> testcases = testCaseMap;
 
         excelReport.exportTestcases(testcases);
         System.out.println("Finish Export Excel report");
@@ -1543,7 +1518,7 @@ public class TestCasesNavigatorRow extends CheckBoxTreeTableRow<ITestcaseNode> {
             Platform.runLater(new Runnable() {
                 @Override
                 public void run() {
-                    Map<String, TestCase> testcases = TestCaseManager.getTestcases();
+                    Map<String , TestCase> testcases = TestCaseManager.getTestcases();
                     genTestCaseToExcel(testcases);
                 }
             });
@@ -1583,39 +1558,35 @@ public class TestCasesNavigatorRow extends CheckBoxTreeTableRow<ITestcaseNode> {
         getContextMenu().getItems().add(mi);
 
         mi.setOnAction(event -> {
-            Platform.runLater(() -> ExportCsvSettingsController.getController().popup(node));
-        });
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    // list test new node of the chosen function.
+                    String path = UIController.chooseDirectoryOfNewFile(".csv");
+                    if (path == null) {
+                        return;
+                    }
+                    //Generate file below
+                    LoadingPopupController loadPopup = CSVReport.getPopup();
+                    loadPopup.show();
+                    System.out.println("Start Exporting...");
+                    try {
+                        IFunctionNode functionNode = (IFunctionNode) UIController.searchFunctionNodeByPath(node.getName());
+                        List<TestCase> list = TestCaseManager.getTestCasesByFunction(functionNode);
+                        CSVReport report = new CSVReport(functionNode, list);
+                        report.exportTo(path);
+                        UIController.showSuccessDialog("Finish.", "CSV Report", "Generate Successfully.");
+                    } catch (FunctionNodeNotFoundException e) {
+                        e.printStackTrace();
+                    } finally {
+                        loadPopup.close();
+                    }
+                    System.out.println("Finish export!");
+                }
+            });
 
-//        mi.setOnAction(event -> {
-//            Platform.runLater(new Runnable() {
-//                @Override
-//                public void run() {
-//                    // list test new node of the chosen function.
-//                    String path = UIController.chooseDirectoryOfNewFile(".csv");
-//                    if (path == null) {
-//                        return;
-//                    }
-//                    //Generate file below
-//                    LoadingPopupController loadPopup = CSVReport.getPopup();
-//                    loadPopup.show();
-//                    System.out.println("Start Exporting...");
-//                    try {
-//                        IFunctionNode functionNode = (IFunctionNode) UIController.searchFunctionNodeByPath(node.getName());
-//                        List<TestCase> list = TestCaseManager.getTestCasesByFunction(functionNode);
-//                        CSVReport report = new CSVReport(functionNode, list);
-//                        report.exportTo(path);
-//                        UIController.showSuccessDialog("Finish.", "CSV Report", "Generate Successfully.");
-//                    } catch (FunctionNodeNotFoundException e) {
-//                        e.printStackTrace();
-//                    } finally {
-//                        loadPopup.close();
-//                    }
-//                    System.out.println("Finish export!");
-//                }
-//            });
-//
-//
-//        });
+
+        });
     }
 
     private void openPrototype(TestNewNode testNewNode) {
@@ -2210,10 +2181,7 @@ public class TestCasesNavigatorRow extends CheckBoxTreeTableRow<ITestcaseNode> {
                     MenuItem miInsertRealType = new MenuItem("Create new prototype");
 
                     miInsertRealType.setOnAction(event -> {
-                        String prototypeName = TestCaseManager
-                                .generateContinuousNameOfTestcase(
-                                        TestPrototype.PROTOTYPE_SIGNAL
-                                                + TestCaseManager.getFunctionName(functionNode));
+                        String prototypeName = TestCaseManager.generateContinuousNameOfTestcase(TestPrototype.PROTOTYPE_SIGNAL + functionNode.getSimpleName());
                         insertPrototypeOfFunction(navigatorNode, item, prototypeName);
 
                     });
@@ -2311,91 +2279,94 @@ public class TestCasesNavigatorRow extends CheckBoxTreeTableRow<ITestcaseNode> {
         }
     }
 
-    private void addCteOption(ITestcaseNode navigatorNode, TestCasesTreeItem item) {
+    private void addCteOption(ITestcaseNode navigatorNode, TestCasesTreeItem item)
+    {
         assert (navigatorNode != null);
 
-        if (navigatorNode instanceof TestNormalSubprogramNode) {
+        if ( navigatorNode instanceof TestNormalSubprogramNode) {
 
             MenuItem miViewCTE = new MenuItem("Open CTE");
 
-            try {
-                ICommonFunctionNode iFunctionNode = UIController.searchFunctionNodeByPath(((TestNormalSubprogramNode) navigatorNode).getName());
-                miViewCTE.setOnAction(event -> {
-                    LoadingPopupController popUp = CteCoefficent.getOpenLoading();
-                    popUp.setText("Openning CTE...");
-                    popUp.show();
-                    try {
-                        IFunctionNode Fnode = (IFunctionNode) iFunctionNode;
-                        Task<Void> createCteTask = new Task<Void>() {
-                            @Override
-                            protected Void call() throws Exception {
-                                Platform.runLater(() -> {
-                                    CteController cteController = new CteController(Fnode, (TestNormalSubprogramNode) navigatorNode);
+                try {
+                    ICommonFunctionNode iFunctionNode = UIController.searchFunctionNodeByPath(((TestNormalSubprogramNode) navigatorNode).getName());
+                    miViewCTE.setOnAction(event -> {
+                        LoadingPopupController popUp = CteCoefficent.getOpenLoading();
+                        popUp.setText("Openning CTE...");
+                        popUp.show();
+                        try {
+                            IFunctionNode Fnode = (IFunctionNode) iFunctionNode;
+                            LoadingPopupController loadingPopUp = LoadingPopupController.newInstance("Opening CTE");
+                            Task<Void> createCteTask = new Task<Void>() {
+                                @Override
+                                protected Void call() throws Exception {
+                                    Platform.runLater(() -> {
+                                        CteController cteController = new CteController(Fnode, (TestNormalSubprogramNode) navigatorNode);
 
-                                    BooleanChangeListener listener = new BooleanChangeListener() {
-                                        @Override
-                                        public void stateChanged(BooleanChangeEvent event) {
-                                            if (event.getDispatcher().getFlag() == true) {
-                                                final LoadingPopupController[] controller = new LoadingPopupController[1];
-                                                boolean needLoading = true;
-                                                Platform.runLater(() -> {
+                                        BooleanChangeListener listener = new BooleanChangeListener() {
+                                            @Override
+                                            public void stateChanged(BooleanChangeEvent event) {
+                                                if (event.getDispatcher().getFlag() == true) {
+                                                    final LoadingPopupController[] controller = new LoadingPopupController[1];
+                                                    boolean needLoading = true;
+                                                    Platform.runLater(() -> {
 
-                                                    controller[0] = LoadingPopupController.newInstance("Exporting To Test Case");
-                                                    controller[0].initOwnerStage(UIController.getPrimaryStage());
-                                                    controller[0].show();
+                                                            controller[0] = LoadingPopupController.newInstance("Exporting To Test Case");
+                                                            controller[0].initOwnerStage(UIController.getPrimaryStage());
+                                                            controller[0].show();
 
-                                                });
+                                                    });
 
-                                                List<TestCase> testCases = cteController.getCombinedTestCases();
-                                                if (!testCases.isEmpty()) {
-                                                    for (TestCase testCase : testCases) {
-                                                        insertTestCaseFromCte(navigatorNode, item, testCase);
+                                                    List<TestCase> testCases = cteController.getCombinedTestCases();
+                                                    if (!testCases.isEmpty()) {
+                                                        for (TestCase testCase : testCases) {
+                                                            insertTestCaseFromCte(navigatorNode, item, testCase);
+                                                        }
                                                     }
+                                                    cteController.turnOffCombineTask();
+                                                    Platform.runLater(() -> {
+                                                        if(controller[0] != null)
+                                                        {
+                                                            controller[0].close();
+                                                        }
+                                                        UIController.showSuccessDialog("Exported All Selected Testcases From CTE", "Exporting Testcases", "Exporting Successful");
+                                                    });
+
                                                 }
-                                                cteController.turnOffCombineTask();
-                                                Platform.runLater(() -> {
-                                                    if (controller[0] != null) {
-                                                        controller[0].close();
-                                                    }
-                                                    UIController.showSuccessDialog("Exported All Selected Testcases From CTE", "Exporting Testcases", "Exporting Successful");
-                                                });
-
                                             }
+                                        };
+                                        cteController.addingListener(listener);
+                                        try {
+                                            UIController.viewCte(Fnode, cteController);
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
                                         }
-                                    };
-                                    cteController.addingListener(listener);
-                                    try {
-                                        UIController.viewCte(Fnode, cteController);
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                    }
-                                });
-                                return null;
-                            }
-                        };
+                                    });
+                                    return null;
+                                }
+                            };
 
 
-                        createCteTask.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
-                            @Override
-                            public void handle(WorkerStateEvent event) {
-                                popUp.close();
-                            }
-                        });
+                            createCteTask.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
+                                @Override
+                                public void handle(WorkerStateEvent event) {
+                                    popUp.close();
+                                }
+                            });
 
 
-                        new Thread(createCteTask).start();
+                            new Thread(createCteTask).start();
 
-                        // UILogger.getUiLogger().logToBothUIAndTerminal("Opened source code of " + iFunctionNode.getName() + " [" + iFunctionNode.getClass().getSimpleName() + "] on this tool");
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        popUp.close();
-                        UIController.showErrorDialog("Error code: " + e.getMessage(), "Open CTE",
-                                "Can not open CTE");
+                           // UILogger.getUiLogger().logToBothUIAndTerminal("Opened source code of " + iFunctionNode.getName() + " [" + iFunctionNode.getClass().getSimpleName() + "] on this tool");
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            popUp.close();
+                            UIController.showErrorDialog("Error code: " + e.getMessage(), "Open CTE",
+                                    "Can not open CTE");
 
-                    }
-                });
-            } catch (FunctionNodeNotFoundException fe) {
-            }
+                        }
+                    });
+                } catch (FunctionNodeNotFoundException fe) {
+                }
             //}
 
             getContextMenu().getItems().add(miViewCTE);
@@ -2465,6 +2436,8 @@ public class TestCasesNavigatorRow extends CheckBoxTreeTableRow<ITestcaseNode> {
         }
 
 
+
+
         InsertTestCaseFromCte insertFromCteTask = new InsertTestCaseFromCte((TestSubprogramNode) navigatorNode, testCase);
 
         insertFromCteTask.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
@@ -2482,8 +2455,8 @@ public class TestCasesNavigatorRow extends CheckBoxTreeTableRow<ITestcaseNode> {
                     getTreeTableView().getSelectionModel().select(newTestCaseTreeItem);
 
                     // render testcase view in MDI window
-                    // UIController.viewTestCase(testCase);
-                    // if(loadingPopup[0] != null) loadingPopup[0].close();
+                   // UIController.viewTestCase(testCase);
+                   // if(loadingPopup[0] != null) loadingPopup[0].close();
 
 
                 } catch (Exception ex) {

@@ -104,7 +104,7 @@ public class EnvironmentAnalyzer implements ICommandList {
                 createCMakeProjDirectory(root, currentLineCommand);
                 currentLineIndex++;
 
-            }  else if (currentLineCommand.startsWith(ENVIRO_LIBRARY_INCLUDE_DIR)) {
+            } else if (currentLineCommand.startsWith(ENVIRO_LIBRARY_INCLUDE_DIR)) {
                 createLibraryIncludeDir(root, currentLineCommand);
                 currentLineIndex++;
 
@@ -152,6 +152,18 @@ public class EnvironmentAnalyzer implements ICommandList {
             } else if (currentLineCommand.startsWith(ENVIRO_IGNORE)) {
                 createIgnoreFunction(root, currentLineCommand);
                 currentLineIndex++;
+
+            } else if (currentLineCommand.startsWith(ENVIRO_MAKE_BS_NEW)) {
+                int endMakeBSLineIndex = currentLineIndex;
+
+                while (!lines[endMakeBSLineIndex].trim().startsWith(ENVIRO_MAKE_BS_END))
+                    endMakeBSLineIndex++;
+
+                String[] makeBSLines = Arrays.copyOfRange(lines, currentLineIndex, endMakeBSLineIndex + 1);
+
+                setMakeBuildSystem(root, makeBSLines);
+
+                currentLineIndex += makeBSLines.length;
 
             } else {
                 logger.error("Do not support " + currentLineCommand);
@@ -264,13 +276,32 @@ public class EnvironmentAnalyzer implements ICommandList {
                 newNode.setOutputFlag(line.replace(ENVIRO_COMPILER_OUTPUT_FLAG, "").trim());
             else if (line.startsWith(ENVIRO_COMPILER_DEBUG_FLAG))
                 newNode.setDebugFlag(line.replace(ENVIRO_COMPILER_DEBUG_FLAG, "").trim());
-            else if (line.startsWith(ENVIRO_COMPILER_IS_USE_GTEST)) {
-                boolean useGTest =
-                        Boolean.parseBoolean(line.replace(ENVIRO_COMPILER_IS_USE_GTEST, "").trim());
-                newNode.setUseGTest(useGTest);
-            }
             else if (line.startsWith(ENVIRO_COMPILER_OUTPUT_EXT))
                 newNode.setOutputExt(line.replace(ENVIRO_COMPILER_OUTPUT_EXT, "").trim());
+        }
+
+        newNode.setParent(root);
+        root.addChild(newNode);
+    }
+
+    private void setMakeBuildSystem(IEnvironmentNode root, String[] lines) {
+        EnviroMakeBuildSystemNode newNode = new EnviroMakeBuildSystemNode();
+
+        for (String line : lines) {
+            if (line.startsWith(ENVIRO_MAKE_BS_NAME))
+                newNode.setBuildSystem(line.replace(ENVIRO_MAKE_BS_NAME, "").trim());
+            else if (line.startsWith(ENVIRO_MAKE_BS_PROJECT_DIRECTORY))
+                newNode.setProjectDirectory(line.replace(ENVIRO_MAKE_BS_PROJECT_DIRECTORY, "").trim());
+            else if (line.startsWith(ENVIRO_MAKE_BS_CMAKE_GENERATOR))
+                newNode.setCMakeGenerator(line.replace(ENVIRO_MAKE_BS_CMAKE_GENERATOR, "").trim());
+            else if (line.startsWith(ENVIRO_MAKE_BS_GNU_MAKE_TARGET))
+                newNode.setGnuMakeTarget(line.replace(ENVIRO_MAKE_BS_GNU_MAKE_TARGET, "").trim());
+            else if (line.startsWith(ENVIRO_MAKE_BS_GNU_MAKE_BUILD_TYPE))
+                newNode.setGnuMakeBuildType(Integer.parseInt(line.replace(ENVIRO_MAKE_BS_GNU_MAKE_BUILD_TYPE, "").trim()));
+            else if (line.startsWith(ENVIRO_MAKE_BS_GNU_MAKE_INCLUDE_FOLDER))
+                newNode.setGnuMakeIncludeDirectory(line.replace(ENVIRO_MAKE_BS_GNU_MAKE_INCLUDE_FOLDER, "").trim());
+            else if (line.startsWith(ENVIRO_MAKE_BS_GNU_MAKE_SOURCE_FOLDER))
+                newNode.setGnuMakeSourceDirectory(line.replace(ENVIRO_MAKE_BS_GNU_MAKE_SOURCE_FOLDER, "").trim());
         }
 
         newNode.setParent(root);

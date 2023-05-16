@@ -9,7 +9,10 @@ import com.dse.testdata.object.DataNode;
 import com.dse.testdata.object.IDataNode;
 import com.dse.testdata.object.ValueDataNode;
 import com.dse.logger.AkaLogger;
-import org.eclipse.cdt.core.dom.ast.*;
+import org.eclipse.cdt.core.dom.ast.IASTDeclarator;
+import org.eclipse.cdt.core.dom.ast.IASTFunctionCallExpression;
+import org.eclipse.cdt.core.dom.ast.IASTNode;
+import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclaration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,12 +55,7 @@ public abstract class AbstractInitialTreeGen implements IInitialSubTreeGen {
         List<IASTFunctionCallExpression> expressions = parser.getExpressions();
         List<String> calledFunctionsName = new ArrayList<>();
         for (IASTFunctionCallExpression exp : expressions) {
-            String expName;
-            if (exp.getFunctionNameExpression() instanceof IASTFieldReference) {
-                expName = ((IASTFieldReference) exp.getFunctionNameExpression()).getFieldName().getRawSignature();
-            } else {
-                expName = exp.getFunctionNameExpression().getRawSignature();
-            }
+            String expName = exp.getFunctionNameExpression().getRawSignature();
             if (!calledFunctionsName.contains(expName)) {
                 calledFunctionsName.add(expName);
             }

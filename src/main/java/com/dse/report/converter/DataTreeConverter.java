@@ -1,7 +1,6 @@
 package com.dse.report.converter;
 
 import com.dse.report.element.Table;
-import com.dse.testcase_execution.result_trace.AssertionResult;
 import com.dse.testdata.Iterator;
 import com.dse.testdata.object.*;
 import com.dse.testdata.object.RootDataNode;
@@ -45,16 +44,6 @@ public class DataTreeConverter extends Converter {
                 return true;
         } else
             return true;
-    }
-
-    @Override
-    public Table execute(SubprogramNode subprogram) {
-        return null;
-    }
-
-    @Override
-    public AssertionResult getResults() {
-        return null;
     }
 
     @Override

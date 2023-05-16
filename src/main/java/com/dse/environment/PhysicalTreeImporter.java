@@ -44,11 +44,12 @@ public class PhysicalTreeImporter {
                     if (n != null) {
                         String relativePath = jsonObject.get("path").getAsString();
                         String path = PathUtils.toAbsolute(relativePath);
+                        if (new File(path).exists()) {
 //                        String path = jsonObject.get("path").getAsString();
-                        n.setAbsolutePath(path);
-                        n.setName(new File(n.getAbsolutePath()).getName());
-                        n.setChildren(new ArrayList<>());
-                        n.setDependencies(new ArrayList<>());
+                            n.setAbsolutePath(path);
+                            n.setName(new File(n.getAbsolutePath()).getName());
+                            n.setChildren(new ArrayList<>());
+                            n.setDependencies(new ArrayList<>());
 
                             if (n instanceof ISourcecodeFileNode){
                                 String lastModifiedDate = jsonObject.get("last-modified").getAsString();
@@ -56,16 +57,32 @@ public class PhysicalTreeImporter {
                                 ((ISourcecodeFileNode) n).setLastModifiedDate(sdf.parse(lastModifiedDate));
                             }
 
-                        if (jsonObject.get("children") != null)
-                            for (JsonElement child : jsonObject.get("children").getAsJsonArray()) {
-                                Node childNode = context.deserialize(child, Node.class);
-                                if (childNode!=null) {
-                                    n.getChildren().add(childNode);
-                                    childNode.setParent(n);
+
+                            if (jsonObject.get("children") != null) {
+                                for (JsonElement child : jsonObject.get("children").getAsJsonArray()) {
+                                    Node childNode = context.deserialize(child, Node.class);
+                                    if (childNode!=null) {
+                                        n.getChildren().add(childNode);
+                                        childNode.setParent(n);
+                                    }
                                 }
                             }
-                    }
 
+                            if (new File(path).isDirectory()) {
+                                // kiem tra nhung file duoc them moi
+                                // build nhung folder/file moi duoi day
+                                // TODO: 08/10/2022 please add your code below to build for new folder/file in second version
+
+
+                            }
+
+                        }
+                        else {
+                            n = null;
+                        }
+
+
+                    }
 
                 } catch (Exception e) {
                     logger.debug("Can not import physical tree from file " + physicalTreePath.getAbsolutePath());

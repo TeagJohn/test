@@ -20,7 +20,7 @@ public class TestCaseExecutionThread extends AbstractAkaTask<ITestCase> {
 
     private final ITestCase testCase;
     // execute with google test, execute without google test, v.v.
-    private int executionMode = Environment.getInstance().getCompiler().isUseGTest() ? ITestcaseExecution.IN_EXECUTION_WITH_FRAMEWORK_TESTING_MODE : ITestcaseExecution.IN_AUTOMATED_TESTDATA_GENERATION_MODE;
+    private int executionMode = TestcaseExecution.IN_EXECUTION_WITH_FRAMEWORK_TESTING_MODE;
     private boolean shouldShowReport = true;
 
     private EventHandler<WorkerStateEvent> preSucceededEvent;
