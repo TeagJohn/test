@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane minHeight="-Infinity" minWidth="-Infinity" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8.0.231" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dse.debugger.controller.DebugController">
+    <SplitPane dividerPositions="0.65" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <AnchorPane minHeight="400.0" minWidth="100.0" prefHeight="100.0" prefWidth="160.0">
+            <TabPane fx:id="codeViewer" tabClosingPolicy="ALL_TABS" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                <padding>
+                    <Insets bottom="30.0" />
+                </padding>
+            </TabPane>
+            <ToolBar prefHeight="40.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+                <Button fx:id="runBtn" onAction="#run" text="Sta_rt debug">
+                    <cursor>
+                        <Cursor fx:constant="HAND" />
+                    </cursor>
+                    <tooltip>
+                        <Tooltip text="Run" />
+                    </tooltip>
+                    <graphic>
+                        <ImageView pickOnBounds="true" preserveRatio="true">
+                            <Image url="@../../icons/debug/debug.png" />
+                        </ImageView>
+                    </graphic>
+                </Button>
+                <Separator orientation="VERTICAL" prefHeight="30.0" />
+                <Button fx:id="continueBtn" disable="true" onAction="#continueUntilNextBreakPoint" text="_Continue">
+                    <cursor>
+                        <Cursor fx:constant="HAND" />
+                    </cursor>
+                    <tooltip>
+                        <Tooltip text="Next breakpoint" />
+                    </tooltip>
+                    <graphic>
+                        <ImageView pickOnBounds="true" preserveRatio="true">
+                            <Image url="@../../icons/debug/play.png" />
+                        </ImageView>
+                    </graphic>
+                </Button>
+                <Button fx:id="nextBtn" disable="true" onAction="#nextLine" text="_Next">
+                    <cursor>
+                        <Cursor fx:constant="HAND" />
+                    </cursor>
+                    <tooltip>
+                        <Tooltip text="Next line" />
+                    </tooltip>
+                    <graphic>
+                        <ImageView pickOnBounds="true" preserveRatio="true">
+                            <Image url="@../../icons/debug/next.png" />
+                        </ImageView>
+                    </graphic>
+                </Button>
+                <Button fx:id="stepInBtn" disable="true" onAction="#stepInFunction" text="Step _In">
+                    <cursor>
+                        <Cursor fx:constant="HAND" />
+                    </cursor>
+                    <tooltip>
+                        <Tooltip text="Jump in a function" />
+                    </tooltip>
+                    <graphic>
+                        <ImageView pickOnBounds="true" preserveRatio="true">
+                            <Image url="@../../icons/debug/step_in.png" />
+                        </ImageView>
+                    </graphic>
+                </Button>
+                <Button fx:id="stepOutBtn" disable="true" onAction="#stepOutFunction" text="Step _Out">
+                    <cursor>
+                        <Cursor fx:constant="HAND" />
+                    </cursor>
+                    <tooltip>
+                        <Tooltip text="Jump out from function" />
+                    </tooltip>
+                    <graphic>
+                        <ImageView pickOnBounds="true" preserveRatio="true">
+                            <Image url="@../../icons/debug/step_out.png" />
+                        </ImageView>
+                    </graphic>
+                </Button>
+                <Button fx:id="stopBtn" disable="true" onAction="#stopExecutingDebug" text="_Stop">
+                    <cursor>
+                        <Cursor fx:constant="HAND" />
+                    </cursor>
+                    <tooltip>
+                        <Tooltip text="Stop" />
+                    </tooltip>
+                    <graphic>
+                        <ImageView pickOnBounds="true" preserveRatio="true">
+                            <Image url="@../../icons/debug/stop.png" />
+                        </ImageView>
+                    </graphic>
+                </Button>
+            </ToolBar>
+        </AnchorPane>
+        <AnchorPane fx:id="debugViewer" minHeight="-Infinity" prefHeight="200.0" prefWidth="800.0">
+            <TabPane layoutX="-208.0" prefHeight="288.0" prefWidth="1208.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                <Tab text="Debugger">
+                    <AnchorPane prefHeight="200.0" prefWidth="200.0">
+                        <SplitPane dividerPositions="0.25, 0.6" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                            <AnchorPane fx:id="framePane" minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="100.0" />
+                            <AnchorPane fx:id="varPane" minHeight="-Infinity" minWidth="-Infinity" prefHeight="100.0" prefWidth="300.0" />
+                            <AnchorPane fx:id="watchesPane" minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="100.0" />
+                        </SplitPane>
+                    </AnchorPane>
+                </Tab>
+                <Tab fx:id="breakTab" text="Breakpoints" />
+            </TabPane>
+        </AnchorPane>
+    </SplitPane>
+</AnchorPane>

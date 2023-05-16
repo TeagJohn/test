@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.TreeTableColumn?>
+<?import javafx.scene.control.TreeTableView?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/8.0.231" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dse.guifx_v3.controllers.BoundOfVariableTypeConfigurationController">
+   <children>
+      <TreeTableView fx:id="ttvBoundOfVariableTypeConfiguration" editable="true" layoutX="10.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" showRoot="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <columns>
+            <TreeTableColumn fx:id="colVariableType" editable="false" prefWidth="328.0" text="Type of variable" />
+            <TreeTableColumn fx:id="colLower" prefWidth="271.0" text="Lower" />
+            <TreeTableColumn fx:id="colUpper" prefWidth="271.0" text="Upper" />
+         </columns>
+         <columnResizePolicy>
+            <TreeTableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+         </columnResizePolicy>
+      </TreeTableView>
+   </children>
+</AnchorPane>

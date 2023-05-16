@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="140.0" prefWidth="381.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dse.guifx_v3.controllers.build_environment.DefineVariablePopupController">
+   <children>
+      <Label layoutX="38.0" layoutY="14.0" prefHeight="17.0" prefWidth="137.0" text="Variable name:" AnchorPane.leftAnchor="15.0" AnchorPane.topAnchor="20.0" />
+      <TextField fx:id="tfName" layoutX="160.0" layoutY="26.0" onKeyPressed="#keypressEnter" prefHeight="25.0" prefWidth="525.0" AnchorPane.leftAnchor="160.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="20.0" />
+      <Label layoutX="15.0" layoutY="59.0" prefHeight="17.0" prefWidth="137.0" text="Variable value:" />
+      <TextField fx:id="tfValue" layoutX="160.0" layoutY="55.0" onKeyPressed="#keypressEnter" prefHeight="25.0" prefWidth="525.0" AnchorPane.leftAnchor="160.0" AnchorPane.rightAnchor="15.0" />
+      <ButtonBar layoutX="465.0" layoutY="102.0" prefHeight="25.0" prefWidth="200.0" AnchorPane.bottomAnchor="15.0" AnchorPane.rightAnchor="15.0">
+        <buttons>
+          <Button mnemonicParsing="false" onAction="#ok" text="Ok" />
+            <Button layoutX="135.0" layoutY="10.0" mnemonicParsing="false" onAction="#cancel" text="Cancel" />
+        </buttons>
+      </ButtonBar>
+   </children>
+</AnchorPane>

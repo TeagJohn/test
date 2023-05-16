@@ -1,0 +1,24 @@
+-- Test Case Script
+--
+-- Environment : NAMESPACES
+-- Unit(s) Under Test: namespaces
+--
+-- Script Features
+TEST.SCRIPT_FEATURE:C_DIRECT_ARRAY_INDEXING
+TEST.SCRIPT_FEATURE:CPP_CLASS_OBJECT_REVISION
+TEST.SCRIPT_FEATURE:MULTIPLE_UUT_SUPPORT
+TEST.SCRIPT_FEATURE:STANDARD_SPACING_R2
+TEST.SCRIPT_FEATURE:OVERLOADED_CONST_SUPPORT
+--
+-- Test Case: PASS.001
+TEST.UNIT:namespaces
+TEST.SUBPROGRAM:func_is_implemented
+TEST.NEW
+TEST.NAME:PASS.001
+TEST.NOTES:
+This testcase illustrates the implementation of a function that is done after a
+using directive. This function is in normal scope of the application and cannot
+be accessed through the plane_makers namespace.
+TEST.END_NOTES:
+TEST.EXPECTED:namespaces.func_is_implemented.return:false
+TEST.END

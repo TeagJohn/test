@@ -1,0 +1,70 @@
+{
+  "name": "UUT",
+  "objectType": "com.dse.testdata.object.RootDataNode",
+  "children": [
+    {
+      "name": "test(Person)",
+      "objectType": "com.dse.testdata.object.SubprogramNode",
+      "params": [
+        {
+          "name": "p",
+          "objectType": "com.dse.testdata.object.ClassDataNode",
+          "type": {
+            "name": "Person",
+            "path": "E:\\akautauto\\datatest\\lamnt\\mysample\\class\\classMethodInDiffFile.cpp\\test(Person)\\p",
+            "objectType": "com.dse.parser.object.ClassNode"
+          },
+          "value": [
+            {
+              "name": "Person",
+              "objectType": "com.dse.testdata.object.SubClassDataNode",
+              "type": {
+                "name": "Person",
+                "path": "E:\\akautauto\\datatest\\lamnt\\mysample\\class\\classMethodInDiffFile.cpp\\test(Person)\\p",
+                "objectType": "com.dse.parser.object.ClassNode"
+              },
+              "value": [
+                {
+                  "name": "Person(int)",
+                  "objectType": "com.dse.testdata.object.SubprogramNode",
+                  "params": [
+                    {
+                      "name": "x",
+                      "objectType": "com.dse.testdata.object.NormalNumberDataNode",
+                      "type": {
+                        "name": "int",
+                        "path": "E:\\akautauto\\datatest\\lamnt\\mysample\\Person.h\\Person\\Person(int)\\x",
+                        "objectType": "com.dse.parser.object.AvailableTypeNode"
+                      },
+                      "value": "12"
+                    }
+                  ]
+                },
+                {
+                  "name": "p.weight",
+                  "objectType": "com.dse.testdata.object.NormalNumberDataNode",
+                  "type": {
+                    "name": "int",
+                    "path": "E:\\akautauto\\datatest\\lamnt\\mysample\\Person.h\\Person\\weight",
+                    "objectType": "com.dse.parser.object.AvailableTypeNode"
+                  },
+                  "value": "56"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "RETURN",
+          "objectType": "com.dse.testdata.object.NormalNumberDataNode",
+          "type": {
+            "name": "int",
+            "path": "",
+            "objectType": "com.dse.parser.object.AvailableTypeNode"
+          },
+          "value": "133"
+        }
+      ]
+    }
+  ]
+}

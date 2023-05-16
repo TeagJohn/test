@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="500.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dse.guifx_v3.controllers.CoverageViewTabController">
+   <children>
+      <TabPane fx:id="tabPane" layoutX="79.0" layoutY="27.0" prefHeight="200.0" prefWidth="200.0" side="BOTTOM" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <tabs>
+          <Tab fx:id="tCoverageTab1" text="Coverage Tab 1">
+               <content>
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="399.0" prefWidth="600.0">
+                     <children>
+                        <HBox alignment="CENTER_LEFT" layoutX="22.0" layoutY="-36.0" prefHeight="32.0" prefWidth="600.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <children>
+                              <Label text="Source code" HBox.hgrow="ALWAYS">
+                                 <padding>
+                                    <Insets left="20.0" right="10.0" />
+                                 </padding>
+                              </Label>
+                              <ProgressBar fx:id="pBCoverageProgress" prefWidth="200.0" progress="0.0">
+                                 <HBox.margin>
+                                    <Insets />
+                                 </HBox.margin>
+                              </ProgressBar>
+                              <Label fx:id="lbPercentage" text="0%">
+                                 <padding>
+                                    <Insets left="10.0" />
+                                 </padding>
+                              </Label>
+                              <Label fx:id="lProgressDetail" layoutX="330.0" layoutY="10.0" text="0/0">
+                                 <padding>
+                                    <Insets left="10.0" />
+                                 </padding>
+                              </Label>
+                              <Label text="Function" HBox.hgrow="ALWAYS">
+                                 <padding>
+                                    <Insets left="30.0" right="10.0" />
+                                 </padding>
+                              </Label>
+                              <ProgressBar fx:id="pBCoverageProgressFunc" prefWidth="200.0" progress="0.0">
+                                 <HBox.margin>
+                                    <Insets />
+                                 </HBox.margin>
+                              </ProgressBar>
+                              <Label fx:id="lbPercentageFunc" text="0%">
+                                 <padding>
+                                    <Insets left="10.0" />
+                                 </padding>
+                              </Label>
+                              <Label fx:id="lProgressDetailFunc" layoutX="330.0" layoutY="10.0" text="0/0">
+                                 <padding>
+                                    <Insets left="10.0" />
+                                 </padding>
+                              </Label>
+                           </children>
+                        </HBox>
+                        <ScrollPane fx:id="spCoverage" hbarPolicy="NEVER" prefHeight="200.0" prefWidth="200.0" vbarPolicy="NEVER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="30.0" />
+                     </children>
+                  </AnchorPane>
+               </content>
+          </Tab>
+            <Tab fx:id="tCoverageTab2" text="Coverage Tab 2">
+                <content>
+                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="399.0" prefWidth="600.0">
+                        <children>
+                           <HBox alignment="CENTER_LEFT" layoutX="22.0" layoutY="-36.0" prefHeight="32.0" prefWidth="600.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                              <children>
+                                 <Label text="Source code" HBox.hgrow="ALWAYS">
+                                    <padding>
+                                       <Insets left="20.0" right="10.0" />
+                                    </padding>
+                                 </Label>
+                                 <ProgressBar fx:id="pBCoverageProgressInTab2" prefWidth="200.0" progress="0.0">
+                                    <HBox.margin>
+                                       <Insets />
+                                    </HBox.margin>
+                                 </ProgressBar>
+                                 <Label fx:id="lbPercentageInTab2" text="0%">
+                                    <padding>
+                                       <Insets left="10.0" />
+                                    </padding>
+                                 </Label>
+                                 <Label fx:id="lProgressDetailInTab2" layoutX="330.0" layoutY="10.0" text="0/0">
+                                    <padding>
+                                       <Insets left="10.0" />
+                                    </padding>
+                                 </Label>
+                                 <Label text="Function" HBox.hgrow="ALWAYS">
+                                    <padding>
+                                       <Insets left="30.0" right="10.0" />
+                                    </padding>
+                                 </Label>
+                                 <ProgressBar fx:id="pBCoverageProgressFnInTab2" prefWidth="200.0" progress="0.0">
+                                    <HBox.margin>
+                                       <Insets />
+                                    </HBox.margin>
+                                 </ProgressBar>
+                                 <Label fx:id="lbPercentageFnInTab2" text="0%">
+                                    <padding>
+                                       <Insets left="10.0" />
+                                    </padding>
+                                 </Label>
+                                 <Label fx:id="lProgressDetailFnInTab2" layoutX="330.0" layoutY="10.0" text="0/0">
+                                    <padding>
+                                       <Insets left="10.0" />
+                                    </padding>
+                                 </Label>
+                              </children>
+                           </HBox>
+                            <ScrollPane fx:id="spCoverageInTab2" hbarPolicy="NEVER" prefHeight="200.0" prefWidth="200.0" vbarPolicy="NEVER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="30.0" />
+                        </children>
+                    </AnchorPane>
+                </content>
+            </Tab>
+<!--          <Tab text="Matrix">-->
+<!--            <content>-->
+<!--              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />-->
+<!--            </content>-->
+<!--          </Tab>-->
+<!--            <Tab text="Basis Paths">-->
+<!--               <content>-->
+<!--                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />-->
+<!--               </content>-->
+<!--            </Tab>-->
+        </tabs>
+      </TabPane>
+   </children>
+</AnchorPane>

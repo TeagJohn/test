@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ButtonBar?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/8.0.231" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dse.probe_point_manager.controllers.ProbePointsOfALineController">
+   <children>
+      <Label layoutX="14.0" layoutY="14.0" text="Available Probe Points">
+         <font>
+            <Font size="15.0" />
+         </font>
+      </Label>
+      <AnchorPane layoutX="71.0" layoutY="95.0" prefHeight="200.0" prefWidth="200.0" style="-fx-border-color: black; -fx-border-width: 0.2;" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="50.0">
+         <children>
+            <ListView fx:id="lvExistedProbePoints" layoutX="51.0" layoutY="100.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="40.0" />
+            <ButtonBar layoutX="466.0" layoutY="14.0" prefHeight="40.0" prefWidth="200.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="0.0">
+              <buttons>
+                <Button mnemonicParsing="false" onAction="#newProbePoint" text="New" />
+                  <Button layoutX="50.0" layoutY="18.0" mnemonicParsing="false" onAction="#editProbePoint" text="Edit" />
+                  <Button mnemonicParsing="false" onAction="#deleteProbePoint" text="Delete" />
+              </buttons>
+            </ButtonBar>
+         </children>
+      </AnchorPane>
+      <ButtonBar layoutX="431.0" layoutY="450.0" prefHeight="10.0" AnchorPane.bottomAnchor="10.0" AnchorPane.rightAnchor="10.0">
+        <buttons>
+          <Button mnemonicParsing="false" onAction="#save" text="Save" />
+            <Button layoutX="109.0" layoutY="10.0" mnemonicParsing="false" onAction="#saveAndCheck" prefHeight="25.0" prefWidth="135.0" text="Save And Check" />
+        </buttons>
+      </ButtonBar>
+   </children>
+</AnchorPane>

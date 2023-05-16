@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.control.TreeView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+
+<TitledPane collapsible="false" minHeight="0.0" minWidth="0.0" prefHeight="300.0" prefWidth="250.0" text="Watches"
+            AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"
+            xmlns="http://javafx.com/javafx/8.0.231" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.dse.debugger.controller.WatchController">
+    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="250.0">
+        <padding>
+            <Insets/>
+        </padding>
+        <VBox fx:id="column" minHeight="0.0" minWidth="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <ToolBar fx:id="supportTools" disable="true">
+                <Button fx:id="addBtn" mnemonicParsing="false" onAction="#showTextFieldForAddBtn">
+                    <tooltip>
+                        <Tooltip text="Add new watch point"/>
+                    </tooltip>
+                    <graphic>
+                        <ImageView fitHeight="16" fitWidth="16" pickOnBounds="true" preserveRatio="true">
+                            <Image url="@../../icons/debug/add.png"/>
+                        </ImageView>
+                    </graphic>
+                </Button>
+                <Button fx:id="delBtn" mnemonicParsing="false" onAction="#deleteWatchPoint">
+                    <tooltip>
+                        <Tooltip text="Delete watch point"/>
+                    </tooltip>
+                    <graphic>
+                        <ImageView fitHeight="16" fitWidth="16" pickOnBounds="true" preserveRatio="true">
+                            <Image url="@../../icons/debug/delete.png"/>
+                        </ImageView>
+                    </graphic>
+                </Button>
+                <Button fx:id="upBtn" mnemonicParsing="false" onAction="#moveUp">
+                    <tooltip>
+                        <Tooltip text="Move up"/>
+                    </tooltip>
+                    <graphic>
+                        <ImageView fitHeight="16" fitWidth="16" pickOnBounds="true" preserveRatio="true">
+                            <Image url="@../../icons/debug/up.png"/>
+                        </ImageView>
+                    </graphic>
+                </Button>
+                <Button fx:id="downBtn" mnemonicParsing="false" onAction="#moveDown">
+                    <tooltip>
+                        <Tooltip text="Move down"/>
+                    </tooltip>
+                    <graphic>
+                        <ImageView fitHeight="16" fitWidth="16" pickOnBounds="true" preserveRatio="true">
+                            <Image url="@../../icons/debug/down.png"/>
+                        </ImageView>
+                    </graphic>
+                </Button>
+                <Button fx:id="dupBtn" mnemonicParsing="false" onAction="#duplicateWatchPoint">
+                    <tooltip>
+                        <Tooltip text="Duplicate watch point"/>
+                    </tooltip>
+                    <graphic>
+                        <ImageView fitHeight="16" fitWidth="16" pickOnBounds="true" preserveRatio="true">
+                            <Image url="@../../icons/debug/dup.png"/>
+                        </ImageView>
+                    </graphic>
+                </Button>
+                <Button fx:id="editBtn" mnemonicParsing="false" onAction="#showTextFieldForEditBtn">
+                    <tooltip>
+                        <Tooltip text="Edit watch point"/>
+                    </tooltip>
+                    <graphic>
+                        <ImageView fitHeight="16" fitWidth="16" pickOnBounds="true" preserveRatio="true">
+                            <Image url="@../../icons/debug/edit.png"/>
+                        </ImageView>
+                    </graphic>
+                </Button>
+            </ToolBar>
+            <TreeView fx:id="watchTree"/>
+        </VBox>
+    </AnchorPane>
+</TitledPane>

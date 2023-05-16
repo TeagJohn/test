@@ -1,0 +1,35 @@
+[
+  {
+    "nodeId": "63",
+    "value": {
+      "realId": "5",
+      "constructor": {
+        "id": "67",
+        "params": [
+          {
+            "nodeId": "79",
+            "value": "200"
+          }
+        ]
+      },
+      "attributes": [
+        {
+          "nodeId": "64",
+          "value": "100"
+        },
+        {
+          "nodeId": "65",
+          "value": "150"
+        }
+      ]
+    }
+  },
+  {
+    "nodeId": "72",
+    "value": "100"
+  },
+  {
+    "nodeId": "73",
+    "value": "50"
+  }
+]

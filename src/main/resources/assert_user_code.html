@@ -1,0 +1,164 @@
+<table cellpadding="5" border="2">
+  <tbody>
+    <tr valign="top">
+      <td>
+        <code>
+          <cite><b>AKA_ASSERT_TRUE</b>(value)</cite>
+          
+        </code>
+      </td>
+      <td>Assert that <i>value</i> is <code>TRUE (non-zero)</code></td>
+    </tr>
+    <tr valign="top">
+      <td>
+        <code>
+          <cite><b>AKA_ASSERT_FALSE</b>(value)</cite>
+          
+        </code>
+      </td>
+      <td>Assert that <i>value</i> is <code>FALSE</code> (zero)</td>
+    </tr>
+
+    <tr valign="top">
+      <td>
+        <code>
+          <cite><b>AKA_ASSERT_EQUAL</b>(actual, expected)</cite>
+          
+        </code>
+      </td>
+      <td>Assert that <i>actual</i> = = <i>expected</i></td>
+    </tr>
+
+
+    <tr valign="top">
+      <td>
+        <code>
+          <cite><b>AKA_ASSERT_NOT_EQUAL</b>(actual, expected))</cite>
+          
+        </code>
+      </td>
+      <td>Assert that <i>actual</i> != <i>expected</i></td>
+    </tr>
+
+    <tr valign="top">
+      <td>
+        <code>
+          <cite><b>AKA_ASSERT_LOWER</b>(actual, boundary)</cite>
+
+        </code>
+      </td>
+      <td>Assert that <i>actual</i> &lt; <i>boundary</i></td>
+    </tr>
+
+    <tr valign="top">
+      <td>
+        <code>
+          <cite><b>AKA_ASSERT_LOWER_OR_EQUAL</b>(actual, boundary)</cite>
+
+        </code>
+      </td>
+      <td>Assert that <i>actual</i> &lt;= <i>boundary</i></td>
+    </tr>
+
+    <tr valign="top">
+      <td>
+        <code>
+          <cite><b>AKA_ASSERT_GREATER</b>(actual, boundary)</cite>
+
+        </code>
+      </td>
+      <td>Assert that <i>actual</i> &gt; <i>boundary</i></td>
+    </tr>
+
+    <tr valign="top">
+      <td>
+        <code>
+          <cite><b>AKA_ASSERT_GREATER_OR_EQUAL</b>(actual, boundary)</cite>
+
+        </code>
+      </td>
+      <td>Assert that <i>actual</i> &gt;= <i>boundary</i></td>
+    </tr>
+
+    <tr valign="top">
+      <td>
+        <code>
+          <cite><b>AKA_ASSERT_PTR_EQUAL</b>(actual, expected)</cite>
+          
+        </code>
+      </td>
+      <td>Assert that pointers <i>actual</i> = = <i>expected</i></td>
+    </tr>
+    <tr valign="top">
+      <td>
+        <code>
+          <cite><b>AKA_ASSERT_PTR_NOT_EQUAL</b>(actual, expected)</cite>
+          
+        </code>
+      </td>
+      <td>Assert that pointers <i>actual</i> != <i>expected</i></td>
+    </tr>
+    <tr valign="top">
+      <td>
+        <code>
+          <cite><b>AKA_ASSERT_PTR_NULL</b>(value)</cite>
+          
+        </code>
+      </td>
+      <td>Assert that pointer <i>value</i> == NULL</td>
+    </tr>
+    <tr valign="top">
+      <td>
+        <code>
+          <cite><b>AKA_ASSERT_PTR_NOT_NULL</b>(value)</cite>
+          
+        </code>
+      </td>
+      <td>Assert that pointer <i>value</i> != NULL</td>
+    </tr>
+    <tr valign="top">
+      <td>
+        <code>
+          <cite><b>AKA_ASSERT_STRING_EQUAL</b>(actual, expected)</cite>
+          
+        </code>
+      </td>
+      <td>Assert that strings <i>actual</i> and <i>expected</i> are equivalent</td>
+    </tr>
+    <tr valign="top">
+      <td>
+        <code>
+          <cite><b>AKA_ASSERT_STRING_NOT_EQUAL</b>(actual, expected)</cite>
+          
+        </code>
+      </td>
+      <td>Assert that strings <i>actual</i> and <i>expected</i> differ</td>
+    </tr>
+    
+    
+    <tr valign="top">
+      <td>
+        <code>
+          <cite><b>AKA_ASSERT_DOUBLE_EQUAL</b>(actual, expected, granularity)</cite>
+          
+        </code>
+      </td>
+      <td>
+        Assert that |<i>actual</i> - <i>expected</i>| &lt;= |<i>granularity</i>|<br>
+        <i>Math library must be linked in for this assertion.</i>
+      </td>
+    </tr>
+    <tr valign="top">
+      <td>
+        <code>
+          <cite><b>AKA_ASSERT_DOUBLE_NOT_EQUAL</b>(actual, expected, granularity)</cite>
+          
+        </code>
+      </td>
+      <td>
+        Assert that |<i>actual</i> - <i>expected</i>| &gt; |<i>granularity</i>|<br>
+        <i>Math library must be linked in for this assertion.</i>
+      </td>
+    </tr>
+  </tbody>
+</table>

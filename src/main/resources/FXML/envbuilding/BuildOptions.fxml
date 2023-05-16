@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="520.0" prefWidth="570.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dse.guifx_v3.controllers.build_environment.BuildOptionsController">
+   <children>
+      <AnchorPane layoutX="18.0" layoutY="14.0" prefHeight="51.0" prefWidth="550.0" style="-fx-border-color: black; -fx-border-width: 0.2;" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+         <children>
+            <Label layoutX="25.0" layoutY="17.0" text="Coverage type:" AnchorPane.leftAnchor="20.0" />
+            <ComboBox fx:id="cbCoverageType" layoutX="138.0" layoutY="13.0" onAction="#UpdateBranchFlagCorrespondingToCoverageType" prefHeight="27.0" prefWidth="414.0" promptText="Choose coverage type" AnchorPane.rightAnchor="20.0" />
+         </children>
+      </AnchorPane>
+      <AnchorPane layoutX="10.0" layoutY="69.0" prefHeight="51.0" prefWidth="550.0" style="-fx-border-color: black; -fx-border-width: 0.2;" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0">
+         <children>
+            <CheckBox fx:id="chbWhitebox" layoutX="14.0" layoutY="17.0" mnemonicParsing="false" text="Whitebox" AnchorPane.leftAnchor="20.0" />
+         </children>
+      </AnchorPane>
+      <AnchorPane layoutX="10.0" layoutY="134.0" prefHeight="373.0" prefWidth="550.0" style="-fx-border-color: black; -fx-border-width: 0.2;" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0">
+         <children>
+            <Label layoutX="13.0" layoutY="109.0" prefHeight="27.0" prefWidth="145.0" text="Compile Command" />
+            <Label layoutX="12.0" layoutY="129.0" prefHeight="27.0" prefWidth="100.0" text="gcda Flag:" />
+            <Label layoutX="134.0" layoutY="135.0" text="gcno Flag:" />
+            <TextField fx:id="cmplGcdaFlag" layoutX="13.0" layoutY="156.0" prefHeight="27.0" prefWidth="111.0" />
+            <TextField fx:id="cmplGncoFlag" layoutX="131.0" layoutY="156.0" prefHeight="27.0" prefWidth="125.0" />
+            <Label layoutX="291.0" layoutY="109.0" prefHeight="26.0" prefWidth="145.0" text="Linking Command" />
+            <Label layoutX="184.0" layoutY="280.0" text="Branch Flag" />
+            <Label layoutX="426.0" layoutY="135.0" text="gcno Flag" />
+            <TextField fx:id="lkGncoFlag" layoutX="425.0" layoutY="156.0" prefHeight="27.0" prefWidth="111.0" />
+            <Label layoutX="12.0" layoutY="199.0" prefHeight="26.0" prefWidth="111.0" text="Lcov Command" />
+            <Label layoutX="152.0" layoutY="204.0" text="Branch Flag" />
+            <TextField fx:id="lkGcdaFlag" layoutX="293.0" layoutY="156.0" prefHeight="27.0" prefWidth="125.0" />
+            <TextField fx:id="oDgCFlag" layoutX="371.0" layoutY="306.0" prefHeight="26.0" prefWidth="164.0" />
+            <Label layoutX="291.0" layoutY="204.0" text="Input Dir FIag" />
+            <TextField fx:id="iDLcFlag" layoutX="275.0" layoutY="228.0" prefHeight="26.0" prefWidth="145.0" />
+            <Label layoutX="436.0" layoutY="204.0" text="Output Flag" />
+            <TextField fx:id="genCommand" layoutX="13.0" layoutY="306.0" prefHeight="26.0" prefWidth="145.0" />
+            <TextField fx:id="oDLcFlag" layoutX="425.0" layoutY="228.0" prefHeight="26.0" prefWidth="111.0" />
+            <TextField fx:id="lcovCommand" layoutX="12.0" layoutY="228.0" prefHeight="26.0" prefWidth="111.0" />
+            <Label layoutX="17.0" layoutY="275.0" prefHeight="26.0" prefWidth="145.0" text="Generate Command" />
+            <TextField fx:id="brchLcFlag" layoutX="143.0" layoutY="228.0" prefHeight="26.0" prefWidth="119.0" />
+            <Label layoutX="383.0" layoutY="280.0" text="Output Directory Flag" />
+            <TextField fx:id="brchGenFlag" layoutX="177.0" layoutY="306.0" />
+            <Label layoutX="291.0" layoutY="135.0" text="gcda Flag" />
+            <Label layoutX="15.0" layoutY="45.0" text="Gcov Command: " />
+            <TextField fx:id="gcovCommand" layoutX="12.2" layoutY="75.2" prefHeight="27.0" prefWidth="527.0" AnchorPane.leftAnchor="12.0" AnchorPane.rightAnchor="11.0" AnchorPane.topAnchor="70.0" />
+            <Button fx:id="testCmd" onAction="#runTestCommand" layoutX="12.0" layoutY="340.0" mnemonicParsing="false" text="Test Command" />
+         </children></AnchorPane>
+      <Label layoutX="56.0" layoutY="127.0" prefHeight="16.0" prefWidth="119.0" style="-fx-background-color: F4F4F4;" text="Gcov Command">
+         <padding>
+            <Insets left="5.0" right="5.0" />
+         </padding>
+      </Label>
+
+<!--      <AnchorPane layoutX="10.0" layoutY="139.0" prefHeight="75.0" prefWidth="550.0" style="-fx-border-color: black; -fx-border-width: 0.2;" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0">-->
+<!--         <children>-->
+<!--            <Button fx:id="bLoad" disable="true" layoutX="30.0" layoutY="25.0" mnemonicParsing="false" onAction="#loadFromRepository" text="Load" AnchorPane.leftAnchor="30.0" />-->
+<!--         </children>-->
+<!--      </AnchorPane>-->
+<!--      <AnchorPane layoutX="27.0" layoutY="131.0" prefHeight="17.0" prefWidth="443.0" style="-fx-background-color: f4f4f4;" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="330.0" />-->
+<!--      <CheckBox fx:id="chbUseBuildSettingsFromRepository" layoutX="27.0" layoutY="131.0" mnemonicParsing="false" onAction="#useBuildSettingsFromRepository" prefHeight="17.0" prefWidth="209.0" style="-fx-background-color: f4f4f4;" text="Use build settings from repository:" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="330.0" />-->
+   </children>
+</AnchorPane>

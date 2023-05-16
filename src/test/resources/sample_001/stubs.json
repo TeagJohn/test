@@ -1,0 +1,56 @@
+[
+  {
+    "nodeId": "22",
+    "enable": "true",
+    "type": "io",
+    "value": {
+      "realId": "5",
+      "constructor": {
+        "id": "15",
+        "params": [
+          {
+            "nodeId": "16",
+            "value": "300"
+          }
+        ]
+      },
+      "attributes": [
+        {
+          "nodeId": "6",
+          "value": "100"
+        },
+        {
+          "nodeId": "7",
+          "value": "300"
+        }
+      ]
+    }
+  },
+  {
+    "nodeId": "26",
+    "enable": "false",
+    "type": "io",
+    "value": {
+      "realId": "5",
+      "constructor": {
+        "id": "15",
+        "params": [
+          {
+            "nodeId": "16",
+            "value": "200"
+          }
+        ]
+      },
+      "attributes": [
+        {
+          "nodeId": "6",
+          "value": "2100"
+        },
+        {
+          "nodeId": "7",
+          "value": "2100"
+        }
+      ]
+    }
+  }
+]

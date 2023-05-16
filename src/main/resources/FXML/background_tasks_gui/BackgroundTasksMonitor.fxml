@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8.0.231" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dse.thread.task.BackgroundTasksMonitorController">
+   <children>
+      <ScrollPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <content>
+            <VBox fx:id="vBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" spacing="5.0">
+               <padding>
+                  <Insets bottom="10.0" left="8.0" right="10.0" top="10.0" />
+               </padding>
+               <children>
+                  <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="70.0" prefWidth="380.0" style="-fx-border-color: black; -fx-border-width: 0.5;">
+                     <children>
+                        <AnchorPane layoutX="-33.0" layoutY="-86.0" prefHeight="20.0" prefWidth="342.0" style="-fx-background-color: grey;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <children>
+                              <Label fx:id="lTitle" layoutX="10.0" layoutY="2.0" text="Process Title" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="0.0" />
+                           </children>
+                        </AnchorPane>
+                        <ProgressBar fx:id="progressBar" layoutX="14.0" layoutY="37.0" prefHeight="18.0" prefWidth="250.0" progress="0.62" AnchorPane.bottomAnchor="12.5" AnchorPane.topAnchor="37.0" />
+                        <Button fx:id="bPause" layoutX="268.0" layoutY="32.0" mnemonicParsing="false" text="Pause" AnchorPane.bottomAnchor="10.0" />
+                        <Label fx:id="lStatus" layoutX="333.0" layoutY="39.0" text="Status" AnchorPane.bottomAnchor="14.0" />
+                     </children>
+                  </AnchorPane>
+                  <AnchorPane layoutX="18.0" layoutY="20.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="70.0" prefWidth="380.0" style="-fx-border-color: black; -fx-border-width: 0.5;">
+                     <children>
+                        <AnchorPane layoutX="-33.0" layoutY="-86.0" prefHeight="20.0" prefWidth="342.0" style="-fx-background-color: grey;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <children>
+                              <Label fx:id="lTitle1" layoutX="10.0" layoutY="2.0" text="Process Title" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="0.0" />
+                           </children>
+                        </AnchorPane>
+                        <ProgressBar fx:id="progressBar1" layoutX="14.0" layoutY="37.0" prefHeight="18.0" prefWidth="250.0" progress="0.62" AnchorPane.bottomAnchor="12.5" AnchorPane.topAnchor="37.0" />
+                        <Button fx:id="bPause1" layoutX="268.0" layoutY="32.0" mnemonicParsing="false" text="Pause" AnchorPane.bottomAnchor="10.0" />
+                        <Label fx:id="lStatus1" layoutX="333.0" layoutY="39.0" text="Status" AnchorPane.bottomAnchor="14.0" />
+                     </children>
+                  </AnchorPane>
+               </children>
+            </VBox>
+         </content>
+      </ScrollPane>
+   </children>
+</AnchorPane>

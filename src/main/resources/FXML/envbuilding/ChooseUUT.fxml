@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="520.0" prefWidth="570.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dse.guifx_v3.controllers.build_environment.ChooseUUTController">
+    <children>
+        <AnchorPane layoutX="17.0" layoutY="14.0" prefHeight="40.0" prefWidth="524.0" style="-fx-border-color: black; -fx-border-width: 0.1;" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0">
+            <children>
+
+<!--                <RadioButton layoutX="30.0" layoutY="15.0" mnemonicParsing="false" onAction="#stubAllasUUT" text="UUT (All)">-->
+<!--                    <toggleGroup>-->
+<!--                        <ToggleGroup fx:id="tgStubDependencies" />-->
+<!--                    </toggleGroup>-->
+<!--                </RadioButton>-->
+<!--                <RadioButton layoutX="121.0" layoutY="14.0" mnemonicParsing="false" onAction="#stubAllasSBF" text="SBF (All)" toggleGroup="$tgStubDependencies" />-->
+<!--                <RadioButton layoutX="222.0" layoutY="14.0" mnemonicParsing="false" onAction="#ignoreAll" text="Ignore (All)" toggleGroup="$tgStubDependencies" />-->
+<!--                <RadioButton layoutX="337.0" layoutY="15.0" mnemonicParsing="false" onAction="#donotStubAll" text="Do not stub (All)" toggleGroup="$tgStubDependencies" />-->
+            <Label blendMode="DARKEN" layoutX="20.0" layoutY="16.0" onMouseClicked="#stubAllasUUT" text="UUT (All)" underline="true" />
+            <Label fx:id="lblSbfAll" blendMode="DARKEN" layoutX="119.0" layoutY="16.0" onMouseClicked="#stubAllasSBF" text="SBF (All)" underline="true" />
+<!--            <Label fx:id="lblIgnoreAll" blendMode="DARKEN" layoutX="207.0" layoutY="16.0" onMouseClicked="#ignoreAll" text="Ignore (All)" underline="true" />-->
+            <Label fx:id="lblDoNotStub" blendMode="DARKEN" layoutX="207.0" layoutY="16.0" onMouseClicked="#donotStubAll" text="Do not stub (All)" underline="true" />
+            </children>
+        </AnchorPane>
+        <Label layoutX="36.0" layoutY="6.0" style="-fx-background-color: F4F4F4;" text="Stub dependencies" AnchorPane.topAnchor="6.0">
+            <padding>
+                <Insets left="5.0" right="5.0" />
+            </padding>
+        </Label>
+        <AnchorPane layoutX="17.0" layoutY="71.0" prefHeight="413.0" prefWidth="524.0" style="-fx-border-color: black; -fx-border-width: 0.1;" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0">
+            <children>
+                <TabPane layoutX="14.0" layoutY="14.0" prefHeight="391.0" prefWidth="150.0" style="-fx-border-color: black; -fx-border-width: 0.1;" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="5.0">
+                    <tabs>
+                        <Tab text="Unit Names">
+                            <content>
+                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="362.0" prefWidth="148.0" style="-fx-background-color: white;">
+                                    <children>
+                                        <ListView fx:id="lvUnitNames" layoutX="-39.0" layoutY="-31.0" prefHeight="341.0" prefWidth="148.0" style="-fx-background-color: white;" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                        <AnchorPane layoutY="332.0" prefHeight="40.0" prefWidth="148.0" style="-fx-background-color: f4f4f4;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="342.0">
+                                            <children>
+                                                <Label layoutY="5.0" text="Choose:" AnchorPane.bottomAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                                <ButtonBar buttonMinWidth="20.0" layoutX="44.0" layoutY="5.0" prefHeight="30.0" prefWidth="104.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="44.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                    <buttons>
+                                                        <Button minWidth="0.0" mnemonicParsing="false" onAction="#chooseAll" prefHeight="25.0" text="All" />
+                                                        <Button layoutX="83.0" layoutY="13.0" minWidth="29.0" mnemonicParsing="false" onAction="#chooseNone" prefHeight="25.0" text="None" />
+                                                    </buttons>
+                                                    <padding>
+                                                        <Insets left="-20.0" />
+                                                    </padding>
+                                                </ButtonBar>
+                                            </children>
+                                        </AnchorPane>
+                                    </children></AnchorPane>
+                            </content>
+                        </Tab>
+                    </tabs>
+                </TabPane>
+                <Button fx:id="bForwardArrow" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="0.0" layoutX="161.0" layoutY="170.0" mnemonicParsing="false" onAction="#addUUT" prefHeight="23.0" prefWidth="23.0" style="-fx-background-radius: 25 25;">
+                    <padding>
+                        <Insets bottom="-1.0" left="-12.0" right="-12.0" top="-1.0" />
+                    </padding>
+                    <cursor>
+                        <Cursor fx:constant="HAND" />
+                    </cursor></Button>
+                <TabPane layoutX="190.0" layoutY="7.0" prefHeight="394.0" prefWidth="267.0" style="-fx-border-color: black; -fx-border-width: 0.1;" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="189.0" AnchorPane.rightAnchor="6.0" AnchorPane.topAnchor="6.0">
+                    <tabs>
+                        <Tab text="Units Under Test">
+                            <content>
+                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                    <children>
+                                        <TreeTableView fx:id="ttvUnitsUnderTest" layoutX="26.0" layoutY="28.0" prefHeight="200.0" prefWidth="200.0" showRoot="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                            <columns>
+                                                <TreeTableColumn fx:id="ttcUnitName" editable="false" maxWidth="167.99999392032623" minWidth="0.0" prefWidth="162.99999392032623" sortable="false" text="Unit Name" />
+                                                <TreeTableColumn fx:id="ttcType" editable="false" maxWidth="222.00003051757812" minWidth="0.0" prefWidth="188.0" sortable="false" text="Type" />
+                                            </columns>
+                                            <columnResizePolicy>
+                                                <TreeTableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                                            </columnResizePolicy>
+                                        </TreeTableView>
+                                    </children></AnchorPane>
+                            </content>
+                        </Tab>
+                        <Tab text="Library Stubs">
+                            <content>
+                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="368.0" prefWidth="323.0">
+                                    <children>
+                                        <AnchorPane layoutX="28.0" layoutY="30.0" prefHeight="200.0" prefWidth="200.0" style="-fx-border-color: black; -fx-border-width: 0.2;" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="15.0">
+                                            <children>
+                                                <Button layoutX="218.0" layoutY="14.0" mnemonicParsing="false" onAction="#addLibraryStub" prefWidth="60.0" text="Add" AnchorPane.rightAnchor="80.0" AnchorPane.topAnchor="15.0" />
+                                                <Button layoutX="267.0" layoutY="14.0" mnemonicParsing="false" onAction="#deleteLibraryStub" prefWidth="60.0" text="Delete" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="15.0" />
+                                                <AnchorPane layoutX="14.0" layoutY="52.0" prefHeight="200.0" prefWidth="200.0" style="-fx-border-color: black; -fx-border-width: 0.2;" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="50.0">
+                                                    <children>
+                                                        <ListView fx:id="lvLibraryStub" layoutX="14.0" layoutY="28.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="20.0" />
+                                                        <Label layoutX="14.0" layoutY="5.0" text="STUBS" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="3.0" />
+                                                    </children>
+                                                </AnchorPane>
+                                            </children>
+                                        </AnchorPane>
+                                        <Label layoutX="32.0" layoutY="7.0" prefHeight="17.0" prefWidth="75.0" style="-fx-background-color: f4f4f4;" text="Library Stubs" />
+                                    </children></AnchorPane>
+                            </content>
+                        </Tab>
+<!--                        <Tab text="Additional Stubs">-->
+<!--                            <content>-->
+<!--                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="368.0" prefWidth="323.0">-->
+<!--                                    <children>-->
+<!--                                        <AnchorPane layoutX="28.0" layoutY="30.0" prefHeight="200.0" prefWidth="200.0" style="-fx-border-color: black; -fx-border-width: 0.2;" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="15.0">-->
+<!--                                            <children>-->
+<!--                                                <Button layoutX="218.0" layoutY="14.0" mnemonicParsing="false" onAction="#addAdditionalStub" prefWidth="60.0" text="Add" AnchorPane.rightAnchor="80.0" AnchorPane.topAnchor="15.0" />-->
+<!--                                                <Button layoutX="267.0" layoutY="14.0" mnemonicParsing="false" onAction="#deleteAdditionalStub" prefWidth="60.0" text="Delete" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="15.0" />-->
+<!--                                                <AnchorPane layoutX="14.0" layoutY="52.0" prefHeight="200.0" prefWidth="200.0" style="-fx-border-color: black; -fx-border-width: 0.2;" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="50.0">-->
+<!--                                                    <children>-->
+<!--                                                        <ListView fx:id="lvAdditionalStub" layoutX="14.0" layoutY="28.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="20.0" />-->
+<!--                                                        <Label layoutX="14.0" layoutY="5.0" text="STUBS" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="3.0" />-->
+<!--                                                    </children>-->
+<!--                                                </AnchorPane>-->
+<!--                                            </children>-->
+<!--                                        </AnchorPane>-->
+<!--                                        <Label layoutX="32.0" layoutY="7.0" prefHeight="17.0" prefWidth="102.0" style="-fx-background-color: f4f4f4;" text="Additional Stubs" />-->
+<!--                                    </children>-->
+<!--                                </AnchorPane>-->
+<!--                            </content>-->
+<!--                        </Tab>-->
+<!--                        <Tab text="Suppressed Stubs">-->
+<!--                            <content>-->
+<!--                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="368.0" prefWidth="323.0">-->
+<!--                                    <children>-->
+<!--                                        <AnchorPane layoutX="28.0" layoutY="30.0" prefHeight="200.0" prefWidth="200.0" style="-fx-border-color: black; -fx-border-width: 0.2;" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="15.0">-->
+<!--                                            <children>-->
+<!--                                                <Button layoutX="218.0" layoutY="14.0" mnemonicParsing="false" onAction="#addSuppressedStub" prefWidth="60.0" text="Add" AnchorPane.rightAnchor="80.0" AnchorPane.topAnchor="15.0" />-->
+<!--                                                <Button layoutX="267.0" layoutY="14.0" mnemonicParsing="false" onAction="#deleteSuppressedStub" prefWidth="60.0" text="Delete" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="15.0" />-->
+<!--                                                <AnchorPane layoutX="14.0" layoutY="52.0" prefHeight="200.0" prefWidth="200.0" style="-fx-border-color: black; -fx-border-width: 0.2;" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="50.0">-->
+<!--                                                    <children>-->
+<!--                                                        <ListView fx:id="lvSuppressedStub" layoutX="14.0" layoutY="28.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="20.0" />-->
+<!--                                                        <Label layoutX="14.0" layoutY="5.0" text="STUBS" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="3.0" />-->
+<!--                                                    </children>-->
+<!--                                                </AnchorPane>-->
+<!--                                            </children>-->
+<!--                                        </AnchorPane>-->
+<!--                                        <Label layoutX="32.0" layoutY="7.0" prefHeight="17.0" prefWidth="102.0" style="-fx-background-color: f4f4f4;" text="Suppressed Stubs" />-->
+<!--                                    </children>-->
+<!--                                </AnchorPane>-->
+<!--                            </content>-->
+<!--                        </Tab>-->
+<!--                        <Tab text="Suppressed Testable Functions">-->
+<!--                            <content>-->
+<!--                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="368.0" prefWidth="323.0">-->
+<!--                                    <children>-->
+<!--                                        <AnchorPane layoutX="28.0" layoutY="30.0" prefHeight="200.0" prefWidth="200.0" style="-fx-border-color: black; -fx-border-width: 0.2;" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="15.0">-->
+<!--                                            <children>-->
+<!--                                                <Button layoutX="218.0" layoutY="14.0" mnemonicParsing="false" onAction="#addSuppressedTestableFunction" prefWidth="60.0" text="Add" AnchorPane.rightAnchor="80.0" AnchorPane.topAnchor="15.0" />-->
+<!--                                                <Button layoutX="267.0" layoutY="14.0" mnemonicParsing="false" onAction="#deleteSuppressedTestableFunction" prefWidth="60.0" text="Delete" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="15.0" />-->
+<!--                                                <AnchorPane layoutX="14.0" layoutY="52.0" prefHeight="200.0" prefWidth="200.0" style="-fx-border-color: black; -fx-border-width: 0.2;" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="50.0">-->
+<!--                                                    <children>-->
+<!--                                                        <ListView fx:id="lvSuppressedTestableFunction" layoutX="14.0" layoutY="28.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />-->
+<!--                                                    </children>-->
+<!--                                                </AnchorPane>-->
+<!--                                            </children>-->
+<!--                                        </AnchorPane>-->
+<!--                                        <Label layoutX="32.0" layoutY="7.0" prefHeight="17.0" prefWidth="175.0" style="-fx-background-color: f4f4f4;" text="Suppressed Testable Functions" />-->
+<!--                                    </children>-->
+<!--                                </AnchorPane>-->
+<!--                            </content>-->
+<!--                        </Tab>-->
+<!--                        <Tab text="Not Supported Types">-->
+<!--                            <content>-->
+<!--                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="368.0" prefWidth="323.0">-->
+<!--                                    <children>-->
+<!--                                        <AnchorPane layoutX="28.0" layoutY="30.0" prefHeight="200.0" prefWidth="200.0" style="-fx-border-color: black; -fx-border-width: 0.2;" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="15.0">-->
+<!--                                            <children>-->
+<!--                                                <Button layoutX="218.0" layoutY="14.0" mnemonicParsing="false" onAction="#addNotSupportedType" prefWidth="60.0" text="Add" AnchorPane.rightAnchor="80.0" AnchorPane.topAnchor="15.0" />-->
+<!--                                                <Button layoutX="267.0" layoutY="14.0" mnemonicParsing="false" onAction="#deleteNotSupportedType" prefWidth="60.0" text="Delete" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="15.0" />-->
+<!--                                                <AnchorPane layoutX="14.0" layoutY="52.0" prefHeight="200.0" prefWidth="200.0" style="-fx-border-color: black; -fx-border-width: 0.2;" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="50.0">-->
+<!--                                                    <children>-->
+<!--                                                        <ListView fx:id="lvNotSupportedType" layoutX="14.0" layoutY="28.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="20.0" />-->
+<!--                                                        <Label layoutX="14.0" layoutY="5.0" text="TYPES" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="3.0" />-->
+<!--                                                    </children>-->
+<!--                                                </AnchorPane>-->
+<!--                                            </children>-->
+<!--                                        </AnchorPane>-->
+<!--                                        <Label layoutX="32.0" layoutY="7.0" prefHeight="17.0" prefWidth="126.0" style="-fx-background-color: f4f4f4;" text="Not Supported Types" />-->
+<!--                                    </children>-->
+<!--                                </AnchorPane>-->
+<!--                            </content>-->
+<!--                        </Tab>-->
+<!--                        <Tab text="Unit Options">-->
+<!--                            <content>-->
+<!--                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="361.0" prefWidth="315.0" />-->
+<!--                            </content>-->
+<!--                        </Tab>-->
+                    </tabs>
+                </TabPane>
+                <Button fx:id="bBackwardArrow" contentDisplay="GRAPHIC_ONLY" layoutX="161.0" layoutY="199.0" mnemonicParsing="false" onAction="#removeUUT" prefHeight="23.0" prefWidth="23.0" style="-fx-background-radius: 25 25;">
+                    <padding>
+                        <Insets bottom="-1.0" left="-12.0" right="-12.0" top="-1.0" />
+                    </padding>
+                    <cursor>
+                        <Cursor fx:constant="HAND" />
+                    </cursor>
+                </Button>
+            </children>
+        </AnchorPane>
+        <TextField fx:id="tfUnitNamesPath" editable="false" layoutX="14.0" layoutY="490.0" prefHeight="25.0" prefWidth="400.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" />
+    </children>
+</AnchorPane>

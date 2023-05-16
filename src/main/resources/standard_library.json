@@ -1,0 +1,1647 @@
+[
+  {
+    "name": "assert.h",
+    "functions": [
+      {
+        "name": "assert",
+        "type": "void",
+        "parameters": "1"
+      }
+    ]
+  },
+  {
+    "name": "ctype.h",
+    "functions": [
+      {
+        "name": "isalnum",
+        "type": "int",
+        "parameters": "1"
+      },
+      {
+        "name": "isalpha",
+        "type": "int",
+        "parameters": "1"
+      },
+      {
+        "name": "isblank",
+        "type": "int",
+        "parameters": "1"
+      },
+      {
+        "name": "iscntrl",
+        "type": "int",
+        "parameters": "1"
+      },
+      {
+        "name": "isdigit",
+        "type": "int",
+        "parameters": "1"
+      },
+      {
+        "name": "isgraph",
+        "type": "int",
+        "parameters": "1"
+      },
+      {
+        "name": "islower",
+        "type": "int",
+        "parameters": "1"
+      },
+      {
+        "name": "isprint",
+        "type": "int",
+        "parameters": "1"
+      },
+      {
+        "name": "ispunct",
+        "type": "int",
+        "parameters": "1"
+      },
+      {
+        "name": "isspace",
+        "type": "int",
+        "parameters": "1"
+      },
+      {
+        "name": "isupper",
+        "type": "int",
+        "parameters": "1"
+      },
+      {
+        "name": "isxdigit",
+        "type": "int",
+        "parameters": "1"
+      },
+      {
+        "name": "tolower",
+        "type": "int",
+        "parameters": "1"
+      },
+      {
+        "name": "toupper",
+        "type": "int",
+        "parameters": "1"
+      }
+    ]
+  },
+  {
+    "name": "fenv.h",
+    "functions": [
+      {
+        "name": "feclearexcept",
+        "type": "int",
+        "parameters": "1"
+      },
+      {
+        "name": "feraiseexcept",
+        "type": "int",
+        "parameters": "1"
+      },
+      {
+        "name": "fegetexceptflag",
+        "type": "int",
+        "parameters": "2"
+      },
+      {
+        "name": "fesetexceptflag",
+        "type": "int",
+        "parameters": "2"
+      },
+      {
+        "name": "fegetround",
+        "type": "int",
+        "parameters": "0"
+      },
+      {
+        "name": "fesetround",
+        "type": "int",
+        "parameters": "1"
+      },
+      {
+        "name": "fegetenv",
+        "type": "int",
+        "parameters": "1"
+      },
+      {
+        "name": "fesetenv",
+        "type": "int",
+        "parameters": "1"
+      },
+      {
+        "name": "feholdexcept",
+        "type": "int",
+        "parameters": "1"
+      },
+      {
+        "name": "feupdateenv",
+        "type": "int",
+        "parameters": "1"
+      },
+      {
+        "name": "fetestexcept",
+        "type": "int",
+        "parameters": "1"
+      }
+    ]
+  },
+  {
+    "name": "inttypes.h",
+    "functions": [
+      {
+        "name": "imaxabs",
+        "type": "intmax_t",
+        "parameters": "1"
+      },
+      {
+        "name": "imaxdiv",
+        "type": "imaxdiv_t",
+        "parameters": "2"
+      },
+      {
+        "name": "strtoimax",
+        "type": "intmax_t",
+        "parameters": "3"
+      },
+      {
+        "name": "strtoumax",
+        "type": "uintmax_t",
+        "parameters": "3"
+      },
+      {
+        "name": "wcstoimax",
+        "type": "intmax_t",
+        "parameters": "3"
+      },
+      {
+        "name": "wcstoumax",
+        "type": "uintmax_t",
+        "parameters": "3"
+      }
+    ]
+  },
+  {
+    "name": "math.h",
+    "functions": [
+      {
+        "name": "cos",
+        "type": "double",
+        "parameters": "1"
+      },
+      {
+        "name": "sin",
+        "type": "double",
+        "parameters": "1"
+      },
+      {
+        "name": "tan",
+        "type": "double",
+        "parameters": "1"
+      },
+      {
+        "name": "acos",
+        "type": "double",
+        "parameters": "1"
+      },
+      {
+        "name": "asin",
+        "type": "double",
+        "parameters": "1"
+      },
+      {
+        "name": "atan",
+        "type": "double",
+        "parameters": "1"
+      },
+      {
+        "name": "atan2",
+        "type": "double",
+        "parameters": "1"
+      },
+      {
+        "name": "cosh",
+        "type": "double",
+        "parameters": "1"
+      },
+      {
+        "name": "sinh",
+        "type": "double",
+        "parameters": "1"
+      },
+      {
+        "name": "tanh",
+        "type": "double",
+        "parameters": "1"
+      },
+      {
+        "name": "acosh",
+        "type": "double",
+        "parameters": "1"
+      },
+      {
+        "name": "asinh",
+        "type": "double",
+        "parameters": "1"
+      },
+      {
+        "name": "atanh",
+        "type": "double",
+        "parameters": "1"
+      },
+      {
+        "name": "exp",
+        "type": "double",
+        "parameters": "1"
+      },
+      {
+        "name": "frexp",
+        "type": "double",
+        "parameters": "2"
+      },
+      {
+        "name": "atanh",
+        "type": "double",
+        "parameters": "1"
+      },
+      {
+        "name": "ldexp",
+        "type": "double",
+        "parameters": "2"
+      },
+      {
+        "name": "log",
+        "type": "double",
+        "parameters": "1"
+      },
+      {
+        "name": "log10",
+        "type": "double",
+        "parameters": "1"
+      },
+      {
+        "name": "modf",
+        "type": "double",
+        "parameters": "2"
+      },
+      {
+        "name": "exp2",
+        "type": "double",
+        "parameters": "1"
+      },
+      {
+        "name": "expm1",
+        "type": "double",
+        "parameters": "1"
+      },
+      {
+        "name": "ilogb",
+        "type": "int",
+        "parameters": "1"
+      },
+      {
+        "name": "log1p",
+        "type": "double",
+        "parameters": "1"
+      },
+      {
+        "name": "log1p",
+        "type": "double",
+        "parameters": "1"
+      },
+      {
+        "name": "log2",
+        "type": "double",
+        "parameters": "1"
+      },
+      {
+        "name": "logb",
+        "type": "double",
+        "parameters": "1"
+      },
+      {
+        "name": "scalbn",
+        "type": "double",
+        "parameters": "2"
+      },
+      {
+        "name": "scalbln",
+        "type": "double",
+        "parameters": "2"
+      },
+      {
+        "name": "power",
+        "type": "double",
+        "parameters": "2"
+      },
+      {
+        "name": "sqrt",
+        "type": "double",
+        "parameters": "1"
+      },
+      {
+        "name": "cbrt",
+        "type": "double",
+        "parameters": "1"
+      },
+      {
+        "name": "hypot",
+        "type": "double",
+        "parameters": "2"
+      },
+      {
+        "name": "erf",
+        "type": "double",
+        "parameters": "1"
+      },
+      {
+        "name": "erfc",
+        "type": "double",
+        "parameters": "1"
+      },
+      {
+        "name": "tgamma",
+        "type": "double",
+        "parameters": "1"
+      },
+      {
+        "name": "lgamma",
+        "type": "double",
+        "parameters": "1"
+      },
+      {
+        "name": "cell",
+        "type": "double",
+        "parameters": "1"
+      },
+      {
+        "name": "floor",
+        "type": "double",
+        "parameters": "1"
+      },
+      {
+        "name": "fmod",
+        "type": "double",
+        "parameters": "2"
+      },
+      {
+        "name": "trunc",
+        "type": "double",
+        "parameters": "1"
+      },
+      {
+        "name": "round",
+        "type": "double",
+        "parameters": "1"
+      },
+      {
+        "name": "lround",
+        "type": "long int",
+        "parameters": "1"
+      },
+      {
+        "name": "llround",
+        "type": "long long int",
+        "parameters": "1"
+      },
+      {
+        "name": "cell",
+        "type": "double",
+        "parameters": "1"
+      },
+      {
+        "name": "rint",
+        "type": "double",
+        "parameters": "1"
+      },
+      {
+        "name": "lrint",
+        "type": "long int",
+        "parameters": "1"
+      },
+      {
+        "name": "llrint",
+        "type": "long long int",
+        "parameters": "1"
+      },
+      {
+        "name": "nearbyint",
+        "type": "double",
+        "parameters": "1"
+      },
+      {
+        "name": "remainder",
+        "type": "double",
+        "parameters": "2"
+      },
+      {
+        "name": "remquo",
+        "type": "double",
+        "parameters": "3"
+      },
+      {
+        "name": "copysign",
+        "type": "double",
+        "parameters": "2"
+      },
+      {
+        "name": "nan",
+        "type": "double",
+        "parameters": "1"
+      },
+      {
+        "name": "nextafter",
+        "type": "double",
+        "parameters": "2"
+      },
+      {
+        "name": "nexttoward",
+        "type": "double",
+        "parameters": "2"
+      },
+      {
+        "name": "fdim",
+        "type": "double",
+        "parameters": "2"
+      },
+      {
+        "name": "fmim",
+        "type": "double",
+        "parameters": "2"
+      },
+      {
+        "name": "fmax",
+        "type": "double",
+        "parameters": "2"
+      },
+      {
+        "name": "fabs",
+        "type": "double",
+        "parameters": "1"
+      },
+      {
+        "name": "abs",
+        "type": "double",
+        "parameters": "1"
+      },
+      {
+        "name": "fma",
+        "type": "double",
+        "parameters": "3"
+      },
+      {
+        "name": "fpclassify",
+        "type": "int",
+        "parameters": "1"
+      },
+      {
+        "name": "isfinite",
+        "type": "int",
+        "parameters": "1"
+      },
+      {
+        "name": "isinf",
+        "type": "int",
+        "parameters": "1"
+      },
+      {
+        "name": "isnan",
+        "type": "int",
+        "parameters": "1"
+      },
+      {
+        "name": "isnormal",
+        "type": "int",
+        "parameters": "1"
+      },
+      {
+        "name": "signbit",
+        "type": "int",
+        "parameters": "1"
+      },
+      {
+        "name": "isgreater",
+        "type": "bool",
+        "parameters": "2"
+      },
+      {
+        "name": "isgreaterequal",
+        "type": "bool",
+        "parameters": "2"
+      },
+      {
+        "name": "isless",
+        "type": "bool",
+        "parameters": "2"
+      },
+      {
+        "name": "islessequal",
+        "type": "bool",
+        "parameters": "2"
+      },
+      {
+        "name": "islessgreater",
+        "type": "bool",
+        "parameters": "2"
+      },
+      {
+        "name": "isunordered",
+        "type": "bool",
+        "parameters": "2"
+      }
+    ]
+  },
+  {
+    "name": "setjmp.h",
+    "functions": [
+      {
+        "name": "longjmp",
+        "type": "void",
+        "parameters": "2"
+      },
+      {
+        "name": "setjmp",
+        "type": "int",
+        "parameters": "1"
+      }
+    ]
+  },
+  {
+    "name": "signal.h",
+    "functions": [
+      {
+        "name": "signal",
+        "type": "void*",
+        "parameters": "2"
+      },
+      {
+        "name": "raise",
+        "type": "int",
+        "parameters": "1"
+      }
+    ]
+  },
+  {
+    "name": "stdarg.h",
+    "functions": [
+      {
+        "name": "va_start",
+        "type": "void",
+        "parameters": "2"
+      },
+      {
+        "name": "va_arg",
+        "type": "type",
+        "parameters": "2"
+      },
+      {
+        "name": "va_end",
+        "type": "void",
+        "parameters": "1"
+      },
+      {
+        "name": "va_copy",
+        "type": "void",
+        "parameters": "2"
+      }
+    ]
+  },
+  {
+    "name": "stdarg.h",
+    "functions": [
+      {
+        "name": "offsetof",
+        "type": "int",
+        "parameters": "2"
+      }
+    ]
+  },
+  {
+    "name": "stdio.h",
+    "functions": [
+      {
+        "name": "remove",
+        "type": "int",
+        "parameters": "1"
+      },
+      {
+        "name": "rename",
+        "type": "int",
+        "parameters": "2"
+      },
+      {
+        "name": "tmpfile",
+        "type": "FILE *",
+        "parameters": "0"
+      },
+      {
+        "name": "tmpnam",
+        "type": "char *",
+        "parameters": "1"
+      },
+      {
+        "name": "tmpnam",
+        "type": "char *",
+        "parameters": "1"
+      },
+      {
+        "name": "fclose",
+        "type": "int",
+        "parameters": "1"
+      },
+      {
+        "name": "fflush",
+        "type": "int",
+        "parameters": "1"
+      },
+      {
+        "name": "fopen",
+        "type": "FILE *",
+        "parameters": "2"
+      },
+      {
+        "name": "freopen",
+        "type": "FILE *",
+        "parameters": "3"
+      },
+      {
+        "name": "setbuf",
+        "type": "void",
+        "parameters": "2"
+      },
+      {
+        "name": "setvbuf",
+        "type": "int",
+        "parameters": "4"
+      },
+      {
+        "name": "fprintf",
+        "type": "int",
+        "parameters": "2.."
+      },
+      {
+        "name": "fscanf",
+        "type": "int",
+        "parameters": "2.."
+      },
+      {
+        "name": "printf",
+        "type": "int",
+        "parameters": "1.."
+      },
+      {
+        "name": "scanf",
+        "type": "int",
+        "parameters": "1.."
+      },
+      {
+        "name": "snprintf",
+        "type": "int",
+        "parameters": "3.."
+      },
+      {
+        "name": "sprintf",
+        "type": "int",
+        "parameters": "2.."
+      },
+      {
+        "name": "sscanf",
+        "type": "int",
+        "parameters": "2.."
+      },
+      {
+        "name": "vfprintf",
+        "type": "int",
+        "parameters": "3"
+      },
+      {
+        "name": "vfscanf",
+        "type": "int",
+        "parameters": "3"
+      },
+      {
+        "name": "vprintf",
+        "type": "int",
+        "parameters": "2"
+      },
+      {
+        "name": "vscanf",
+        "type": "int",
+        "parameters": "2"
+      },
+      {
+        "name": "vsnprintf",
+        "type": "int",
+        "parameters": "4"
+      },
+      {
+        "name": "vsprintf",
+        "type": "int",
+        "parameters": "3"
+      },
+      {
+        "name": "vsscanf",
+        "type": "int",
+        "parameters": "3"
+      },
+      {
+        "name": "vsscanf",
+        "type": "int",
+        "parameters": "3"
+      },
+      {
+        "name": "fgetc",
+        "type": "int",
+        "parameters": "1"
+      },
+      {
+        "name": "fgets",
+        "type": "char *",
+        "parameters": "3"
+      },
+      {
+        "name": "putc",
+        "type": "int",
+        "parameters": "2"
+      },
+      {
+        "name": "fgets",
+        "type": "int",
+        "parameters": "2"
+      },
+      {
+        "name": "getc",
+        "type": "int",
+        "parameters": "1"
+      },
+      {
+        "name": "getchar",
+        "type": "int",
+        "parameters": "0"
+      },
+      {
+        "name": "gets",
+        "type": "char *",
+        "parameters": "1"
+      },
+      {
+        "name": "putc",
+        "type": "int",
+        "parameters": "2"
+      },
+      {
+        "name": "putchar",
+        "type": "int",
+        "parameters": "1"
+      },
+      {
+        "name": "puts",
+        "type": "int",
+        "parameters": "1"
+      },
+      {
+        "name": "ungetc",
+        "type": "int",
+        "parameters": "2"
+      },
+      {
+        "name": "fread",
+        "type": "size_t",
+        "parameters": "4"
+      },
+      {
+        "name": "fwrite",
+        "type": "size_t",
+        "parameters": "4"
+      },
+      {
+        "name": "fgetpos",
+        "type": "int",
+        "parameters": "2"
+      },
+      {
+        "name": "fseek",
+        "type": "int",
+        "parameters": "3"
+      },
+      {
+        "name": "fgetpos",
+        "type": "int",
+        "parameters": "2"
+      },
+      {
+        "name": "fsetpos",
+        "type": "int",
+        "parameters": "2"
+      },
+      {
+        "name": "ftell",
+        "type": "long int",
+        "parameters": "1"
+      },
+      {
+        "name": "rewind",
+        "type": "void",
+        "parameters": "1"
+      },
+      {
+        "name": "clearerr",
+        "type": "void",
+        "parameters": "1"
+      },
+      {
+        "name": "feof",
+        "type": "int",
+        "parameters": "1"
+      },
+      {
+        "name": "ferror",
+        "type": "int",
+        "parameters": "1"
+      },
+      {
+        "name": "perror",
+        "type": "void",
+        "parameters": "1"
+      }
+    ]
+  },
+  {
+    "name": "stdlib.h",
+    "functions": [
+      {
+        "name": "atof",
+        "type": "double",
+        "parameters": "1"
+      },
+      {
+        "name": "atoi",
+        "type": "int",
+        "parameters": "1"
+      },
+      {
+        "name": "atol",
+        "type": "long int",
+        "parameters": "1"
+      },
+      {
+        "name": "atoll",
+        "type": "long long int",
+        "parameters": "1"
+      },
+      {
+        "name": "strtod",
+        "type": "double",
+        "parameters": "2"
+      },
+      {
+        "name": "strtof",
+        "type": "float",
+        "parameters": "2"
+      },
+      {
+        "name": "strtol",
+        "type": "long int",
+        "parameters": "3"
+      },
+      {
+        "name": "strtold",
+        "type": "long double",
+        "parameters": "2"
+      },
+      {
+        "name": "strtoll",
+        "type": "long long int",
+        "parameters": "3"
+      },
+      {
+        "name": "strtoul",
+        "type": "unsigned long int",
+        "parameters": "3"
+      },
+      {
+        "name": "strtoull",
+        "type": "unsigned long long int",
+        "parameters": "3"
+      },
+      {
+        "name": "rand",
+        "type": "int",
+        "parameters": "0"
+      },
+      {
+        "name": "srand",
+        "type": "void",
+        "parameters": "1"
+      },
+      {
+        "name": "calloc",
+        "type": "void*",
+        "parameters": "2"
+      },
+      {
+        "name": "free",
+        "type": "void",
+        "parameters": "1"
+      },
+      {
+        "name": "malloc",
+        "type": "void*",
+        "parameters": "1"
+      },
+      {
+        "name": "realloc",
+        "type": "void*",
+        "parameters": "2"
+      },
+      {
+        "name": "abort",
+        "type": "void",
+        "parameters": "0"
+      },
+      {
+        "name": "atexit",
+        "type": "int",
+        "parameters": "1"
+      },
+      {
+        "name": "at_quick_exit",
+        "type": "int",
+        "parameters": "1"
+      },
+      {
+        "name": "exit",
+        "type": "void",
+        "parameters": "1"
+      },
+      {
+        "name": "getenv",
+        "type": "char*",
+        "parameters": "1"
+      },
+      {
+        "name": "quick_exit",
+        "type": "void",
+        "parameters": "1"
+      },
+      {
+        "name": "system",
+        "type": "int",
+        "parameters": "1"
+      },
+      {
+        "name": "_Exit",
+        "type": "void",
+        "parameters": "1"
+      },
+      {
+        "name": "bsearch",
+        "type": "void*",
+        "parameters": "5"
+      },
+      {
+        "name": "qsort",
+        "type": "void",
+        "parameters": "4"
+      },
+      {
+        "name": "abs",
+        "type": "int",
+        "parameters": "1"
+      },
+      {
+        "name": "div",
+        "type": "div_t",
+        "parameters": "2"
+      },
+      {
+        "name": "labs",
+        "type": "long int",
+        "parameters": "1"
+      },
+      {
+        "name": "ldiv",
+        "type": "ldiv_t",
+        "parameters": "2"
+      },
+      {
+        "name": "llabs",
+        "type": "long long int",
+        "parameters": "1"
+      },
+      {
+        "name": "lldiv",
+        "type": "lldiv_t",
+        "parameters": "2"
+      },
+      {
+        "name": "mblen",
+        "type": "int",
+        "parameters": "2"
+      },
+      {
+        "name": "mbtowc",
+        "type": "int",
+        "parameters": "3"
+      },
+      {
+        "name": "wctomb",
+        "type": "int",
+        "parameters": "2"
+      },
+      {
+        "name": "mbstowcs",
+        "type": "size_t",
+        "parameters": "3"
+      },
+      {
+        "name": "wcstombs",
+        "type": "size_t",
+        "parameters": "3"
+      }
+    ]
+  },
+  {
+    "name": "string.h",
+    "functions": [
+      {
+        "name": "memcpy",
+        "type": "void *",
+        "parameters": "3"
+      },
+      {
+        "name": "memmove",
+        "type": "void *",
+        "parameters": "3"
+      },
+      {
+        "name": "strcpy",
+        "type": "char *",
+        "parameters": "2"
+      },
+      {
+        "name": "strncpy",
+        "type": "char *",
+        "parameters": "3"
+      },
+      {
+        "name": "strcat",
+        "type": "char *",
+        "parameters": "2"
+      },
+      {
+        "name": "strncat",
+        "type": "char *",
+        "parameters": "3"
+      },
+      {
+        "name": "memcmp",
+        "type": "int",
+        "parameters": "3"
+      },
+      {
+        "name": "strcmp",
+        "type": "int",
+        "parameters": "2"
+      },
+      {
+        "name": "strcoll",
+        "type": "int",
+        "parameters": "2"
+      },
+      {
+        "name": "strncmp",
+        "type": "int",
+        "parameters": "3"
+      },
+      {
+        "name": "strxfrm",
+        "type": "size_t",
+        "parameters": "3"
+      },
+      {
+        "name": "memchr",
+        "type": "void *",
+        "parameters": "3"
+      },
+      {
+        "name": "strchr",
+        "type": "char *",
+        "parameters": "2"
+      },
+      {
+        "name": "strcspn",
+        "type": "size_t",
+        "parameters": "2"
+      },
+      {
+        "name": "strpbrk",
+        "type": "char *",
+        "parameters": "2"
+      },
+      {
+        "name": "strrchr",
+        "type": "char *",
+        "parameters": "2"
+      },
+      {
+        "name": "strspn",
+        "type": "size_t",
+        "parameters": "2"
+      },
+      {
+        "name": "strstr",
+        "type": "char *",
+        "parameters": "2"
+      },
+      {
+        "name": "strtok",
+        "type": "char *",
+        "parameters": "2"
+      },
+      {
+        "name": "memset",
+        "type": "void *",
+        "parameters": "3"
+      },
+      {
+        "name": "strerror",
+        "type": "char *",
+        "parameters": "1"
+      },
+      {
+        "name": "strlen",
+        "type": "size_t",
+        "parameters": "1"
+      }
+    ]
+  },
+  {
+    "name": "time.h",
+    "functions": [
+      {
+        "name": "clock",
+        "type": "clock_t",
+        "parameters": "0"
+      },
+      {
+        "name": "difftime",
+        "type": "double",
+        "parameters": "2"
+      },
+      {
+        "name": "mktime",
+        "type": "time_t",
+        "parameters": "1"
+      },
+      {
+        "name": "time",
+        "type": "time_t",
+        "parameters": "1"
+      },
+      {
+        "name": "asctime",
+        "type": "char*",
+        "parameters": "1"
+      },
+      {
+        "name": "ctime",
+        "type": "char*",
+        "parameters": "1"
+      },
+      {
+        "name": "gmtime",
+        "type": "struct tm *",
+        "parameters": "1"
+      },
+      {
+        "name": "localtime",
+        "type": "struct tm *",
+        "parameters": "1"
+      },
+      {
+        "name": "strftime",
+        "type": "size_t",
+        "parameters": "4"
+      }
+    ]
+  },
+  {
+    "name": "uchar.h",
+    "functions": [
+      {
+        "name": "c16rtomb",
+        "type": "size_t",
+        "parameters": "3"
+      },
+      {
+        "name": "c32rtomb",
+        "type": "size_t",
+        "parameters": "3"
+      },
+      {
+        "name": "mbrtoc16",
+        "type": "size_t",
+        "parameters": "4"
+      },
+      {
+        "name": "mbrtoc32",
+        "type": "size_t",
+        "parameters": "4"
+      }
+    ]
+  },
+  {
+    "name": "wchar.h",
+    "functions": [
+      {
+        "name": "fgetwc",
+        "type": "wint_t",
+        "parameters": "1"
+      },
+      {
+        "name": "fgetws",
+        "type": "wchar_t*",
+        "parameters": "3"
+      },
+      {
+        "name": "fputwc",
+        "type": "wint_t",
+        "parameters": "2"
+      },
+      {
+        "name": "fputws",
+        "type": "int",
+        "parameters": "2"
+      },
+      {
+        "name": "fwide",
+        "type": "int",
+        "parameters": "2"
+      },
+      {
+        "name": "fwprintf",
+        "type": "int",
+        "parameters": "2.."
+      },
+      {
+        "name": "fwscanf",
+        "type": "int",
+        "parameters": "2.."
+      },
+      {
+        "name": "getwc",
+        "type": "wint_t",
+        "parameters": "1"
+      },
+      {
+        "name": "getwchar",
+        "type": "wint_t",
+        "parameters": "0"
+      },
+      {
+        "name": "putwc",
+        "type": "wint_t",
+        "parameters": "2"
+      },
+      {
+        "name": "putwchar",
+        "type": "wint_t",
+        "parameters": "1"
+      },
+      {
+        "name": "swprintf",
+        "type": "int",
+        "parameters": "3.."
+      },
+      {
+        "name": "swscanf",
+        "type": "int",
+        "parameters": "2.."
+      },
+      {
+        "name": "ungetwc",
+        "type": "wint_t",
+        "parameters": "2"
+      },
+      {
+        "name": "vfwprintf",
+        "type": "int",
+        "parameters": "3"
+      },
+      {
+        "name": "vfwscanf",
+        "type": "int",
+        "parameters": "3"
+      },
+      {
+        "name": "vswprintf",
+        "type": "int",
+        "parameters": "4"
+      },
+      {
+        "name": "vswscanf",
+        "type": "int",
+        "parameters": "3"
+      },
+      {
+        "name": "vwprintf",
+        "type": "int",
+        "parameters": "2"
+      },
+      {
+        "name": "vwscanf",
+        "type": "int",
+        "parameters": "2"
+      },
+      {
+        "name": "wprintf",
+        "type": "int",
+        "parameters": "1.."
+      },
+      {
+        "name": "wscanf",
+        "type": "int",
+        "parameters": "1.."
+      },
+      {
+        "name": "wcstod",
+        "type": "double",
+        "parameters": "2"
+      },
+      {
+        "name": "wcstof",
+        "type": "float",
+        "parameters": "2"
+      },
+      {
+        "name": "wcstol",
+        "type": "long",
+        "parameters": "2"
+      },
+      {
+        "name": "wcstold",
+        "type": "long double",
+        "parameters": "2"
+      },
+      {
+        "name": "wcstoll",
+        "type": "long long int",
+        "parameters": "2"
+      },
+      {
+        "name": "wcstoul",
+        "type": "unsigned long int",
+        "parameters": "2"
+      },
+      {
+        "name": "wcstoull",
+        "type": "unsigned long long int",
+        "parameters": "2"
+      },
+      {
+        "name": "btowc",
+        "type": "wint_t",
+        "parameters": "1"
+      },
+      {
+        "name": "mbrlen",
+        "type": "size_t",
+        "parameters": "3"
+      },
+      {
+        "name": "mbrtowc",
+        "type": "size_t",
+        "parameters": "4"
+      },
+      {
+        "name": "mbsinit",
+        "type": "int",
+        "parameters": "1"
+      },
+      {
+        "name": "mbsrtowcs",
+        "type": "size_t",
+        "parameters": "4"
+      },
+      {
+        "name": "wcrtomb",
+        "type": "size_t",
+        "parameters": "3"
+      },
+      {
+        "name": "wctob",
+        "type": "int",
+        "parameters": "1"
+      },
+      {
+        "name": "wcsrtombs",
+        "type": "size_t",
+        "parameters": "4"
+      },
+      {
+        "name": "wcsftime",
+        "type": "size_t",
+        "parameters": "4"
+      },
+      {
+        "name": "wcscat",
+        "type": "wchar_t*",
+        "parameters": "2"
+      },
+      {
+        "name": "wcschr",
+        "type": "wchar_t*",
+        "parameters": "2"
+      },
+      {
+        "name": "wcscmp",
+        "type": "int",
+        "parameters": "2"
+      },
+      {
+        "name": "wcscoll",
+        "type": "int",
+        "parameters": "2"
+      },
+      {
+        "name": "wcscpy",
+        "type": "wchar_t*",
+        "parameters": "2"
+      },
+      {
+        "name": "wcscspn",
+        "type": "size_t",
+        "parameters": "2"
+      },
+      {
+        "name": "wcslen",
+        "type": "size_t",
+        "parameters": "1"
+      },
+      {
+        "name": "wcsncat",
+        "type": "wchar_t*",
+        "parameters": "3"
+      },
+      {
+        "name": "wcsncmp",
+        "type": "int",
+        "parameters": "3"
+      },
+      {
+        "name": "wcsncpy",
+        "type": "wchar_t*",
+        "parameters": "3"
+      },
+      {
+        "name": "wcspbrk",
+        "type": "wchar_t*",
+        "parameters": "2"
+      },
+      {
+        "name": "wcsrchr",
+        "type": "wchar_t*",
+        "parameters": "2"
+      },
+      {
+        "name": "wcsspn",
+        "type": "size_t",
+        "parameters": "2"
+      },
+      {
+        "name": "wcsstr",
+        "type": "wchar_t*",
+        "parameters": "2"
+      },
+      {
+        "name": "wcstok",
+        "type": "wchar_t*",
+        "parameters": "2"
+      },
+      {
+        "name": "wcsxfrm",
+        "type": "size_t",
+        "parameters": "3"
+      },
+      {
+        "name": "wmemchr",
+        "type": "wchar_t*",
+        "parameters": "3"
+      },
+      {
+        "name": "wmemcmp",
+        "type": "int",
+        "parameters": "3"
+      },
+      {
+        "name": "wmemcpy",
+        "type": "wchar_t*",
+        "parameters": "3"
+      },
+      {
+        "name": "wmemmove",
+        "type": "wchar_t*",
+        "parameters": "3"
+      },
+      {
+        "name": "wmemset",
+        "type": "wchar_t*",
+        "parameters": "3"
+      }
+    ]
+  },
+  {
+    "name": "wctype.h",
+    "functions": [
+      {
+        "name": "iswalnum",
+        "type": "int",
+        "parameters": "1"
+      },
+      {
+        "name": "iswalpha",
+        "type": "int",
+        "parameters": "1"
+      },
+      {
+        "name": "iswblank",
+        "type": "int",
+        "parameters": "1"
+      },
+      {
+        "name": "iswcntrl",
+        "type": "int",
+        "parameters": "1"
+      },
+      {
+        "name": "iswdigit",
+        "type": "int",
+        "parameters": "1"
+      },
+      {
+        "name": "iswgraph",
+        "type": "int",
+        "parameters": "1"
+      },
+      {
+        "name": "iswlower",
+        "type": "int",
+        "parameters": "1"
+      },
+      {
+        "name": "iswprint",
+        "type": "int",
+        "parameters": "1"
+      },
+      {
+        "name": "iswpunct",
+        "type": "int",
+        "parameters": "1"
+      },
+      {
+        "name": "iswspace",
+        "type": "int",
+        "parameters": "1"
+      },
+      {
+        "name": "iswupper",
+        "type": "int",
+        "parameters": "1"
+      },
+      {
+        "name": "iswxdigit",
+        "type": "int",
+        "parameters": "1"
+      },
+      {
+        "name": "towlower",
+        "type": "wint_t",
+        "parameters": "1"
+      },
+      {
+        "name": "towupper",
+        "type": "wint_t",
+        "parameters": "1"
+      },
+      {
+        "name": "iswctype",
+        "type": "int",
+        "parameters": "2"
+      },
+      {
+        "name": "towctrans",
+        "type": "wint_t",
+        "parameters": "2"
+      },
+      {
+        "name": "wctrans",
+        "type": "wctrans_t",
+        "parameters": "1"
+      },
+      {
+        "name": "wctype",
+        "type": "wctype_t",
+        "parameters": "1"
+      }
+    ]
+  }
+]

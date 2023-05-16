@@ -1,0 +1,224 @@
+{
+  "type": "ProjectNode",
+  "properties": {
+    "children": [
+      {
+        "type": "CppFileNode",
+        "properties": {
+          "children": [
+            {
+              "type": "ExternalVariableNode",
+              "properties": {
+                "rawType": "char",
+                "coreType": "char",
+                "reducedRawType": "char",
+                "levelOfPointer": 0,
+                "isReference": false,
+                "isPrivate": false,
+                "children": [],
+                "name": "char1",
+                "absolutePath": "/home/macvan/IdeaProjects/utt/local/data-test/test_data_004_normal/normaldata.cpp/char1",
+                "id": 2,
+                "dependencies": [
+                  {
+                    "type": "GlobalVariableDependency",
+                    "properties": {
+                      "startNodeId": 0,
+                      "endNodeId": 0
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "type": "FunctionNode",
+              "properties": {
+                "children": [
+                  {
+                    "type": "InternalVariableNode",
+                    "properties": {
+                      "rawType": "int",
+                      "coreType": "int",
+                      "reducedRawType": "int",
+                      "levelOfPointer": 0,
+                      "isReference": false,
+                      "isPrivate": false,
+                      "children": [],
+                      "name": "x",
+                      "absolutePath": "/x",
+                      "id": 4,
+                      "dependencies": []
+                    }
+                  },
+                  {
+                    "type": "ReturnVariableNode",
+                    "properties": {
+                      "rawType": "int",
+                      "coreType": "int",
+                      "reducedRawType": "int",
+                      "levelOfPointer": 0,
+                      "isReference": false,
+                      "isPrivate": false,
+                      "children": [],
+                      "name": "returnVar",
+                      "absolutePath": "/home/macvan/IdeaProjects/utt/local/data-test/test_data_004_normal/normaldata.cpp/functionB(int)/returnVar",
+                      "id": 5,
+                      "dependencies": []
+                    }
+                  }
+                ],
+                "name": "functionB(int)",
+                "absolutePath": "/home/macvan/IdeaProjects/utt/local/data-test/test_data_004_normal/normaldata.cpp/functionB(int)",
+                "id": 3,
+                "dependencies": []
+              }
+            },
+            {
+              "type": "FunctionNode",
+              "properties": {
+                "children": [
+                  {
+                    "type": "InternalVariableNode",
+                    "properties": {
+                      "rawType": "int",
+                      "coreType": "int",
+                      "reducedRawType": "int",
+                      "levelOfPointer": 0,
+                      "isReference": false,
+                      "isPrivate": false,
+                      "children": [],
+                      "name": "x",
+                      "absolutePath": "/x",
+                      "id": 7,
+                      "dependencies": []
+                    }
+                  },
+                  {
+                    "type": "InternalVariableNode",
+                    "properties": {
+                      "rawType": "int",
+                      "coreType": "int",
+                      "reducedRawType": "int",
+                      "levelOfPointer": 0,
+                      "isReference": false,
+                      "isPrivate": false,
+                      "children": [],
+                      "name": "y",
+                      "absolutePath": "/y",
+                      "id": 8,
+                      "dependencies": []
+                    }
+                  },
+                  {
+                    "type": "ReturnVariableNode",
+                    "properties": {
+                      "rawType": "int",
+                      "coreType": "int",
+                      "reducedRawType": "int",
+                      "levelOfPointer": 0,
+                      "isReference": false,
+                      "isPrivate": false,
+                      "children": [],
+                      "name": "returnVar",
+                      "absolutePath": "/home/macvan/IdeaProjects/utt/local/data-test/test_data_004_normal/normaldata.cpp/functionA(int,int)/returnVar",
+                      "id": 9,
+                      "dependencies": []
+                    }
+                  }
+                ],
+                "name": "functionA(int,int)",
+                "absolutePath": "/home/macvan/IdeaProjects/utt/local/data-test/test_data_004_normal/normaldata.cpp/functionA(int,int)",
+                "id": 6,
+                "dependencies": []
+              }
+            },
+            {
+              "type": "FunctionNode",
+              "properties": {
+                "children": [
+                  {
+                    "type": "InternalVariableNode",
+                    "properties": {
+                      "rawType": "int",
+                      "coreType": "int",
+                      "reducedRawType": "int",
+                      "levelOfPointer": 0,
+                      "isReference": false,
+                      "isPrivate": false,
+                      "children": [],
+                      "name": "argc",
+                      "absolutePath": "/argc",
+                      "id": 11,
+                      "dependencies": []
+                    }
+                  },
+                  {
+                    "type": "InternalVariableNode",
+                    "properties": {
+                      "rawType": "char*[]",
+                      "coreType": "char",
+                      "reducedRawType": "char*[]",
+                      "levelOfPointer": 1,
+                      "isReference": false,
+                      "isPrivate": false,
+                      "children": [],
+                      "name": "argv",
+                      "absolutePath": "/argv",
+                      "id": 12,
+                      "dependencies": []
+                    }
+                  },
+                  {
+                    "type": "ReturnVariableNode",
+                    "properties": {
+                      "rawType": "int",
+                      "coreType": "int",
+                      "reducedRawType": "int",
+                      "levelOfPointer": 0,
+                      "isReference": false,
+                      "isPrivate": false,
+                      "children": [],
+                      "name": "returnVar",
+                      "absolutePath": "/home/macvan/IdeaProjects/utt/local/data-test/test_data_004_normal/normaldata.cpp/main(int,char*[])/returnVar",
+                      "id": 13,
+                      "dependencies": []
+                    }
+                  }
+                ],
+                "name": "main(int,char*[])",
+                "absolutePath": "/home/macvan/IdeaProjects/utt/local/data-test/test_data_004_normal/normaldata.cpp/main(int,char*[])",
+                "id": 10,
+                "dependencies": [
+                  {
+                    "type": "GlobalVariableDependency",
+                    "properties": {
+                      "startNodeId": 0,
+                      "endNodeId": 0
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "type": "IncludeHeaderNode",
+              "properties": {
+                "children": [],
+                "name": "\"iostream\"",
+                "absolutePath": "/home/macvan/IdeaProjects/utt/local/data-test/test_data_004_normal/normaldata.cpp/\"iostream\"",
+                "id": 14,
+                "dependencies": []
+              }
+            }
+          ],
+          "name": "normaldata.cpp",
+          "absolutePath": "/home/macvan/IdeaProjects/utt/local/data-test/test_data_004_normal/normaldata.cpp",
+          "id": 1,
+          "dependencies": []
+        }
+      }
+    ],
+    "name": "test_data_004_normal",
+    "absolutePath": "/home/macvan/IdeaProjects/utt/local/data-test/test_data_004_normal",
+    "id": 0
+  }
+}

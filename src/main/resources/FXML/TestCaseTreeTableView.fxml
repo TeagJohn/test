@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.TreeTableColumn?>
+<?import javafx.scene.control.TreeTableView?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.212" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dse.guifx_v3.controllers.TestCaseTreeTableController">
+   <children>
+      <TreeTableView fx:id="treeTableView" layoutX="79.0" layoutY="49.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <columns>
+            <TreeTableColumn fx:id="parameterCol" minWidth="30.0" prefWidth="75.0" sortable="false" text="Parameter" />
+            <TreeTableColumn fx:id="typeCol" prefWidth="75.0" sortable="false" text="Type" />
+            <TreeTableColumn fx:id="inputCol" prefWidth="75.0" sortable="false" text="Input Value" />
+            <TreeTableColumn fx:id="outputCol" prefWidth="75.0" sortable="false" text="Expected Value" />
+            <TreeTableColumn fx:id="assertCol" prefWidth="75.0" sortable="false" text="Assert Method" />
+        </columns>
+        <columnResizePolicy>
+            <TreeTableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+        </columnResizePolicy>
+      </TreeTableView>
+   </children>
+</AnchorPane>

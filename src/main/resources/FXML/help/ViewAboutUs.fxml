@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane fx:id="anchorHelp" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dse.guifx_v3.about_us.DeletedViewAboutUsController">
+   <children>
+      <TextArea fx:id="textArea" prefHeight="800.0" prefWidth="1203.0" text="asdasdsa dasdasd asd asd asdasd a a das da&#10;d asd as dad&#10; asd&#10; a&#10;d as&#10; das dsdasdas as&#10;d a dsasdasdd&#10;asd&#10;asd&#10;sad&#10;as d&#10;asd asd&#10;sd&#10;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+   </children>
+</AnchorPane>

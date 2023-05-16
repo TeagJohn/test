@@ -1,0 +1,10 @@
+TEST.UNIT:file_io
+TEST.SUBPROGRAM:CreateFile
+TEST.NEW
+TEST.NAME:CREATEFILE.001
+TEST.VALUE:file_io.CreateFile.filename:<<malloc 9>>
+TEST.END
+TEST.NEW
+TEST.NAME:CREATEFILE.002
+TEST.VALUE:file_io.CreateFile.filename:<<malloc 9>>
+TEST.END

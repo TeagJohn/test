@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import org.fxmisc.richtext.*?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="456.0" prefWidth="672.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dse.guifx_v3.controllers.build_environment.ParseCommandLineController">
+   <children>
+      <AnchorPane layoutX="10.0" layoutY="64.0" prefHeight="100.0" prefWidth="580.0" style="-fx-border-color: black; -fx-border-width: 0.2;" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="40.0">
+         <children>
+            <CodeArea fx:id="caCommand" layoutY="-61.0" prefHeight="200.0" prefWidth="200.0" wrapText="true" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="10.0" />
+         </children>
+      </AnchorPane>
+      <AnchorPane layoutX="10.0" layoutY="239.0" prefHeight="169.0" prefWidth="652.0" AnchorPane.bottomAnchor="55.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="230.0">
+         <children>
+            <TabPane layoutX="64.0" layoutY="-45.0" prefHeight="200.0" prefWidth="200.0" style="-fx-border-color: black; -fx-border-width: 0.2;" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+              <tabs>
+                  <Tab text="Includes" >
+                      <ListView fx:id="lvIncludes" />
+                  </Tab>
+                  <Tab text="Defines">
+                      <ListView fx:id="lvDefines" />
+                  </Tab>
+              </tabs>
+            </TabPane>
+         </children>
+      </AnchorPane>
+      <Label layoutX="24.0" layoutY="52.0" style="-fx-background-color: f4f4f4;" text="Enter Command Line" AnchorPane.topAnchor="32.0" />
+      <Label layoutX="78.0" layoutY="201.0" prefHeight="16.0" prefWidth="517.0" text="Any items selected below will be added to the C++ Preprocessor/Compiler tab." AnchorPane.leftAnchor="78.0" AnchorPane.rightAnchor="77.0" AnchorPane.topAnchor="200.0" />
+      <Button fx:id="btnParse" layoutX="302.0" layoutY="160.0" mnemonicParsing="false" onAction="#parse" prefWidth="68.0" text="Parse" AnchorPane.rightAnchor="302.0" />
+      <Button fx:id="btnCancel" layoutX="594.0" layoutY="416.0" mnemonicParsing="false" onAction="#cancel" prefWidth="68.0" text="Cancel" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="594.0" AnchorPane.rightAnchor="10.0" />
+      <Button fx:id="btnOk" layoutX="519.0" layoutY="416.0" mnemonicParsing="false" onAction="#save" prefWidth="68.0" text="OK" />
+   </children>
+</AnchorPane>

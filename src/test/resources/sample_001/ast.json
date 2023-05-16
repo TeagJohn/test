@@ -1,0 +1,562 @@
+{
+  "type": "ProjectNode",
+  "properties": {
+    "children": [
+      {
+        "type": "CppFileNode",
+        "properties": {
+          "children": [
+            {
+              "type": "ClassNode",
+              "properties": {
+                "children": [
+                  {
+                    "type": "AttributeOfStructureVariableNode",
+                    "properties": {
+                      "rawType": "int",
+                      "coreType": "int",
+                      "reducedRawType": "int",
+                      "levelOfPointer": 0,
+                      "isReference": false,
+                      "isPrivate": true,
+                      "children": [],
+                      "name": "MAX_CHIEURONG",
+                      "absolutePath": "/home/macvan/IdeaProjects/utt/local/data-test/test_data_003/class.cpp/Hinh/MAX_CHIEURONG",
+                      "id": 3,
+                      "dependencies": []
+                    }
+                  },
+                  {
+                    "type": "AttributeOfStructureVariableNode",
+                    "properties": {
+                      "rawType": "int",
+                      "coreType": "int",
+                      "reducedRawType": "int",
+                      "levelOfPointer": 0,
+                      "isReference": false,
+                      "isPrivate": true,
+                      "children": [],
+                      "name": "MAX_CHIEUCAO",
+                      "absolutePath": "/home/macvan/IdeaProjects/utt/local/data-test/test_data_003/class.cpp/Hinh/MAX_CHIEUCAO",
+                      "id": 4,
+                      "dependencies": []
+                    }
+                  }
+                ],
+                "name": "Hinh",
+                "absolutePath": "/home/macvan/IdeaProjects/utt/local/data-test/test_data_003/class.cpp/Hinh",
+                "id": 2,
+                "dependencies": [
+                  {
+                    "type": "ExtendDependency",
+                    "properties": {
+                      "startNodeId": 0,
+                      "endNodeId": 0
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "type": "ClassNode",
+              "properties": {
+                "children": [
+                  {
+                    "type": "AttributeOfStructureVariableNode",
+                    "properties": {
+                      "rawType": "int",
+                      "coreType": "int",
+                      "reducedRawType": "int",
+                      "levelOfPointer": 0,
+                      "isReference": false,
+                      "isPrivate": false,
+                      "children": [],
+                      "name": "chieurong",
+                      "absolutePath": "/home/macvan/IdeaProjects/utt/local/data-test/test_data_003/class.cpp/HinhChuNhat/chieurong",
+                      "id": 6,
+                      "dependencies": []
+                    }
+                  },
+                  {
+                    "type": "AttributeOfStructureVariableNode",
+                    "properties": {
+                      "rawType": "int",
+                      "coreType": "int",
+                      "reducedRawType": "int",
+                      "levelOfPointer": 0,
+                      "isReference": false,
+                      "isPrivate": false,
+                      "children": [],
+                      "name": "chieucao",
+                      "absolutePath": "/home/macvan/IdeaProjects/utt/local/data-test/test_data_003/class.cpp/HinhChuNhat/chieucao",
+                      "id": 7,
+                      "dependencies": []
+                    }
+                  },
+                  {
+                    "type": "FunctionNode",
+                    "properties": {
+                      "children": [
+                        {
+                          "type": "InternalVariableNode",
+                          "properties": {
+                            "rawType": "int",
+                            "coreType": "int",
+                            "reducedRawType": "int",
+                            "levelOfPointer": 0,
+                            "isReference": false,
+                            "isPrivate": false,
+                            "children": [],
+                            "name": "rong",
+                            "absolutePath": "/rong",
+                            "id": 9,
+                            "dependencies": []
+                          }
+                        },
+                        {
+                          "type": "ReturnVariableNode",
+                          "properties": {
+                            "rawType": "void",
+                            "coreType": "void",
+                            "reducedRawType": "void",
+                            "levelOfPointer": 0,
+                            "isReference": false,
+                            "isPrivate": false,
+                            "children": [],
+                            "name": "returnVar",
+                            "absolutePath": "/home/macvan/IdeaProjects/utt/local/data-test/test_data_003/class.cpp/HinhChuNhat/setChieuRong(int)/returnVar",
+                            "id": 10,
+                            "dependencies": []
+                          }
+                        }
+                      ],
+                      "name": "setChieuRong(int)",
+                      "absolutePath": "/home/macvan/IdeaProjects/utt/local/data-test/test_data_003/class.cpp/HinhChuNhat/setChieuRong(int)",
+                      "id": 8,
+                      "dependencies": []
+                    }
+                  },
+                  {
+                    "type": "FunctionNode",
+                    "properties": {
+                      "children": [
+                        {
+                          "type": "InternalVariableNode",
+                          "properties": {
+                            "rawType": "int",
+                            "coreType": "int",
+                            "reducedRawType": "int",
+                            "levelOfPointer": 0,
+                            "isReference": false,
+                            "isPrivate": false,
+                            "children": [],
+                            "name": "cao",
+                            "absolutePath": "/cao",
+                            "id": 12,
+                            "dependencies": []
+                          }
+                        },
+                        {
+                          "type": "ReturnVariableNode",
+                          "properties": {
+                            "rawType": "void",
+                            "coreType": "void",
+                            "reducedRawType": "void",
+                            "levelOfPointer": 0,
+                            "isReference": false,
+                            "isPrivate": false,
+                            "children": [],
+                            "name": "returnVar",
+                            "absolutePath": "/home/macvan/IdeaProjects/utt/local/data-test/test_data_003/class.cpp/HinhChuNhat/setChieuCao(int)/returnVar",
+                            "id": 13,
+                            "dependencies": []
+                          }
+                        }
+                      ],
+                      "name": "setChieuCao(int)",
+                      "absolutePath": "/home/macvan/IdeaProjects/utt/local/data-test/test_data_003/class.cpp/HinhChuNhat/setChieuCao(int)",
+                      "id": 11,
+                      "dependencies": []
+                    }
+                  },
+                  {
+                    "type": "ConstructorNode",
+                    "properties": {
+                      "children": [],
+                      "name": "HinhChuNhat()",
+                      "absolutePath": "/home/macvan/IdeaProjects/utt/local/data-test/test_data_003/class.cpp/HinhChuNhat/HinhChuNhat()",
+                      "id": 14,
+                      "dependencies": []
+                    }
+                  },
+                  {
+                    "type": "ConstructorNode",
+                    "properties": {
+                      "children": [
+                        {
+                          "type": "InternalVariableNode",
+                          "properties": {
+                            "rawType": "int",
+                            "coreType": "int",
+                            "reducedRawType": "int",
+                            "levelOfPointer": 0,
+                            "isReference": false,
+                            "isPrivate": false,
+                            "children": [],
+                            "name": "rong",
+                            "absolutePath": "/rong",
+                            "id": 16,
+                            "dependencies": []
+                          }
+                        }
+                      ],
+                      "name": "HinhChuNhat(int)",
+                      "absolutePath": "/home/macvan/IdeaProjects/utt/local/data-test/test_data_003/class.cpp/HinhChuNhat/HinhChuNhat(int)",
+                      "id": 15,
+                      "dependencies": []
+                    }
+                  },
+                  {
+                    "type": "ConstructorNode",
+                    "properties": {
+                      "children": [
+                        {
+                          "type": "InternalVariableNode",
+                          "properties": {
+                            "rawType": "int",
+                            "coreType": "int",
+                            "reducedRawType": "int",
+                            "levelOfPointer": 0,
+                            "isReference": false,
+                            "isPrivate": false,
+                            "children": [],
+                            "name": "rong",
+                            "absolutePath": "/rong",
+                            "id": 18,
+                            "dependencies": []
+                          }
+                        },
+                        {
+                          "type": "InternalVariableNode",
+                          "properties": {
+                            "rawType": "int",
+                            "coreType": "int",
+                            "reducedRawType": "int",
+                            "levelOfPointer": 0,
+                            "isReference": false,
+                            "isPrivate": false,
+                            "children": [],
+                            "name": "cao",
+                            "absolutePath": "/cao",
+                            "id": 19,
+                            "dependencies": []
+                          }
+                        }
+                      ],
+                      "name": "HinhChuNhat(int,int)",
+                      "absolutePath": "/home/macvan/IdeaProjects/utt/local/data-test/test_data_003/class.cpp/HinhChuNhat/HinhChuNhat(int,int)",
+                      "id": 17,
+                      "dependencies": []
+                    }
+                  },
+                  {
+                    "type": "FunctionNode",
+                    "properties": {
+                      "children": [
+                        {
+                          "type": "ReturnVariableNode",
+                          "properties": {
+                            "rawType": "int",
+                            "coreType": "int",
+                            "reducedRawType": "int",
+                            "levelOfPointer": 0,
+                            "isReference": false,
+                            "isPrivate": false,
+                            "children": [],
+                            "name": "returnVar",
+                            "absolutePath": "/home/macvan/IdeaProjects/utt/local/data-test/test_data_003/class.cpp/HinhChuNhat/tinhDienTich()/returnVar",
+                            "id": 21,
+                            "dependencies": []
+                          }
+                        }
+                      ],
+                      "name": "tinhDienTich()",
+                      "absolutePath": "/home/macvan/IdeaProjects/utt/local/data-test/test_data_003/class.cpp/HinhChuNhat/tinhDienTich()",
+                      "id": 20,
+                      "dependencies": []
+                    }
+                  }
+                ],
+                "name": "HinhChuNhat",
+                "absolutePath": "/home/macvan/IdeaProjects/utt/local/data-test/test_data_003/class.cpp/HinhChuNhat",
+                "id": 5,
+                "dependencies": [
+                  {
+                    "type": "ExtendDependency",
+                    "properties": {
+                      "startNodeId": 0,
+                      "endNodeId": 0
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "type": "FunctionNode",
+              "properties": {
+                "children": [
+                  {
+                    "type": "InternalVariableNode",
+                    "properties": {
+                      "rawType": "HinhChuNhat",
+                      "coreType": "HinhChuNhat",
+                      "reducedRawType": "HinhChuNhat",
+                      "levelOfPointer": 0,
+                      "isReference": false,
+                      "isPrivate": false,
+                      "children": [],
+                      "name": "hcn",
+                      "absolutePath": "/hcn",
+                      "id": 23,
+                      "dependencies": []
+                    }
+                  },
+                  {
+                    "type": "InternalVariableNode",
+                    "properties": {
+                      "rawType": "int",
+                      "coreType": "int",
+                      "reducedRawType": "int",
+                      "levelOfPointer": 0,
+                      "isReference": false,
+                      "isPrivate": false,
+                      "children": [],
+                      "name": "rong",
+                      "absolutePath": "/rong",
+                      "id": 24,
+                      "dependencies": []
+                    }
+                  },
+                  {
+                    "type": "ReturnVariableNode",
+                    "properties": {
+                      "rawType": "HinhChuNhat",
+                      "coreType": "HinhChuNhat",
+                      "reducedRawType": "HinhChuNhat",
+                      "levelOfPointer": 0,
+                      "isReference": false,
+                      "isPrivate": false,
+                      "children": [],
+                      "name": "returnVar",
+                      "absolutePath": "/home/macvan/IdeaProjects/utt/local/data-test/test_data_003/class.cpp/GHCN(HinhChuNhat,int)/returnVar",
+                      "id": 25,
+                      "dependencies": []
+                    }
+                  }
+                ],
+                "name": "changeRongHCN(HinhChuNhat,int)",
+                "absolutePath": "/home/macvan/IdeaProjects/utt/local/data-test/test_data_003/class.cpp/changeRongHCN(HinhChuNhat,int)",
+                "id": 22,
+                "dependencies": []
+              }
+            },
+            {
+              "type": "FunctionNode",
+              "properties": {
+                "children": [
+                  {
+                    "type": "InternalVariableNode",
+                    "properties": {
+                      "rawType": "HinhChuNhat",
+                      "coreType": "HinhChuNhat",
+                      "reducedRawType": "HinhChuNhat",
+                      "levelOfPointer": 0,
+                      "isReference": false,
+                      "isPrivate": false,
+                      "children": [],
+                      "name": "hcn",
+                      "absolutePath": "/hcn",
+                      "id": 27,
+                      "dependencies": []
+                    }
+                  },
+                  {
+                    "type": "InternalVariableNode",
+                    "properties": {
+                      "rawType": "int",
+                      "coreType": "int",
+                      "reducedRawType": "int",
+                      "levelOfPointer": 0,
+                      "isReference": false,
+                      "isPrivate": false,
+                      "children": [],
+                      "name": "cao",
+                      "absolutePath": "/cao",
+                      "id": 28,
+                      "dependencies": []
+                    }
+                  },
+                  {
+                    "type": "ReturnVariableNode",
+                    "properties": {
+                      "rawType": "HinhChuNhat",
+                      "coreType": "HinhChuNhat",
+                      "reducedRawType": "HinhChuNhat",
+                      "levelOfPointer": 0,
+                      "isReference": false,
+                      "isPrivate": false,
+                      "children": [],
+                      "name": "returnVar",
+                      "absolutePath": "/home/macvan/IdeaProjects/utt/local/data-test/test_data_003/class.cpp/changeCaoHCN(HinhChuNhat,int)/returnVar",
+                      "id": 29,
+                      "dependencies": []
+                    }
+                  }
+                ],
+                "name": "changeCaoHCN(HinhChuNhat,int)",
+                "absolutePath": "/home/macvan/IdeaProjects/utt/local/data-test/test_data_003/class.cpp/changeCaoHCN(HinhChuNhat,int)",
+                "id": 26,
+                "dependencies": []
+              }
+            },
+            {
+              "type": "FunctionNode",
+              "properties": {
+                "children": [
+                  {
+                    "type": "InternalVariableNode",
+                    "properties": {
+                      "rawType": "HinhChuNhat",
+                      "coreType": "HinhChuNhat",
+                      "reducedRawType": "HinhChuNhat",
+                      "levelOfPointer": 0,
+                      "isReference": false,
+                      "isPrivate": false,
+                      "children": [],
+                      "name": "hcn",
+                      "absolutePath": "/hcn",
+                      "id": 31,
+                      "dependencies": []
+                    }
+                  },
+                  {
+                    "type": "InternalVariableNode",
+                    "properties": {
+                      "rawType": "int",
+                      "coreType": "int",
+                      "reducedRawType": "int",
+                      "levelOfPointer": 0,
+                      "isReference": false,
+                      "isPrivate": false,
+                      "children": [],
+                      "name": "rong",
+                      "absolutePath": "/rong",
+                      "id": 32,
+                      "dependencies": []
+                    }
+                  },
+                  {
+                    "type": "InternalVariableNode",
+                    "properties": {
+                      "rawType": "int",
+                      "coreType": "int",
+                      "reducedRawType": "int",
+                      "levelOfPointer": 0,
+                      "isReference": false,
+                      "isPrivate": false,
+                      "children": [],
+                      "name": "cao",
+                      "absolutePath": "/cao",
+                      "id": 33,
+                      "dependencies": []
+                    }
+                  },
+                  {
+                    "type": "ReturnVariableNode",
+                    "properties": {
+                      "rawType": "HinhChuNhat",
+                      "coreType": "HinhChuNhat",
+                      "reducedRawType": "HinhChuNhat",
+                      "levelOfPointer": 0,
+                      "isReference": false,
+                      "isPrivate": false,
+                      "children": [],
+                      "name": "returnVar",
+                      "absolutePath": "/home/macvan/IdeaProjects/utt/local/data-test/test_data_003/class.cpp/changeKichThuocHCN(HinhChuNhat,int,int)/returnVar",
+                      "id": 34,
+                      "dependencies": []
+                    }
+                  }
+                ],
+                "name": "changeKichThuocHCN(HinhChuNhat,int,int)",
+                "absolutePath": "/home/macvan/IdeaProjects/utt/local/data-test/test_data_003/class.cpp/changeKichThuocHCN(HinhChuNhat,int,int)",
+                "id": 30,
+                "dependencies": []
+              }
+            },
+            {
+              "type": "FunctionNode",
+              "properties": {
+                "children": [
+                  {
+                    "type": "InternalVariableNode",
+                    "properties": {
+                      "rawType": "void",
+                      "coreType": "void",
+                      "reducedRawType": "void",
+                      "levelOfPointer": 0,
+                      "isReference": false,
+                      "isPrivate": false,
+                      "children": [],
+                      "name": "",
+                      "absolutePath": "/",
+                      "id": 36,
+                      "dependencies": []
+                    }
+                  },
+                  {
+                    "type": "ReturnVariableNode",
+                    "properties": {
+                      "rawType": "int",
+                      "coreType": "int",
+                      "reducedRawType": "int",
+                      "levelOfPointer": 0,
+                      "isReference": false,
+                      "isPrivate": false,
+                      "children": [],
+                      "name": "returnVar",
+                      "absolutePath": "/home/macvan/IdeaProjects/utt/local/data-test/test_data_003/class.cpp/main(void)/returnVar",
+                      "id": 37,
+                      "dependencies": []
+                    }
+                  }
+                ],
+                "name": "main(void)",
+                "absolutePath": "/home/macvan/IdeaProjects/utt/local/data-test/test_data_003/class.cpp/main(void)",
+                "id": 35,
+                "dependencies": []
+              }
+            },
+            {
+              "type": "IncludeHeaderNode",
+              "properties": {
+                "children": [],
+                "name": "\"iostream\"",
+                "absolutePath": "/home/macvan/IdeaProjects/utt/local/data-test/test_data_003/class.cpp/\"iostream\"",
+                "id": 38,
+                "dependencies": []
+              }
+            }
+          ],
+          "name": "class.cpp",
+          "absolutePath": "/home/macvan/IdeaProjects/utt/local/data-test/test_data_003/class.cpp",
+          "id": 1,
+          "dependencies": []
+        }
+      }
+    ],
+    "name": "test_data_003",
+    "absolutePath": "/home/macvan/IdeaProjects/utt/local/data-test/test_data_003",
+    "id": 0
+  }
+}

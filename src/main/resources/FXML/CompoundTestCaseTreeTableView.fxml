@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ButtonBar?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TreeTableColumn?>
+<?import javafx.scene.control.TreeTableView?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane prefHeight="608.0" prefWidth="856.0" xmlns="http://javafx.com/javafx/8.0.231" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dse.guifx_v3.controllers.CompoundTestCaseTreeTableViewController">
+   <children>
+      <TabPane prefHeight="200.0" prefWidth="200.0" side="BOTTOM" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <tabs>
+            <Tab fx:id="tabSlots" text="Slots">
+               <content>
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <TreeTableView fx:id="ttvCompoundTestCase" prefHeight="490.0" prefWidth="700.0" showRoot="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                          <columns>
+                            <TreeTableColumn fx:id="colSlot" prefWidth="75.0" text="Slot" />
+                            <TreeTableColumn fx:id="colUnits" minWidth="80.0" prefWidth="75.0" text="Units" />
+                              <TreeTableColumn fx:id="colSubprograms" minWidth="90.0" prefWidth="75.0" text="Subprograms" />
+                              <TreeTableColumn fx:id="colTestCases" minWidth="200.0" prefWidth="75.0" text="Test Cases" />
+                              <TreeTableColumn fx:id="colIterations" minWidth="50.0" prefWidth="75.0" text="Iterations" />
+                              <TreeTableColumn fx:id="colDelay" prefWidth="75.0" text="Delay" />
+                              <TreeTableColumn fx:id="colBreak" prefWidth="75.0" text="Break" />
+                              <TreeTableColumn fx:id="colReport" prefWidth="75.0" text="Report" />
+                          </columns>
+                           <columnResizePolicy>
+                              <TreeTableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                           </columnResizePolicy>
+                        </TreeTableView>
+                     </children>
+                  </AnchorPane>
+               </content>
+            </Tab>
+            <Tab text="Test Case User Code">
+               <content>
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <ButtonBar prefHeight="26.0" prefWidth="317.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="7.0">
+                           <buttons>
+                              <Button layoutX="125.0" layoutY="10.0" mnemonicParsing="false" onAction="#loadExistedUserCode" text="Load Existed" />
+                              <Button layoutX="125.0" layoutY="10.0" mnemonicParsing="false" onAction="#saveTestCaseUserCode" text="Save" />
+                           </buttons>
+                        </ButtonBar>
+                        <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="40.0">
+                           <tabs>
+                              <Tab fx:id="tabUserCode" text="User Code">
+                                 <content>
+                                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                       <children>
+                                          <SplitPane fx:id="spUserCode" dividerPositions="0.6749872643912379" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+                                             <items>
+                                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0" />
+                                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0" />
+                                             </items>
+                                          </SplitPane>
+                                       </children>
+                                    </AnchorPane>
+                                 </content>
+                              </Tab>
+                              <Tab text="Include">
+                                 <content>
+                                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                       <children>
+                                          <ListView fx:id="lvIncludeFiles" layoutX="145.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="35.0" />
+                                          <ButtonBar layoutX="386.0" layoutY="-6.0" prefHeight="7.0" prefWidth="200.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="5.0">
+                                             <buttons>
+                                                <Button fx:id="bAddIncludeFile" mnemonicParsing="false" onAction="#addIncludeFile" text="Add" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="0.0" />
+                                                <Button fx:id="bDeleteIncludeFile" layoutX="125.0" layoutY="10.0" mnemonicParsing="false" onAction="#deleteIncludeFile" text="Delete" />
+                                             </buttons>
+                                          </ButtonBar>
+                                       </children>
+                                    </AnchorPane>
+                                 </content>
+                              </Tab>
+                           </tabs>
+                        </TabPane>
+                     </children>
+                  </AnchorPane>
+               </content>
+            </Tab>
+         </tabs>
+      </TabPane>
+   </children>
+</AnchorPane>

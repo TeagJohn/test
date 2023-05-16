@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="800.0" prefHeight="599.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dse.guifx_v3.controllers.build_environment.SrcResolverController">
+    <top>
+        <VBox BorderPane.alignment="CENTER">
+            <children>
+                <HBox>
+                    <children>
+                        <Label fx:id="title" text="Source Code Resolver">
+                            <font>
+                                <Font size="17.0" />
+                            </font>
+                            <padding>
+                                <Insets bottom="5.0" left="10.0" right="5.0" top="5.0" />
+                            </padding>
+                        </Label>
+                        <Region HBox.hgrow="ALWAYS" />
+                    </children>
+                </HBox>
+                <Separator prefWidth="200.0" />
+            </children>
+        </VBox>
+    </top>
+   <bottom>
+      <HBox alignment="BOTTOM_CENTER" prefHeight="25.0" prefWidth="390.0" BorderPane.alignment="CENTER">
+         <children>
+            <Button fx:id="btnIgnore" minWidth="100.0" mnemonicParsing="false" onAction="#onBtnIgnoreClick" text="Ignore">
+               <HBox.margin>
+                  <Insets right="20.0" />
+               </HBox.margin>
+            </Button>
+            <Button fx:id="btnIgnoreAll" minWidth="100.0" mnemonicParsing="false" onAction="#onBtnIgnoreAllClick" text="Ignore All">
+               <HBox.margin>
+                  <Insets right="20.0" />
+               </HBox.margin>
+            </Button>
+            <Button fx:id="btnAbort" minWidth="100.0" mnemonicParsing="false" onAction="#onBtnAbortClick" text="Abort">
+               <HBox.margin>
+                  <Insets right="20.0" />
+               </HBox.margin>
+            </Button>
+            <Button fx:id="btnHelp" minWidth="100.0" mnemonicParsing="false" onAction="#onBtnHelpClick" text="Help">
+               <HBox.margin>
+                  <Insets right="20.0" />
+               </HBox.margin>
+            </Button>
+            <Button fx:id="btnOpenFile" minWidth="100.0" mnemonicParsing="false" onAction="#onBtnOpenFileClick" text="Open In Explorer">
+               <HBox.margin>
+                  <Insets />
+               </HBox.margin>
+            </Button>
+         </children>
+         <BorderPane.margin>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+         </BorderPane.margin>
+      </HBox>
+   </bottom>
+   <center>
+      <VBox prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
+         <children>
+            <Text fx:id="txtFilePath" strokeType="OUTSIDE" strokeWidth="0.0" text="Text">
+               <VBox.margin>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </VBox.margin>
+            </Text>
+            <TextArea fx:id="txtCompileMessage" prefHeight="629.0" prefWidth="800.0">
+               <VBox.margin>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </VBox.margin>
+            </TextArea>
+            <SplitPane dividerPositions="0.5" prefWidth="200.0">
+              <items>
+                  <VBox prefHeight="200.0" prefWidth="100.0">
+                     <children>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Missing" />
+                        <ListView fx:id="lvMissing" maxHeight="180.0" minHeight="180.0" prefWidth="780.0" />
+                     </children>
+                  </VBox>
+                  <VBox prefHeight="200.0" prefWidth="100.0">
+                      <children>
+                          <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Resolved" />
+                          <ListView fx:id="lvResolved" maxHeight="180.0" minHeight="180.0" prefWidth="780.0" />
+                      </children>
+                  </VBox>
+              </items>
+               <padding>
+                  <Insets left="10.0" right="10.0" />
+               </padding>
+            </SplitPane>
+         </children>
+      </VBox>
+   </center>
+</BorderPane>

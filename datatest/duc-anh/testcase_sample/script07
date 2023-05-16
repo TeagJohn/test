@@ -1,0 +1,27 @@
+-- VectorCAST 5.3 (07/18/11)
+-- Test Case Script
+--
+-- Environment : TUTORIAL
+-- Unit(s) Under Test: database manager manager_driver whitebox
+--
+-- Script Features
+TEST.SCRIPT_FEATURE:C_DIRECT_ARRAY_INDEXING
+TEST.SCRIPT_FEATURE:CPP_CLASS_OBJECT_REVISION
+TEST.SCRIPT_FEATURE:MULTIPLE_UUT_SUPPORT
+TEST.SCRIPT_FEATURE:STANDARD_SPACING_R2
+TEST.SCRIPT_FEATURE:OVERLOADED_CONST_SUPPORT
+--
+-- Test Case: (CL)MANAGER::PLACEORDER.001
+TEST.UNIT:manager
+TEST.SUBPROGRAM:(cl)Manager::PlaceOrder
+TEST.NEW
+TEST.NAME:(CL)MANAGER::PLACEORDER.001
+TEST.VALUE:manager.(cl)Manager::PlaceOrder.Table:1
+TEST.VALUE:manager.(cl)Manager::PlaceOrder.Seat:4
+TEST.VALUE:manager.(cl)Manager::PlaceOrder.Order.Soup:Onion
+TEST.VALUE:manager.(cl)Manager::PlaceOrder.Order.Salad:Caesar
+TEST.VALUE:manager.(cl)Manager::PlaceOrder.Order.Entree:Steak
+TEST.VALUE:manager.(cl)Manager::PlaceOrder.Order.Dessert:Pie
+TEST.VALUE:manager.(cl)Manager::PlaceOrder.Order.Beverage:Wine
+TEST.VALUE:whitebox.<<GLOBAL>>.(cl).WhiteBox.WhiteBox.<<constructor>>.WhiteBox().<<call>>:0
+TEST.END

@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ButtonBar?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/8.0.231" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dse.user_code.controllers.UserCodeManagerController">
+   <children>
+      <AnchorPane layoutX="39.0" layoutY="100.0" prefHeight="200.0" prefWidth="200.0" style="-fx-border-color: black; -fx-border-width: 0.2;" AnchorPane.bottomAnchor="45.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="60.0">
+         <children>
+            <SplitPane dividerPositions="0.45" layoutX="123.0" layoutY="125.0" prefHeight="160.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+              <items>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+                     <children>
+                        <AnchorPane prefHeight="40.0" prefWidth="267.0" style="-fx-border-width: 0.1; -fx-border-color: black;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <children>
+                              <Label prefHeight="26.0" text="Search:" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="7.0" />
+                              <TextField fx:id="tfSearch" prefHeight="26.0" prefWidth="240.0" AnchorPane.leftAnchor="60.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="7.0" />
+                           </children>
+                        </AnchorPane>
+                        <AnchorPane layoutX="10.0" layoutY="10.0" prefHeight="40.0" prefWidth="267.0" style="-fx-border-color: black; -fx-border-width: 0.1;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="40.0">
+                           <children>
+                              <Label prefHeight="26.0" text="Type:" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="7.0" />
+                              <ComboBox fx:id="cbbType" layoutX="60.0" layoutY="7.0" prefHeight="26.0" prefWidth="236.0" AnchorPane.bottomAnchor="7.0" AnchorPane.leftAnchor="60.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="7.0" />
+                           </children>
+                        </AnchorPane>
+                        <ListView fx:id="lvUserCodes" layoutX="78.0" layoutY="59.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="80.0" />
+                     </children>
+                  </AnchorPane>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+                     <children>
+                        <TabPane fx:id="tpContent" layoutX="41.0" layoutY="76.0" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                          <tabs>
+                            <Tab fx:id="tabCode" text="Code">
+                              <content>
+                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                              </content>
+                            </Tab>
+                              <Tab fx:id="tabCodes" text="Codes">
+                                 <content>
+                                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                       <children>
+                                          <SplitPane dividerPositions="0.5" layoutX="59.0" layoutY="93.0" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                            <items>
+                                              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+                                                   <children>
+                                                      <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                        <tabs>
+                                                          <Tab fx:id="tabSetUp" text="Set up">
+                                                            <content>
+                                                              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                                                            </content>
+                                                          </Tab>
+                                                        </tabs>
+                                                      </TabPane>
+                                                   </children>
+                                                </AnchorPane>
+                                              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+                                                   <children>
+                                                      <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                         <tabs>
+                                                            <Tab fx:id="tabTearDown" text="Tear down">
+                                                               <content>
+                                                                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                                                               </content>
+                                                            </Tab>
+                                                         </tabs>
+                                                      </TabPane>
+                                                   </children>
+                                                </AnchorPane>
+                                            </items>
+                                          </SplitPane>
+                                       </children>
+                                    </AnchorPane>
+                                 </content>
+                              </Tab>
+                            <Tab text="Includes">
+                              <content>
+                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                       <children>
+                                          <ListView fx:id="lvIncludes" layoutX="75.0" layoutY="71.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                       </children>
+                                    </AnchorPane>
+                              </content>
+                            </Tab>
+                          </tabs>
+                        </TabPane>
+                     </children>
+                  </AnchorPane>
+              </items>
+            </SplitPane>
+         </children>
+      </AnchorPane>
+      <ButtonBar layoutX="387.0" layoutY="69.0" prefHeight="40.0" prefWidth="200.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+        <buttons>
+          <Button fx:id="addUserCodeBtn" mnemonicParsing="false" onAction="#addUserCode" text="Add" />
+          <Button fx:id="duplicateUserCodeBtn" layoutX="125.0" layoutY="17.0" mnemonicParsing="false" onAction="#duplicateUserCode" text="Duplicate" />
+          <Button fx:id="editUserCodeBtn" layoutX="30.0" layoutY="17.0" mnemonicParsing="false" onAction="#editUserCode" text="Edit" />
+          <Button fx:id="deleteUserCodeBtn" layoutX="125.0" layoutY="17.0" mnemonicParsing="false" onAction="#deleteUserCode" text="Delete" />
+        </buttons>
+      </ButtonBar>
+      <ButtonBar layoutX="395.0" layoutY="546.0" prefHeight="16.0" prefWidth="200.0" AnchorPane.bottomAnchor="10.0" AnchorPane.rightAnchor="10.0">
+        <buttons>
+            <Button layoutX="125.0" layoutY="10.0" mnemonicParsing="false" onAction="#close" text="Close" />
+        </buttons>
+      </ButtonBar>
+   </children>
+</AnchorPane>

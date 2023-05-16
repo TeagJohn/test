@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="520.0" prefWidth="570.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dse.guifx_v3.controllers.build_environment.NameEnvironmentController">
+   <children>
+      <Label layoutX="14.0" layoutY="14.0" prefHeight="33.0" prefWidth="120.0" text="Environment Name:  " AnchorPane.leftAnchor="15.0" />
+      <TextField fx:id="tfEnvironmentName" layoutX="139.0" layoutY="18.0" onAction="#validate" onKeyReleased="#validate" prefHeight="27.0" prefWidth="419.0" />
+<!--      <Button layoutX="444.0" layoutY="18.0" mnemonicParsing="false" onAction="#loadExistingEnvironmentFile" text="Load" AnchorPane.rightAnchor="15.0" />-->
+   </children>
+</AnchorPane>

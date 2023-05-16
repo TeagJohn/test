@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="800.0" prefHeight="599.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dse.guifx_v3.controllers.build_environment.BaseController">
+   <bottom>
+      <AnchorPane BorderPane.alignment="CENTER">
+         <children>
+            <ButtonBar centerShape="false" prefHeight="40.0" prefWidth="200.0" scaleShape="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="0.0">
+               <buttons>
+                  <Button maxWidth="70.0" minWidth="70.0" mnemonicParsing="false" onAction="#save" prefWidth="70.0" text="Save" />
+                  <Button fx:id="bBack" maxWidth="70.0" mnemonicParsing="false" onAction="#back" prefWidth="70.0" text="&lt; Back" />
+                  <Button fx:id="bNext" maxWidth="70.0" mnemonicParsing="false" onAction="#next" prefWidth="70.0" text="Next &gt;" />
+                  <Button maxWidth="70.0" mnemonicParsing="false" onAction="#cancel" prefWidth="70.0" text="Cancel" />
+                  <Region prefHeight="40.0" prefWidth="267.0" />
+                  <Button fx:id="bBuild" maxWidth="150.0" minWidth="150.0" mnemonicParsing="false" onAction="#buildEnvironment" prefWidth="150.0" text="Build" />
+               </buttons>
+            </ButtonBar>
+         </children>
+      </AnchorPane>
+   </bottom>
+   <right>
+      <AnchorPane minWidth="201.0" prefHeight="508.0" prefWidth="224.0" BorderPane.alignment="CENTER">
+         <children>
+            <VBox layoutX="-53.0" layoutY="35.0" minWidth="254.0" prefHeight="508.0" prefWidth="254.0" spacing="4.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+               <children>
+                  <AnchorPane prefHeight="10.0" prefWidth="222.0">
+                     <children>
+                        <Label fx:id="labelChooseCompiler" layoutX="33.0" layoutY="27.0" onMouseClicked="#onSelectChooseCompiler" prefHeight="29.0" prefWidth="189.0" style="-fx-border-color: grey; -fx-background-color: white;" text="Choose Compiler" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="29.0" AnchorPane.topAnchor="5.0">
+                           <padding>
+                              <Insets bottom="5.0" left="5.0" right="10.0" top="5.0" />
+                           </padding>
+                        </Label>
+                        <Label alignment="CENTER" layoutX="162.0" layoutY="15.0" prefHeight="25.0" prefWidth="30.0" style="-fx-background-radius: 25 25 25 25; -fx-background-color: grey;" text="1" textFill="WHITE" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="5.0" />
+                     </children>
+                  </AnchorPane>
+                  <AnchorPane layoutX="10.0" layoutY="10.0" prefHeight="10.0" prefWidth="222.0">
+                     <children>
+                        <Label fx:id="labelNameEnvironment" layoutX="33.0" layoutY="27.0" onMouseClicked="#onSelectNameEnvironment" prefHeight="29.0" prefWidth="189.0" style="-fx-border-color: grey; -fx-background-color: white;" text="Name the Environment" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="29.0" AnchorPane.topAnchor="5.0">
+                           <padding>
+                              <Insets bottom="5.0" left="5.0" right="10.0" top="5.0" />
+                           </padding>
+                        </Label>
+                        <Label alignment="CENTER" layoutX="162.0" layoutY="15.0" prefHeight="25.0" prefWidth="30.0" style="-fx-background-radius: 25 25 25 25; -fx-background-color: grey;" text="2" textFill="WHITE" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="5.0" />
+                     </children>
+                  </AnchorPane>
+                  <AnchorPane layoutX="10.0" layoutY="49.0" prefHeight="10.0" prefWidth="222.0">
+                     <children>
+                        <Label fx:id="labelTestingMethod" layoutX="33.0" layoutY="27.0" onMouseClicked="#onSelectTestingMethod" prefHeight="29.0" prefWidth="189.0" style="-fx-border-color: grey; -fx-background-color: white;" text="Testing method" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="29.0" AnchorPane.topAnchor="5.0">
+                           <padding>
+                              <Insets bottom="5.0" left="5.0" right="10.0" top="5.0" />
+                           </padding>
+                        </Label>
+                        <Label alignment="CENTER" layoutX="162.0" layoutY="15.0" prefHeight="25.0" prefWidth="30.0" style="-fx-background-radius: 25 25 25 25; -fx-background-color: grey;" text="3" textFill="WHITE" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="5.0" />
+                     </children>
+                  </AnchorPane>
+                  <AnchorPane layoutX="10.0" layoutY="88.0" prefHeight="10.0" prefWidth="222.0">
+                     <children>
+                        <Label fx:id="labelBuildOptions" layoutX="33.0" layoutY="27.0" onMouseClicked="#onSelectBuildOptions" prefHeight="29.0" prefWidth="189.0" style="-fx-border-color: grey; -fx-background-color: white;" text="Build Options" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="29.0" AnchorPane.topAnchor="5.0">
+                           <padding>
+                              <Insets bottom="5.0" left="5.0" right="10.0" top="5.0" />
+                           </padding>
+                        </Label>
+                        <Label alignment="CENTER" layoutX="162.0" layoutY="15.0" prefHeight="25.0" prefWidth="30.0" style="-fx-background-radius: 25 25 25 25; -fx-background-color: grey;" text="4" textFill="WHITE" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="5.0" />
+                     </children>
+                  </AnchorPane>
+                  <AnchorPane layoutX="10.0" layoutY="127.0" prefHeight="10.0" prefWidth="222.0">
+                     <children>
+                        <Label fx:id="labelLocateSourceFiles" layoutX="33.0" layoutY="27.0" onMouseClicked="#onSelectLocateSourceFiles" prefHeight="29.0" prefWidth="189.0" style="-fx-border-color: grey; -fx-background-color: white;" text="Locate Source Files" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="29.0" AnchorPane.topAnchor="5.0">
+                           <padding>
+                              <Insets bottom="5.0" left="5.0" right="10.0" top="5.0" />
+                           </padding>
+                        </Label>
+                        <Label alignment="CENTER" layoutX="162.0" layoutY="15.0" prefHeight="25.0" prefWidth="30.0" style="-fx-background-radius: 25 25 25 25; -fx-background-color: grey;" text="5" textFill="WHITE" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="5.0" />
+                     </children>
+                  </AnchorPane>
+                  <AnchorPane layoutX="10.0" layoutY="166.0" prefHeight="10.0" prefWidth="222.0">
+                     <children>
+                        <Label fx:id="labelChooseUUT" layoutX="33.0" layoutY="27.0" onMouseClicked="#onSelectChooseUUT" prefHeight="29.0" prefWidth="189.0" style="-fx-border-color: grey; -fx-background-color: white;" text="Choose UUTs &amp; Stubs" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="29.0" AnchorPane.topAnchor="5.0">
+                           <padding>
+                              <Insets bottom="5.0" left="5.0" right="10.0" top="5.0" />
+                           </padding>
+                        </Label>
+                        <Label alignment="CENTER" layoutX="162.0" layoutY="15.0" prefHeight="25.0" prefWidth="30.0" style="-fx-background-radius: 25 25 25 25; -fx-background-color: grey;" text="6" textFill="WHITE" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="5.0" />
+                     </children>
+                  </AnchorPane>
+                  <AnchorPane layoutX="10.0" layoutY="205.0" prefHeight="10.0" prefWidth="222.0">
+                     <children>
+                        <Label fx:id="labelUserCode" layoutX="33.0" layoutY="27.0" onMouseClicked="#onSelectUserCode" prefHeight="29.0" prefWidth="189.0" style="-fx-border-color: grey; -fx-background-color: white;" text="User Code (optional)" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="29.0" AnchorPane.topAnchor="5.0">
+                           <padding>
+                              <Insets bottom="5.0" left="5.0" right="10.0" top="5.0" />
+                           </padding>
+                        </Label>
+                        <Label alignment="CENTER" layoutX="162.0" layoutY="15.0" prefHeight="25.0" prefWidth="30.0" style="-fx-background-radius: 25 25 25 25; -fx-background-color: grey;" text="7" textFill="WHITE" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="5.0" />
+                     </children>
+                  </AnchorPane>
+                  <AnchorPane layoutX="10.0" layoutY="244.0" prefHeight="10.0" prefWidth="222.0">
+                     <children>
+                        <Label fx:id="labelSummary" layoutX="33.0" layoutY="27.0" onMouseClicked="#onSelectSummary" prefHeight="29.0" prefWidth="189.0" style="-fx-border-color: grey; -fx-background-color: white;" text="Summary" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="29.0" AnchorPane.topAnchor="5.0">
+                           <padding>
+                              <Insets bottom="5.0" left="5.0" right="10.0" top="5.0" />
+                           </padding>
+                        </Label>
+                        <Label alignment="CENTER" layoutX="162.0" layoutY="15.0" prefHeight="25.0" prefWidth="30.0" style="-fx-background-radius: 25 25 25 25; -fx-background-color: grey;" text="8" textFill="WHITE" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="5.0" />
+                     </children>
+                  </AnchorPane>
+               </children>
+            </VBox>
+         </children>
+      </AnchorPane>
+   </right>
+   <center>
+      <SplitPane fx:id="inputWindow" prefHeight="487.0" prefWidth="550.0" BorderPane.alignment="CENTER">
+         <BorderPane.margin>
+            <Insets left="5.0" />
+         </BorderPane.margin>
+      </SplitPane>
+   </center>
+   <top>
+      <VBox BorderPane.alignment="CENTER">
+         <children>
+            <HBox>
+               <children>
+                  <Label fx:id="title" text="Environment Builder">
+                     <font>
+                        <Font size="17.0" />
+                     </font>
+                     <padding>
+                        <Insets bottom="5.0" left="10.0" right="5.0" top="5.0" />
+                     </padding>
+                  </Label>
+                  <Region HBox.hgrow="ALWAYS" />
+               </children>
+            </HBox>
+            <Separator prefWidth="200.0" />
+         </children>
+      </VBox>
+   </top>
+</BorderPane>

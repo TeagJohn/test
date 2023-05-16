@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="520.0" prefWidth="570.0" xmlns="http://javafx.com/javafx/8.0.231" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dse.guifx_v3.controllers.build_environment.TestingMethodController">
+   <children>
+      <RadioButton fx:id="rbTraditionalUnitTesting" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#chooseTraditionalUnitTesting" selected="true" text="Traditional Unit Testing" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+         <toggleGroup>
+            <ToggleGroup fx:id="rmiTestingMethod" />
+         </toggleGroup>
+      </RadioButton>
+      <RadioButton disable="true" layoutX="10.0" layoutY="86.0" mnemonicParsing="false" onAction="#chooseObjectFileTesting" text="Object File Testing " toggleGroup="$rmiTestingMethod" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="86.0">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+      </RadioButton>
+      <RadioButton disable="true" layoutX="10.0" layoutY="357.0" mnemonicParsing="false" onAction="#chooseTestDrivenDevelopment" text="Test Driven Development" toggleGroup="$rmiTestingMethod" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="357.0">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+      </RadioButton>
+      <RadioButton disable="true" layoutX="10.0" layoutY="210.0" mnemonicParsing="false" onAction="#chooseLibraryInterfaceTesting" text="Library Interface Testing" toggleGroup="$rmiTestingMethod" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="210.0">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+      </RadioButton>
+      <Label layoutX="25.0" layoutY="25.0" prefHeight="57.0" prefWidth="535.0" text="Unit Test Tool will parse the implemetation of the functions and methods that exist in your C/C++ source files, and create the test driver based on these. Additionally, any prototypes found for called functions that are not part of the test environment will be stubbed." textAlignment="JUSTIFY" wrapText="true" AnchorPane.leftAnchor="25.0" AnchorPane.rightAnchor="10.0" />
+      <Label disable="true" layoutX="25.0" layoutY="105.0" prefHeight="65.0" prefWidth="535.0" text="Unit Test Tool will work in the same way as for Traditional Unit Testing, except the original source files will not be compiled into the test harness. You will use the &quot;Link Options&quot; to provide the path to the object files or the library file containing the object files for all units under test." textAlignment="JUSTIFY" wrapText="true" AnchorPane.leftAnchor="25.0" AnchorPane.rightAnchor="10.0" />
+      <Label disable="true" layoutX="25.0" layoutY="231.0" prefHeight="74.0" prefWidth="535.0" text="Unit Test Tool will parse the definition of  the functions and methods that exist in your C/C++ header files, and create the test environment based on these. No stubs will be created. It is assumed that the test harness will be linked against a library archive that contains the implementation of the functions and methods under test." textAlignment="JUSTIFY" wrapText="true" AnchorPane.leftAnchor="25.0" AnchorPane.rightAnchor="10.0" />
+      <Label disable="true" layoutX="25.0" layoutY="379.0" prefHeight="125.0" prefWidth="536.0" text="Unit Test Tool will parse the definition of the functions and methods that exist in your C/C++ header files, and create the test environment based on these. A distinction between this method and &quot;Library Interface Testing&quot; is that for &quot;Test Driven Development&quot;, Unit Test Tool will create &quot;stubbed place-holders&quot; for the functions under test. Additionally, as you start to develop the implementations of the functions and methods under test, the real implementations can replace the place-holders incrementally. This allows test cases to be developed as soon as the top-level software design is complete." textAlignment="JUSTIFY" wrapText="true" AnchorPane.leftAnchor="25.0" AnchorPane.rightAnchor="9.0" />
+      <Label fx:id="lLinkOptionsObjectFileTesting" disable="true" layoutX="25.0" layoutY="182.0" text="Link options:" AnchorPane.leftAnchor="25.0" />
+      <TextField fx:id="tfObjectFileTesting" disable="true" editable="false" layoutX="110.0" layoutY="178.0" prefHeight="25.0" prefWidth="404.0" AnchorPane.leftAnchor="110.0" AnchorPane.rightAnchor="80.0" />
+      <Button fx:id="bLoadObjectFileTesting" disable="true" layoutX="498.0" layoutY="178.0" mnemonicParsing="false" onAction="#loadLinkOptionsForObjectFileTesting" text="Load" AnchorPane.rightAnchor="30.0" />
+      <Label fx:id="lLinkOptionsLibraryInterfaceTesting" disable="true" layoutX="25.0" layoutY="320.0" text="Link options:" AnchorPane.leftAnchor="25.0" />
+      <TextField fx:id="tfLibraryInterfaceTesting" disable="true" editable="false" layoutX="110.0" layoutY="316.0" prefHeight="25.0" prefWidth="404.0" AnchorPane.leftAnchor="110.0" AnchorPane.rightAnchor="80.0" />
+      <Button fx:id="bLoadLibraryInterfaceTesting" disable="true" layoutX="498.0" layoutY="316.0" mnemonicParsing="false" onAction="#loadLinkOptionsForLibraryInterfaceTesting" text="Load" AnchorPane.rightAnchor="30.0" />
+   </children>
+</AnchorPane>

@@ -1,0 +1,9 @@
+.tree-table-row-cell {
+    -fx-cell-size: 27px;
+}
+
+.tree-table-cell {
+    -fx-border-width: 0;
+    -fx-alignment: top-left;
+    -fx-padding: 0;
+}

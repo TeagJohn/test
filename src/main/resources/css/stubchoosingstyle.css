@@ -1,0 +1,16 @@
+.jfx-button {
+    -fx-background-color: #1976D2;
+    -fx-text-fill: white;
+}
+
+.jfx-button:hover {
+    -fx-background-color: #388E3C;
+}
+
+#dependencyBox {
+    -fx-border-style: solid inside;
+    -fx-border-width: 2;
+    -fx-border-insets: 5;
+    -fx-border-radius: 5;
+    -fx-border-color: grey;
+}

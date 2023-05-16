@@ -1,0 +1,12 @@
+[
+  {
+    "nodeId": "3",
+    "enable": "true",
+    "type": "io",
+    "value":
+    {
+      "nodeId": "5",
+      "value": "10000"
+    }
+  }
+]

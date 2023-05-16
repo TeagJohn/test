@@ -1,0 +1,36 @@
+.tree-table-row-cell {
+    -fx-cell-size: 27px;
+    -fx-font: 12 arial;
+}
+
+.tree-table-row-cell:input-column-is-selected {
+    -fx-background-color: #afe3bd;
+}
+
+.tree-table-row-cell:expected-output-column-is-selected {
+    -fx-background-color: #ffdeb3;
+}
+
+.tree-table-cell:input-column-parameter {
+    -fx-background-color: #afe3bd;
+}
+
+.tree-table-cell:expected-output-column-parameter {
+    -fx-background-color: #ffdeb3;
+}
+
+.tree-table-cell {
+    -fx-border-width: 0.1;
+    -fx-border-color: black;
+    -fx-border-style: solid;
+    -fx-alignment: CENTER-LEFT;
+    -fx-padding: 0;
+}
+
+.tree-table-cell:disabled {
+    -fx-background-color: grey;
+}
+
+/*.tree-table-row-cell:selected .tree-table-cell{*/
+/*    -fx-background-color: #3f71a1;*/
+/*}*/

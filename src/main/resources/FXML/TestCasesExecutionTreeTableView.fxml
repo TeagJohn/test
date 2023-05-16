@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.TreeTableColumn?>
+<?import javafx.scene.control.TreeTableView?>
+
+<TreeTableView prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.212" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dse.guifx_v3.controllers.TestCasesExecutionTreeTableViewController">
+  <columns>
+    <TreeTableColumn fx:id="colId" minWidth="5.0" prefWidth="75.0" text="Id" />
+    <TreeTableColumn fx:id="colValue" minWidth="200.0" prefWidth="75.0" text="Value" />
+      <TreeTableColumn fx:id="colTestCasePath" minWidth="270.0" prefWidth="75.0" text="Test Case Path" />
+      <TreeTableColumn fx:id="colCoverage" minWidth="50.0" prefWidth="75.0" text="Coverage" />
+  </columns>
+   <columnResizePolicy>
+      <TreeTableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+   </columnResizePolicy>
+</TreeTableView>

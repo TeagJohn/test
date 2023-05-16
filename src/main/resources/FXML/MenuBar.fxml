@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.CustomMenuItem?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.input.KeyCodeCombination?>
+
+<?import javafx.scene.image.ImageView?><?import javafx.scene.image.Image?>
+<MenuBar fx:id="mMenuBar" xmlns="http://javafx.com/javafx/8.0.231" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dse.guifx_v3.controllers.main_view.MenuBarController">
+    <Menu fx:id="mFile" text="_File">
+        <Menu fx:id="mNew" mnemonicParsing="false" text="New">
+            <CustomMenuItem fx:id="cminewCCPPEnvironment" onAction="#createNewEnvironment" text="C/C++ Environment">
+                <accelerator>
+                    <KeyCodeCombination alt="UP" code="N" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                </accelerator>
+                <content>
+                    <Label text="C/C++ Environment">
+                    </Label>
+                </content>
+            </CustomMenuItem>
+        </Menu>
+        <CustomMenuItem fx:id="cmiOpenEnvironment" mnemonicParsing="false" onAction="#openEnvironment" text="Open Environment">
+            <accelerator>
+                <KeyCodeCombination alt="UP" code="O" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+            </accelerator>
+            <content>
+                <Label text="Open Environment">
+                    <graphic>
+                        <ImageView pickOnBounds="true" preserveRatio="true">
+                            <Image url="/icons/file/openEnvironment.png" />
+                        </ImageView>
+                    </graphic>
+                </Label>
+            </content>
+        </CustomMenuItem>
+        <Menu fx:id="miRecentEnvironments" mnemonicParsing="false" text="Recent Environments" />
+        <CustomMenuItem fx:id="cmiSetZ3Solver" mnemonicParsing="false" onAction="#setZ3Solver" text="Set Z3 SMT-Solver">
+            <accelerator>
+                <KeyCodeCombination alt="UP" code="Z" control="DOWN" meta="UP" shift="DOWN" shortcut="UP" />
+            </accelerator>
+            <content>
+                <Label text="Set Z3 SMT-Solver">
+                    <graphic>
+                        <ImageView pickOnBounds="true" preserveRatio="true">
+                            <Image url="/icons/file/setWorkingDirectory.png" />
+                        </ImageView>
+                    </graphic>
+                </Label>
+            </content>
+        </CustomMenuItem>
+        <CustomMenuItem mnemonicParsing="false" onAction="#testZ3Solver" text="Test Z3 Solver">
+<!--            <accelerator>-->
+<!--                <KeyCodeCombination alt="UP" code="Z" control="DOWN" meta="UP" shift="UP" shortcut="UP" />-->
+<!--            </accelerator>-->
+            <content>
+                <Label text="Test Z3 Solver">
+                    <graphic>
+                        <ImageView pickOnBounds="true" preserveRatio="true">
+                            <Image url="/icons/file/importTestcase.png" />
+                        </ImageView>
+                    </graphic>
+                </Label>
+            </content>
+        </CustomMenuItem>
+        <CustomMenuItem fx:id="cmiExit" onAction="#exit" text="Quit">
+            <accelerator>
+                <KeyCodeCombination alt="UP" code="Q" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+            </accelerator>
+            <content>
+                <Label text="Quit">
+                    <graphic>
+                        <ImageView pickOnBounds="true" preserveRatio="true">
+                            <Image url="/icons/file/exit.png" />
+                        </ImageView>
+                    </graphic>
+                </Label>
+            </content>
+        </CustomMenuItem>
+        <CustomMenuItem fx:id="cmiClearCache" mnemonicParsing="false" onAction="#clearCache" text="Clear Cache">
+            <!--            <accelerator>-->
+            <!--                <KeyCodeCombination alt="UP" code="P" control="DOWN" meta="UP" shift="UP" shortcut="UP" />-->
+            <!--            </accelerator>-->
+            <content>
+                <Label text="Clear Cache"/>
+            </content>
+        </CustomMenuItem>
+    </Menu>
+
+    <Menu fx:id="mEnvironment" disable="false" mnemonicParsing="false" text="_Environment">
+        <CustomMenuItem fx:id="cmiIncrementalBuild" mnemonicParsing="false" onAction="#incrementalBuild" text="Incremental building">
+            <accelerator>
+                <KeyCodeCombination alt="UP" code="I" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+            </accelerator>
+            <content>
+                <Label text="Incremental building"/>
+            </content>
+        </CustomMenuItem>
+        <CustomMenuItem fx:id="cmiUpdateEnvironment" mnemonicParsing="false" onAction="#updateEnvironment" text="Update Environment">
+            <accelerator>
+                <KeyCodeCombination alt="UP" code="U" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+            </accelerator>
+            <content>
+                <Label text="Update Environment"/>
+            </content>
+        </CustomMenuItem>
+        <CustomMenuItem fx:id="cmiAnalyzeDependencies" mnemonicParsing="false" onAction="#analyzeDependencies" text="Analyze Dependencies">
+            <accelerator>
+                <KeyCodeCombination alt="UP" code="A" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+            </accelerator>
+            <content>
+                <Label text="Analyze Dependencies"/>
+            </content>
+        </CustomMenuItem>
+        <CustomMenuItem fx:id="cmiInstrumentProject" mnemonicParsing="false" onAction="#instrumentProject" text="Instrument Project">
+            <accelerator>
+                <KeyCodeCombination alt="UP" code="P" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+            </accelerator>
+            <content>
+                <Label text="Instrument Project"/>
+            </content>
+        </CustomMenuItem>
+        <CustomMenuItem fx:id="cmiShowAvailableRegressionScripts" mnemonicParsing="false" onAction="#showAvailableRegressionScripts" text="Regression Scripts">
+            <content>
+                <Label text="Regression Scripts"/>
+            </content>
+        </CustomMenuItem>
+    </Menu>
+
+    <Menu fx:id="mEdit" disable="false" text="Edit">
+        <CustomMenuItem fx:id="cmiClean" mnemonicParsing="false" onAction="#miCleanAtFunctionLevel" text="Optimize test cases at function level">
+            <accelerator>
+                <KeyCodeCombination alt="UP" code="B" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+            </accelerator>
+            <content>
+                <Label text="Optimize test cases at function level"/>
+            </content>
+        </CustomMenuItem>
+        <CustomMenuItem fx:id="cmiCleanAtSourcecodeFileLevel" mnemonicParsing="false" onAction="#cleanTestCasesAtSourcecodeFileLevel" text="Optimize test cases at source code file level">
+            <accelerator>
+                <KeyCodeCombination alt="UP" code="B" control="DOWN" meta="UP" shift="DOWN" shortcut="UP" />
+            </accelerator>
+            <content>
+                <Label text="Optimize test cases at source code file level"/>
+            </content>
+        </CustomMenuItem>
+      <CustomMenuItem fx:id="cmiUserCode" onAction="#manageUserCode" text="User Code">
+            <content>
+                <Label text="User Code"/>
+            </content>
+      </CustomMenuItem>
+    </Menu>
+
+    <Menu fx:id="mRun" disable="false" text="_Run">
+        <CustomMenuItem fx:id="cmiRunWithoutReport" mnemonicParsing="false" onAction="#runAllSelectedTestCasesWithoutReport" text="Execute Without Report">
+            <accelerator>
+                <KeyCodeCombination alt="UP" code="R" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+            </accelerator>
+            <content>
+                <Label text="Execute Without Report"/>
+            </content>
+        </CustomMenuItem>
+        <CustomMenuItem fx:id="cmiRunWithReport" mnemonicParsing="false" onAction="#runAllSelectedTestCasesWithReport" text="Execute and Show Report">
+            <accelerator>
+                <KeyCodeCombination alt="UP" code="R" control="DOWN" meta="UP" shift="DOWN" shortcut="UP" />
+            </accelerator>
+            <content>
+                <Label text="Execute and Show Report"/>
+            </content>
+        </CustomMenuItem>
+        <CustomMenuItem fx:id="cmiDebug" mnemonicParsing="false" onAction="#debugTestCase" text="Run With Debugger">
+            <accelerator>
+                <KeyCodeCombination alt="UP" code="D" control="DOWN" meta="UP" shift="DOWN" shortcut="UP" />
+            </accelerator>
+            <content>
+                <Label text="Run With Debugger"/>
+            </content>
+        </CustomMenuItem>
+        <CustomMenuItem fx:id="cmiStopAutomatedTestdataGeneration" mnemonicParsing="false" onAction="#stopAllAutomatedTestdataGenerationThread" text="Stop all automated test data generation threads">
+            <accelerator>
+                <KeyCodeCombination alt="UP" code="S" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+            </accelerator>
+            <content>
+                <Label text="Stop all automated test data generation threads"/>
+            </content>
+        </CustomMenuItem>
+    </Menu>
+
+    <Menu fx:id="mSetting" disable="false" text="_Setting">
+        <CustomMenuItem fx:id="cmiAutomatedTestdataGenerationConfig" onAction="#openAutomatedTestdataGenerationConfig" text="Automated Test data generation config">
+            <accelerator>
+                <KeyCodeCombination alt="UP" code="A" control="DOWN" meta="UP" shift="DOWN" shortcut="UP" />
+            </accelerator>
+            <content>
+                <Label text="Automated Test data generation config"/>
+            </content>
+        </CustomMenuItem>
+<!--        <CustomMenuItem fx:id="cmiOpenTextEditorConfig" mnemonicParsing="false" onAction="#openTexteditorConfig" text="Text editor">-->
+<!--            <accelerator>-->
+<!--                <KeyCodeCombination alt="UP" code="T" control="DOWN" meta="UP" shift="DOWN" shortcut="UP" />-->
+<!--            </accelerator>-->
+<!--            <content>-->
+<!--                <Label text="Text editor"/>-->
+<!--            </content>-->
+<!--        </CustomMenuItem>-->
+        <CustomMenuItem fx:id="cmiSetupBoundOfVariableType" onAction="#setupBoundOfVariableType" text="Config bound of variable types">
+            <accelerator>
+                <KeyCodeCombination alt="UP" code="B" control="DOWN" meta="UP" shift="DOWN" shortcut="UP" />
+            </accelerator>
+            <content>
+                <Label text="Config bound of variable types"/>
+            </content>
+        </CustomMenuItem>
+    </Menu>
+
+    <Menu fx:id="mView" disable="false" mnemonicParsing="false" text="_View">
+        <items>
+            <CustomMenuItem fx:id="cmiViewEnvironment" onAction="#viewEnvironment" text="Environment Report">
+                <accelerator>
+                    <KeyCodeCombination alt="UP" code="E" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                </accelerator>
+                <content>
+                    <Label text="Environment Report"/>
+                </content>
+            </CustomMenuItem>
+            <CustomMenuItem fx:id="cmiViewTestCaseData" onAction="#viewTestCaseData" text="Test Case Data Report">
+                <accelerator>
+                    <KeyCodeCombination alt="UP" code="T" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                </accelerator>
+                <content>
+                    <Label text="Test Case Data Report"/>
+                </content>
+            </CustomMenuItem>
+            <CustomMenuItem fx:id="cmiViewFull" onAction="#viewFullReport" text="Full Report">
+                <accelerator>
+                    <KeyCodeCombination alt="UP" code="F" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                </accelerator>
+                <content>
+                    <Label text="Full Report"/>
+                </content>
+            </CustomMenuItem>
+            <CustomMenuItem fx:id="cmiViewTestCaseManage" onAction="#viewTestCaseManage" text="Test Case Management Report">
+                <accelerator>
+                    <KeyCodeCombination alt="UP" code="M" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                </accelerator>
+                <content>
+                    <Label text="Test Case Management Report"/>
+                </content>
+            </CustomMenuItem>
+        </items>
+    </Menu>
+
+<!--    <Menu mnemonicParsing="false" text="License">-->
+<!--        <CustomMenuItem mnemonicParsing="false" text="User License" onAction="#viewLicense" >-->
+<!--            <content>-->
+<!--                <Label text="User License" />-->
+<!--            </content>-->
+<!--        </CustomMenuItem>-->
+<!--    </Menu>-->
+
+   <Menu fx:id="mHelp" mnemonicParsing="false" text="Help">
+      <items>
+         <CustomMenuItem fx:id="cmiUserManual" mnemonicParsing="false" text="User Manual" onAction="#openUserManual">
+             <accelerator>
+                 <KeyCodeCombination alt="UP" code="H" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+             </accelerator>
+            <content>
+               <Label fx:id="labelHelp" text="User manual" />
+            </content>
+         </CustomMenuItem>
+         <CustomMenuItem fx:id="cmiToolVersion" mnemonicParsing="false" text="Tool Version" onAction="#viewReleaseNotes">
+            <content>
+               <Label text="Tool Version" />
+            </content>
+         </CustomMenuItem>
+          <CustomMenuItem mnemonicParsing="false" text="License" onAction="#viewLicense" >
+              <content>
+                  <Label text="License" />
+              </content>
+          </CustomMenuItem>
+      </items>
+   </Menu>
+</MenuBar>

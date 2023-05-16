@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane fx:id="CWindow" prefHeight="900.0" prefWidth="890.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="auto_testcase_generation.cte.UI.Controller.CTEWindowController">
+   <children>
+      <SplitPane fx:id="DInTR" dividerPositions="0.9" layoutX="0.0" layoutY="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <items>
+            <AnchorPane prefHeight="200.0" prefWidth="200.0">
+               <children>
+                  <AnchorPane prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <children>
+                        <SplitPane fx:id="OTnCT" dividerPositions="0.7398097826086956" orientation="VERTICAL" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <items>
+                              <AnchorPane fx:id="CTnMN" minHeight="0.0" minWidth="0.0" prefHeight="195.0" prefWidth="442.0">
+                                 <children>
+                                    <SplitPane fx:id="splitCTnMN" dividerPositions="0.2" prefHeight="160.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                      <items>
+                                          <AnchorPane fx:id="MNnTCBtn" minHeight="0.0" minWidth="0.0" prefHeight="650.0" prefWidth="203.0">
+                                             <children>
+                                                <AnchorPane fx:id="MNPane" prefHeight="620.0" prefWidth="203.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                   <children>
+                                                      <Button fx:id="deleteTC" layoutY="79.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="155.0" text="Delete Testcase" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="94.0">
+                                                         <font>
+                                                            <Font size="11.0" />
+                                                         </font>
+                                                         <graphic>
+                                                            <ImageView fitHeight="18.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+                                                               <image>
+                                                                  <Image url="@../../icons/cte/delTC.png" />
+                                                               </image>
+                                                            </ImageView>
+                                                         </graphic>
+                                                      </Button>
+                                                    <Button fx:id="exportTC" layoutY="156.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="155.0" text="Export to Testcase" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="187.0">
+                                                         <font>
+                                                            <Font size="11.0" />
+                                                         </font>
+                                                         <graphic>
+                                                            <ImageView fitHeight="26.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+                                                               <image>
+                                                                  <Image url="@../../icons/cte/exportTC.png" />
+                                                               </image>
+                                                            </ImageView>
+                                                         </graphic>
+                                                    </Button>
+                                                      <Button fx:id="selectAll" layoutY="105.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="155.0" text="Select All" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="125.0">
+                                                         <font>
+                                                            <Font size="11.0" />
+                                                         </font>
+                                                         <graphic>
+                                                            <ImageView fitHeight="16.0" fitWidth="21.0" pickOnBounds="true" preserveRatio="true">
+                                                               <image>
+                                                                  <Image url="@../../icons/cte/selectAllTC.png" />
+                                                               </image>
+                                                            </ImageView>
+                                                         </graphic>
+                                                      </Button>
+                                                      <Button fx:id="genPairwise" layoutY="130.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="155.0" text="Generate Pairwise" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="156.0">
+                                                         <font>
+                                                            <Font size="11.0" />
+                                                         </font>
+                                                         <graphic>
+                                                            <ImageView fitHeight="18.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+                                                               <image>
+                                                                  <Image url="@../../icons/cte/autoGenTCPW.png" />
+                                                               </image>
+                                                            </ImageView>
+                                                         </graphic>
+                                                      </Button>
+                                                      <Button fx:id="addingTC" layoutY="53.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="155.0" text="Add Blank Testcase" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="63.0">
+                                                         <font>
+                                                            <Font size="11.0" />
+                                                         </font>
+                                                         <graphic>
+                                                            <ImageView fitHeight="18.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+                                                               <image>
+                                                                  <Image url="@../../icons/cte/addTC.png" />
+                                                               </image>
+                                                            </ImageView>
+                                                         </graphic>
+                                                      </Button>
+                                                      <Button fx:id="saveCTE" layoutY="1.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="155.0" text="Save CTE" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="1.0">
+                                                         <font>
+                                                            <Font size="11.0" />
+                                                         </font>
+                                                          <graphic>
+                                                              <ImageView fitHeight="18.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+                                                                  <image>
+                                                                      <Image url="@../../icons/cte/saveCTE.png" />
+                                                                  </image>
+                                                              </ImageView>
+                                                          </graphic>
+                                                      </Button>
+                                                      <Button fx:id="arrangeTree" layoutY="27.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="155.0" text="Arrange Tree" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="32.0">
+                                                         <font>
+                                                            <Font size="11.0" />
+                                                         </font>
+                                                          <graphic>
+                                                              <ImageView fitHeight="18.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+                                                                  <image>
+                                                                      <Image url="@../../icons/cte/arrangeCT.png" />
+                                                                  </image>
+                                                              </ImageView>
+                                                          </graphic>
+                                                      </Button>
+                                                      <Button fx:id="resetCTE" layoutY="221.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="135.0" text="Reset CTE" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="218.0">
+                                                         <font>
+                                                            <Font size="11.0" />
+                                                         </font>
+                                                         <graphic>
+                                                            <ImageView fitHeight="26.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+                                                               <image>
+                                                                  <Image url="@../../icons/cte/resetCTE.png" />
+                                                               </image>
+                                                            </ImageView>
+                                                         </graphic>
+                                                      </Button>
+                                                   </children></AnchorPane>
+                                             </children>
+                                             <padding>
+                                                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                             </padding>
+                                             <opaqueInsets>
+                                                <Insets />
+                                             </opaqueInsets>
+                                          </AnchorPane>
+                                          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0">
+                                             <children>
+                                                <ScrollPane fx:id="CTPane" prefHeight="656.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                             </children>
+                                          </AnchorPane>
+                                      </items>
+                                    </SplitPane>
+                                 </children>
+                              </AnchorPane>
+                              <AnchorPane fx:id="OTnTT" minHeight="0.0" minWidth="0.0" prefHeight="118.0" prefWidth="442.0">
+                                 <children>
+                                    <SplitPane fx:id="splitOTnTT" dividerPositions="0.2" prefHeight="160.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                      <items>
+                                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+                                             <children>
+                                                <ScrollPane fx:id="TTPane" prefHeight="225.0" prefWidth="203.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                             </children>
+                                          </AnchorPane>
+                                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+                                             <children>
+                                                <ScrollPane fx:id="OTPane" prefHeight="225.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                             </children>
+                                          </AnchorPane>
+                                      </items>
+                                    </SplitPane>
+                                 </children>
+                              </AnchorPane>
+                           </items>
+                        </SplitPane>
+                     </children>
+                  </AnchorPane>
+               </children>
+            </AnchorPane>
+            <AnchorPane fx:id="DIPane" minHeight="0.0" minWidth="0.0" prefHeight="880.0" prefWidth="400.0" />
+         </items>
+      </SplitPane>
+   </children>
+</AnchorPane>

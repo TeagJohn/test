@@ -1,0 +1,36 @@
+[
+  {
+    "nodeId": "31",
+    "_comment": "// parameter hcn trong ham changeKichThuocHCN(HinhChuNhat hcn, int rong, int cao)",
+    "value": {
+      "realId": "5",
+      "constructor": {
+        "id": "15",
+        "params": [
+          {
+            "nodeId": "16",
+            "value": "200"
+          }
+        ]
+      },
+      "attributes": [
+        {
+          "nodeId": "6",
+          "value": "100"
+        },
+        {
+          "nodeId": "7",
+          "value": "150"
+        }
+      ]
+    }
+  },
+  {
+    "nodeId": "32",
+    "value": "100"
+  },
+  {
+    "nodeId": "33",
+    "value": "50"
+  }
+]

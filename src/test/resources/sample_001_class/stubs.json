@@ -1,0 +1,19 @@
+[
+  {
+    "nodeId": "20",
+    "enable": "true",
+    "type": "io",
+    "value":
+    {
+      "nodeId": "21",
+      "value": "555555"
+    }
+  },
+  {
+    "nodeId": "8",
+    "enable": "true",
+    "type": "stubcode",
+    "value": "100"
+  }
+
+]

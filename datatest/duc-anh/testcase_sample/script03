@@ -1,0 +1,60 @@
+-- Unit(s) Under Test: file_io
+--
+-- Script Features
+TEST.SCRIPT_FEATURE:CPP_CLASS_OBJECT_REVISION
+TEST.SCRIPT_FEATURE:MULTIPLE_UUT_SUPPORT
+--
+-- Unit: file_io
+-- Subprogram: CreateFile
+-- Test Case: CREATEFILE.001
+TEST.UNIT:file_io
+TEST.SUBPROGRAM:CreateFile
+TEST.NEW
+TEST.NAME:CREATEFILE.001
+TEST.NOTES:
+TEST.END_NOTES:
+TEST.VALUE:file_io.CreateFile.filename:<<malloc 9>>
+TEST.VALUE:file_io.CreateFile.filename:"TEMP.TXT"
+TEST.VALUE:file_io.CreateFile.return:<<malloc 1>>
+TEST.EXPECTED_USER_CODE:file_io.CreateFile.return
+{{ <<file_io.CreateFile.return>> != NULL }}
+TEST.END_EXPECTED_USER_CODE:
+TEST.END
+
+-- Subprogram: WriteLine
+-- Test Case: WRITELINE.001
+TEST.UNIT:file_io
+TEST.SUBPROGRAM:WriteLine
+TEST.NEW
+TEST.NAME:WRITELINE.001
+TEST.NOTES:
+TEST.END_NOTES:
+TEST.VALUE:file_io.WriteLine.outputLine:<<malloc 13>>
+TEST.VALUE:file_io.WriteLine.outputLine:"Hello, World"
+TEST.VALUE_USER_CODE:file_io.WriteLine.fp
+<<file_io.WriteLine.*fp>> = ( <<file_io.CreateFile.return>> );
+TEST.END_VALUE_USER_CODE:
+TEST.END
+-- Subprogram: CloseFile
+-- Test Case: CLOSEFILE.001
+TEST.UNIT:file_io
+TEST.SUBPROGRAM:CloseFile
+TEST.NEW
+TEST.NAME:CLOSEFILE.001
+TEST.NOTES:
+TEST.END_NOTES:
+TEST.VALUE_USER_CODE:file_io.CloseFile.fp
+<<file_io.CloseFile.fp>> = ( <<file_io.CreateFile.return>>);
+TEST.END_VALUE_USER_CODE:
+TEST.END
+-- COMPOUND TESTS
+TEST.SUBPROGRAM:<<COMPOUND>>
+TEST.NEW
+TEST.NAME:<<COMPOUND>>.001
+TEST.NOTES:
+TEST.END_NOTES:
+TEST.SLOT: "1", "file_io", "CreateFile", "1", "CREATEFILE.001"
+TEST.SLOT: "2", "file_io", "WriteLine", "1", "WRITELINE.001"
+TEST.SLOT: "3", "file_io", "CloseFile", "1", "CLOSEFILE.001"
+TEST.END
+--

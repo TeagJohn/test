@@ -1,0 +1,1 @@
+int voidStarBasic(void* x){return 0;}

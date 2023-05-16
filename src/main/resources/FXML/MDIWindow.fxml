@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane prefHeight="549.0" prefWidth="677.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dse.guifx_v3.controllers.main_view.MDIWindowController">
+   <children>
+      <TabPane id="MDITabPane" fx:id="mdiTabPane" layoutX="186.0" layoutY="75.0" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <tabs>
+            <Tab fx:id="mdiTabAboutUs" text="Release Notes">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <TabPane fx:id="tpAboutUs" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                     </children>
+                  </AnchorPane>
+              </content>
+            </Tab>
+            <Tab fx:id="mdiTabTestCases" onClosed="#mdiTabTestCasesClose" text="Test Cases">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <TabPane fx:id="testCaseViews" prefHeight="517.0" prefWidth="678.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="2.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                          <tabs>
+                            <Tab text="init.001" />
+                          </tabs>
+                        </TabPane>
+                     </children>
+                  </AnchorPane>
+              </content>
+            </Tab>
+             <Tab fx:id="mdiTabPrototypes" onClosed="#mdiTabPrototypeClose" text="Prototypes">
+                 <content>
+                     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                         <children>
+                             <TabPane fx:id="prototypeViews" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                 <tabs>
+
+                                 </tabs>
+                             </TabPane>
+                         </children>
+                     </AnchorPane>
+                 </content>
+             </Tab>
+            <Tab fx:id="mdiTabSourceCode" onClosed="#mdiTabSourceCodeClose" text="Source Code">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <TabPane fx:id="sourceCodeViews" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="30.0">
+                          <tabs>
+                            <Tab text="init.cpp">
+                              <content>
+                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                              </content>
+                            </Tab>
+                          </tabs>
+                        </TabPane>
+                        <ToolBar prefHeight="29.0" prefWidth="64.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                          <items>
+                            <Button fx:id="bCompileOpeningSourcecodeTab" mnemonicParsing="false" prefHeight="25.0" prefWidth="25.0">
+                                 <tooltip>
+                                    <Tooltip text="Save and compile current source code file" />
+                                 </tooltip>
+                              </Button>
+                              <Button fx:id="bCompileAllSourcecodeTabs" mnemonicParsing="false" prefHeight="25.0" prefWidth="24.0">
+                                 <tooltip>
+                                    <Tooltip text="Save and compile all source code files" />
+                                 </tooltip>
+                              </Button>
+                              <Button fx:id="bRefreshAllOpeningSourceCodeFileTabs" mnemonicParsing="false" prefHeight="25.0" prefWidth="25.0">
+                                 <tooltip>
+                                    <Tooltip text="Reload from hard disk" />
+                                 </tooltip>
+                              </Button>
+
+                              <Button fx:id="bSaveOpeningSourcecodeTab" mnemonicParsing="false" prefHeight="25.0" prefWidth="25.0">
+                                  <tooltip>
+                                      <Tooltip text="Save the opening source code tab" />
+                                  </tooltip>
+                              </Button>
+                              <Button fx:id="bSaveAllOpeningSourcecodeTabs" mnemonicParsing="false" prefHeight="25.0" prefWidth="25.0">
+                                  <tooltip>
+                                      <Tooltip text="Save all source code tabs" />
+                                  </tooltip>
+                              </Button>
+                              <Button fx:id="bOpenProbePointMode" layoutX="125.0" layoutY="10.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="25.0">
+                                 <tooltip>
+                                    <Tooltip text="Open Probe Point Mode" />
+                                 </tooltip>
+                              </Button>
+                              <Button fx:id="bChangeMode" layoutX="154.0" layoutY="10.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="25.0">
+                                 <tooltip>
+                                    <Tooltip text="Open Edit Mode" />
+                                 </tooltip>
+                              </Button>
+                          </items>
+                        </ToolBar>
+                     </children>
+                  </AnchorPane>
+              </content>
+            </Tab>
+            <Tab fx:id="mdiTabCompounds" onClosed="#mdiTabCompoundsClose" text="Compounds">
+               <content>
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <TabPane fx:id="compounds" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <tabs>
+                              <Tab text="&lt;&lt;COMPOUND&gt;&gt;.001">
+                                 <content>
+                                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                                 </content>
+                              </Tab>
+                           </tabs>
+                        </TabPane>
+                     </children>
+                  </AnchorPane>
+               </content>
+            </Tab>
+             <Tab fx:id="mdiTabCte" onClosed="#mdiTabCteClose" text="CTE">
+                 <content>
+                     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                         <children>
+                             <TabPane fx:id="cteView" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                 <tabs>
+                                     <Tab text="CTE.001">
+                                         <content>
+                                             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                                <children>
+                                                    <AnchorPane fx:id="paneCTE" layoutY="1.0" prefHeight="492.0" prefWidth="678.0">
+                                                     <children>
+                                                <ScrollPane fx:id="paneCT" layoutX="203.0" prefHeight="650.0" prefWidth="296.0" />
+                                                <ScrollPane fx:id="paneOT" layoutX="203.0" layoutY="300.0" prefHeight="225.0" prefWidth="480.0" />
+                                                <ScrollPane fx:id="paneTT" layoutX="0.0" layoutY="300.0" prefHeight="225.0" prefWidth="200.0"/>
+                                                <ScrollPane fx:id="paneDI" layoutX="700.0" prefHeight="549.0" prefWidth="400.0" />
+                                                     </children>
+                                                    </AnchorPane>
+                                                </children>
+                                             </AnchorPane>
+                                         </content>
+                                     </Tab>
+                                 </tabs>
+                             </TabPane>
+                         </children>
+                     </AnchorPane>
+                 </content>
+             </Tab>
+            <Tab fx:id="mdiTabDebug" text="Debug">
+               <content>
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <tabs>
+                              <Tab text="abc.cpp">
+                                 <content>
+                                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                                 </content>
+                              </Tab>
+                           </tabs>
+                        </TabPane>
+                     </children>
+                  </AnchorPane>
+               </content>
+            </Tab>
+            <Tab fx:id="mdiTabFunctionConfiguration" onClosed="#mdiTabFunctionConfigClose" text="Function Configuration">
+               <content>
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <TabPane fx:id="functionConfigurations" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <tabs>
+                              <Tab text="TriType">
+                                 <content>
+                                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                                 </content>
+                              </Tab>
+                           </tabs>
+                        </TabPane>
+                     </children>
+                  </AnchorPane>
+               </content>
+            </Tab>
+            <Tab fx:id="mdiTabTestCasesExecution" onClosed="#mdiTabTestCasesExecutionClose" text="Test Cases Execution">
+               <content>
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <TabPane fx:id="testCasesExecutions" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <tabs>
+                              <Tab text="TriType">
+                                 <content>
+                                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                                 </content>
+                              </Tab>
+                           </tabs>
+                        </TabPane>
+                     </children>
+                  </AnchorPane>
+               </content>
+            </Tab>
+            <Tab fx:id="mdiTabCoverage" onClosed="#mdiTabCoverageClose" text="Coverage View">
+               <content>
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <TabPane fx:id="coverageViews" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <tabs>
+                              <Tab text="init.cpp">
+                                 <content>
+                                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                                 </content>
+                              </Tab>
+                           </tabs>
+                        </TabPane>
+                     </children>
+                  </AnchorPane>
+               </content>
+            </Tab>
+            <Tab fx:id="mdiTabReports" onClosed="#mdiTabReportsClose" text="Reports">
+               <content>
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <TabPane fx:id="reports" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <tabs>
+                              <Tab text="init.cpp">
+                                 <content>
+                                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                                 </content>
+                              </Tab>
+                           </tabs>
+                        </TabPane>
+                     </children>
+                  </AnchorPane>
+               </content>
+            </Tab>
+            <Tab fx:id="mdiTabProbePoint" onClosed="#mdiTabProbePointClose" text="Probe Points">
+               <content>
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <SplitPane dividerPositions="0.6" prefHeight="160.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                          <items>
+                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="518.0" prefWidth="284.0">
+                                 <children>
+                                    <TabPane fx:id="probePointSourceCodeViews" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="ALL_TABS" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                       <tabs>
+                                          <Tab text="init.cpp">
+                                             <content>
+                                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                                             </content>
+                                          </Tab>
+                                       </tabs>
+                                    </TabPane>
+                                 </children>
+                              </AnchorPane>
+                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="518.0" prefWidth="457.0">
+                                 <children>
+                                    <Label layoutX="21.0" layoutY="14.0" text="Probe Point Manager" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0">
+                                       <font>
+                                          <Font size="15.0" />
+                                       </font>
+                                    </Label>
+                                    <AnchorPane layoutX="81.0" layoutY="176.0" prefHeight="456.0" prefWidth="471.0" style="-fx-border-color: black; -fx-border-width: 0.2;" AnchorPane.bottomAnchor="40.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="40.0">
+                                       <children>
+                                          <Button layoutX="-127.0" layoutY="113.0" maxHeight="30.0" minHeight="30.0" mnemonicParsing="false" prefHeight="30.0" text="Switch List and Tree" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
+                                          <ListView fx:id="lvProbePoints" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                          <TreeView layoutX="43.0" layoutY="47.0" prefHeight="200.0" prefWidth="200.0" visible="false" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                       </children>
+                                    </AnchorPane>
+                                    <ButtonBar buttonMinWidth="50.0" layoutX="-8.0" layoutY="488.0" prefHeight="30.0" prefWidth="267.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="10.0">
+                                       <buttons>
+                                          <Button mnemonicParsing="false" prefHeight="8.0" prefWidth="41.0" text="Save" />
+                                          <Button mnemonicParsing="false" text="Check" />
+                                       </buttons>
+                                    </ButtonBar>
+                                 </children>
+                              </AnchorPane>
+                          </items>
+                        </SplitPane>
+                     </children>
+                  </AnchorPane>
+               </content>
+            </Tab>
+         </tabs></TabPane>
+   </children>
+</AnchorPane>

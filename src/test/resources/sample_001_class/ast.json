@@ -1,0 +1,1319 @@
+{
+  "type": "ProjectNode",
+  "properties": {
+    "children": [
+      {
+        "type": "CppFileNode",
+        "properties": {
+          "AST": {},
+          "children": [
+            {
+              "type": "ClassNode",
+              "properties": {
+                "AST": {},
+                "children": [
+                  {
+                    "type": "AttributeOfStructureVariableNode",
+                    "properties": {
+                      "rawType": "int",
+                      "coreType": "int",
+                      "reducedRawType": "int",
+                      "levelOfPointer": 0,
+                      "isReference": false,
+                      "isPrivate": true,
+                      "AST": {},
+                      "children": [],
+                      "name": "MAX_CHIEURONG",
+                      "absolutePath": "C:\\Users\\Admin\\Dropbox\\Unit Test FGA\\test_data\\sample_001_class\\test_data_003\\class.cpp\\Hinh\\MAX_CHIEURONG",
+                      "id": 3,
+                      "dependencies": []
+                    }
+                  },
+                  {
+                    "type": "AttributeOfStructureVariableNode",
+                    "properties": {
+                      "rawType": "int",
+                      "coreType": "int",
+                      "reducedRawType": "int",
+                      "levelOfPointer": 0,
+                      "isReference": false,
+                      "isPrivate": true,
+                      "AST": {},
+                      "children": [],
+                      "name": "MAX_CHIEUCAO",
+                      "absolutePath": "C:\\Users\\Admin\\Dropbox\\Unit Test FGA\\test_data\\sample_001_class\\test_data_003\\class.cpp\\Hinh\\MAX_CHIEUCAO",
+                      "id": 4,
+                      "dependencies": []
+                    }
+                  }
+                ],
+                "name": "Hinh",
+                "absolutePath": "C:\\Users\\Admin\\Dropbox\\Unit Test FGA\\test_data\\sample_001_class\\test_data_003\\class.cpp\\Hinh",
+                "id": 2,
+                "dependencies": [
+                  {
+                    "type": "ExtendDependency",
+                    "properties": {
+                      "startNodeId": 0,
+                      "endNodeId": 0
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "type": "ClassNode",
+              "properties": {
+                "AST": {},
+                "children": [
+                  {
+                    "type": "AttributeOfStructureVariableNode",
+                    "properties": {
+                      "rawType": "int",
+                      "coreType": "int",
+                      "reducedRawType": "int",
+                      "levelOfPointer": 0,
+                      "isReference": false,
+                      "isPrivate": false,
+                      "AST": {},
+                      "children": [],
+                      "name": "chieurong",
+                      "absolutePath": "C:\\Users\\Admin\\Dropbox\\Unit Test FGA\\test_data\\sample_001_class\\test_data_003\\class.cpp\\HinhChuNhat\\chieurong",
+                      "id": 6,
+                      "dependencies": []
+                    }
+                  },
+                  {
+                    "type": "AttributeOfStructureVariableNode",
+                    "properties": {
+                      "rawType": "int",
+                      "coreType": "int",
+                      "reducedRawType": "int",
+                      "levelOfPointer": 0,
+                      "isReference": false,
+                      "isPrivate": false,
+                      "AST": {},
+                      "children": [],
+                      "name": "chieucao",
+                      "absolutePath": "C:\\Users\\Admin\\Dropbox\\Unit Test FGA\\test_data\\sample_001_class\\test_data_003\\class.cpp\\HinhChuNhat\\chieucao",
+                      "id": 7,
+                      "dependencies": []
+                    }
+                  },
+                  {
+                    "type": "FunctionNode",
+                    "properties": {
+                      "AST": {},
+                      "children": [
+                        {
+                          "type": "InternalVariableNode",
+                          "properties": {
+                            "rawType": "int",
+                            "coreType": "int",
+                            "reducedRawType": "int",
+                            "levelOfPointer": 0,
+                            "isReference": false,
+                            "isPrivate": false,
+                            "AST": {},
+                            "children": [],
+                            "name": "rong",
+                            "absolutePath": "\\rong",
+                            "id": 9,
+                            "dependencies": []
+                          }
+                        },
+                        {
+                          "type": "ReturnVariableNode",
+                          "properties": {
+                            "rawType": "void",
+                            "coreType": "void",
+                            "reducedRawType": "void",
+                            "levelOfPointer": 0,
+                            "isReference": false,
+                            "isPrivate": false,
+                            "children": [],
+                            "name": "returnVar",
+                            "absolutePath": "C:\\Users\\Admin\\Dropbox\\Unit Test FGA\\test_data\\sample_001_class\\test_data_003\\class.cpp\\HinhChuNhat\\setChieuRong(int)\\returnVar",
+                            "id": 10,
+                            "dependencies": []
+                          }
+                        }
+                      ],
+                      "name": "setChieuRong(int)",
+                      "absolutePath": "C:\\Users\\Admin\\Dropbox\\Unit Test FGA\\test_data\\sample_001_class\\test_data_003\\class.cpp\\HinhChuNhat\\setChieuRong(int)",
+                      "id": 8,
+                      "dependencies": []
+                    }
+                  },
+                  {
+                    "type": "FunctionNode",
+                    "properties": {
+                      "AST": {},
+                      "children": [
+                        {
+                          "type": "InternalVariableNode",
+                          "properties": {
+                            "rawType": "int",
+                            "coreType": "int",
+                            "reducedRawType": "int",
+                            "levelOfPointer": 0,
+                            "isReference": false,
+                            "isPrivate": false,
+                            "AST": {},
+                            "children": [],
+                            "name": "cao",
+                            "absolutePath": "\\cao",
+                            "id": 12,
+                            "dependencies": []
+                          }
+                        },
+                        {
+                          "type": "ReturnVariableNode",
+                          "properties": {
+                            "rawType": "void",
+                            "coreType": "void",
+                            "reducedRawType": "void",
+                            "levelOfPointer": 0,
+                            "isReference": false,
+                            "isPrivate": false,
+                            "children": [],
+                            "name": "returnVar",
+                            "absolutePath": "C:\\Users\\Admin\\Dropbox\\Unit Test FGA\\test_data\\sample_001_class\\test_data_003\\class.cpp\\HinhChuNhat\\setChieuCao(int)\\returnVar",
+                            "id": 13,
+                            "dependencies": []
+                          }
+                        }
+                      ],
+                      "name": "setChieuCao(int)",
+                      "absolutePath": "C:\\Users\\Admin\\Dropbox\\Unit Test FGA\\test_data\\sample_001_class\\test_data_003\\class.cpp\\HinhChuNhat\\setChieuCao(int)",
+                      "id": 11,
+                      "dependencies": []
+                    }
+                  },
+                  {
+                    "type": "ConstructorNode",
+                    "properties": {
+                      "AST": {},
+                      "children": [],
+                      "name": "HinhChuNhat()",
+                      "absolutePath": "C:\\Users\\Admin\\Dropbox\\Unit Test FGA\\test_data\\sample_001_class\\test_data_003\\class.cpp\\HinhChuNhat\\HinhChuNhat()",
+                      "id": 14,
+                      "dependencies": []
+                    }
+                  },
+                  {
+                    "type": "ConstructorNode",
+                    "properties": {
+                      "AST": {},
+                      "children": [
+                        {
+                          "type": "InternalVariableNode",
+                          "properties": {
+                            "rawType": "int",
+                            "coreType": "int",
+                            "reducedRawType": "int",
+                            "levelOfPointer": 0,
+                            "isReference": false,
+                            "isPrivate": false,
+                            "AST": {},
+                            "children": [],
+                            "name": "rong",
+                            "absolutePath": "\\rong",
+                            "id": 79,
+                            "dependencies": []
+                          }
+                        }
+                      ],
+                      "name": "HinhChuNhat(int)",
+                      "absolutePath": "C:\\Users\\Admin\\Dropbox\\Unit Test FGA\\test_data\\sample_001_class\\test_data_003\\class.cpp\\HinhChuNhat\\HinhChuNhat(int)",
+                      "id": 15,
+                      "dependencies": []
+                    }
+                  },
+                  {
+                    "type": "ConstructorNode",
+                    "properties": {
+                      "AST": {},
+                      "children": [
+                        {
+                          "type": "InternalVariableNode",
+                          "properties": {
+                            "rawType": "int",
+                            "coreType": "int",
+                            "reducedRawType": "int",
+                            "levelOfPointer": 0,
+                            "isReference": false,
+                            "isPrivate": false,
+                            "AST": {},
+                            "children": [],
+                            "name": "rong",
+                            "absolutePath": "\\rong",
+                            "id": 81,
+                            "dependencies": []
+                          }
+                        },
+                        {
+                          "type": "InternalVariableNode",
+                          "properties": {
+                            "rawType": "int",
+                            "coreType": "int",
+                            "reducedRawType": "int",
+                            "levelOfPointer": 0,
+                            "isReference": false,
+                            "isPrivate": false,
+                            "AST": {},
+                            "children": [],
+                            "name": "cao",
+                            "absolutePath": "\\cao",
+                            "id": 82,
+                            "dependencies": []
+                          }
+                        }
+                      ],
+                      "name": "HinhChuNhat(int,int)",
+                      "absolutePath": "C:\\Users\\Admin\\Dropbox\\Unit Test FGA\\test_data\\sample_001_class\\test_data_003\\class.cpp\\HinhChuNhat\\HinhChuNhat(int,int)",
+                      "id": 17,
+                      "dependencies": []
+                    }
+                  },
+                  {
+                    "type": "FunctionNode",
+                    "properties": {
+                      "AST": {},
+                      "children": [
+                        {
+                          "type": "ReturnVariableNode",
+                          "properties": {
+                            "rawType": "int",
+                            "coreType": "int",
+                            "reducedRawType": "int",
+                            "levelOfPointer": 0,
+                            "isReference": false,
+                            "isPrivate": false,
+                            "children": [],
+                            "name": "returnVar",
+                            "absolutePath": "C:\\Users\\Admin\\Dropbox\\Unit Test FGA\\test_data\\sample_001_class\\test_data_003\\class.cpp\\HinhChuNhat\\tinhDienTich()\\returnVar",
+                            "id": 21,
+                            "dependencies": []
+                          }
+                        }
+                      ],
+                      "name": "tinhDienTich()",
+                      "absolutePath": "C:\\Users\\Admin\\Dropbox\\Unit Test FGA\\test_data\\sample_001_class\\test_data_003\\class.cpp\\HinhChuNhat\\tinhDienTich()",
+                      "id": 20,
+                      "dependencies": []
+                    }
+                  }
+                ],
+                "name": "HinhChuNhat",
+                "absolutePath": "C:\\Users\\Admin\\Dropbox\\Unit Test FGA\\test_data\\sample_001_class\\test_data_003\\class.cpp\\HinhChuNhat",
+                "id": 5,
+                "dependencies": [
+                  {
+                    "type": "ExtendDependency",
+                    "properties": {
+                      "startNodeId": 0,
+                      "endNodeId": 0
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "type": "FunctionNode",
+              "properties": {
+                "AST": {},
+                "children": [
+                  {
+                    "type": "InternalVariableNode",
+                    "properties": {
+                      "rawType": "HinhChuNhat",
+                      "coreType": "HinhChuNhat",
+                      "reducedRawType": "HinhChuNhat",
+                      "levelOfPointer": 0,
+                      "isReference": false,
+                      "isPrivate": false,
+                      "AST": {},
+                      "children": [
+                        {
+                          "type": "VariableNode",
+                          "properties": {
+                            "rawType": "int",
+                            "coreType": "int",
+                            "reducedRawType": "int",
+                            "levelOfPointer": 0,
+                            "isReference": false,
+                            "isPrivate": false,
+                            "AST": {},
+                            "children": [],
+                            "name": "chieurong",
+                            "absolutePath": "C:\\Users\\Admin\\Dropbox\\Unit Test FGA\\test_data\\sample_001_class\\test_data_003\\class.cpp\\HinhChuNhat\\chieurong",
+                            "id": 24,
+                            "dependencies": []
+                          }
+                        },
+                        {
+                          "type": "VariableNode",
+                          "properties": {
+                            "rawType": "int",
+                            "coreType": "int",
+                            "reducedRawType": "int",
+                            "levelOfPointer": 0,
+                            "isReference": false,
+                            "isPrivate": false,
+                            "AST": {},
+                            "children": [],
+                            "name": "chieucao",
+                            "absolutePath": "C:\\Users\\Admin\\Dropbox\\Unit Test FGA\\test_data\\sample_001_class\\test_data_003\\class.cpp\\HinhChuNhat\\chieucao",
+                            "id": 25,
+                            "dependencies": []
+                          }
+                        },
+                        {
+                          "type": "ConstructorNode",
+                          "properties": {
+                            "AST": {},
+                            "children": [],
+                            "name": "HinhChuNhat()",
+                            "absolutePath": "C:\\Users\\Admin\\Dropbox\\Unit Test FGA\\test_data\\sample_001_class\\test_data_003\\class.cpp\\HinhChuNhat\\HinhChuNhat()",
+                            "id": 26,
+                            "dependencies": []
+                          }
+                        },
+                        {
+                          "type": "ConstructorNode",
+                          "properties": {
+                            "AST": {},
+                            "children": [
+                              {
+                                "type": "InternalVariableNode",
+                                "properties": {
+                                  "rawType": "int",
+                                  "coreType": "int",
+                                  "reducedRawType": "int",
+                                  "levelOfPointer": 0,
+                                  "isReference": false,
+                                  "isPrivate": false,
+                                  "AST": {},
+                                  "children": [],
+                                  "name": "rong",
+                                  "absolutePath": "\\rong",
+                                  "id": 79,
+                                  "dependencies": []
+                                }
+                              }
+                            ],
+                            "name": "HinhChuNhat(int)",
+                            "absolutePath": "C:\\Users\\Admin\\Dropbox\\Unit Test FGA\\test_data\\sample_001_class\\test_data_003\\class.cpp\\HinhChuNhat\\HinhChuNhat(int)",
+                            "id": 27,
+                            "dependencies": []
+                          }
+                        },
+                        {
+                          "type": "ConstructorNode",
+                          "properties": {
+                            "AST": {},
+                            "children": [
+                              {
+                                "type": "InternalVariableNode",
+                                "properties": {
+                                  "rawType": "int",
+                                  "coreType": "int",
+                                  "reducedRawType": "int",
+                                  "levelOfPointer": 0,
+                                  "isReference": false,
+                                  "isPrivate": false,
+                                  "AST": {},
+                                  "children": [],
+                                  "name": "rong",
+                                  "absolutePath": "\\rong",
+                                  "id": 81,
+                                  "dependencies": []
+                                }
+                              },
+                              {
+                                "type": "InternalVariableNode",
+                                "properties": {
+                                  "rawType": "int",
+                                  "coreType": "int",
+                                  "reducedRawType": "int",
+                                  "levelOfPointer": 0,
+                                  "isReference": false,
+                                  "isPrivate": false,
+                                  "AST": {},
+                                  "children": [],
+                                  "name": "cao",
+                                  "absolutePath": "\\cao",
+                                  "id": 82,
+                                  "dependencies": []
+                                }
+                              }
+                            ],
+                            "name": "HinhChuNhat(int,int)",
+                            "absolutePath": "C:\\Users\\Admin\\Dropbox\\Unit Test FGA\\test_data\\sample_001_class\\test_data_003\\class.cpp\\HinhChuNhat\\HinhChuNhat(int,int)",
+                            "id": 29,
+                            "dependencies": []
+                          }
+                        }
+                      ],
+                      "name": "hcn",
+                      "absolutePath": "\\hcn",
+                      "id": 23,
+                      "dependencies": []
+                    }
+                  },
+                  {
+                    "type": "InternalVariableNode",
+                    "properties": {
+                      "rawType": "int",
+                      "coreType": "int",
+                      "reducedRawType": "int",
+                      "levelOfPointer": 0,
+                      "isReference": false,
+                      "isPrivate": false,
+                      "AST": {},
+                      "children": [],
+                      "name": "rong",
+                      "absolutePath": "\\rong",
+                      "id": 32,
+                      "dependencies": []
+                    }
+                  },
+                  {
+                    "type": "ReturnVariableNode",
+                    "properties": {
+                      "rawType": "HinhChuNhat",
+                      "coreType": "HinhChuNhat",
+                      "reducedRawType": "HinhChuNhat",
+                      "levelOfPointer": 0,
+                      "isReference": false,
+                      "isPrivate": false,
+                      "children": [
+                        {
+                          "type": "VariableNode",
+                          "properties": {
+                            "rawType": "int",
+                            "coreType": "int",
+                            "reducedRawType": "int",
+                            "levelOfPointer": 0,
+                            "isReference": false,
+                            "isPrivate": false,
+                            "AST": {},
+                            "children": [],
+                            "name": "chieurong",
+                            "absolutePath": "C:\\Users\\Admin\\Dropbox\\Unit Test FGA\\test_data\\sample_001_class\\test_data_003\\class.cpp\\HinhChuNhat\\chieurong",
+                            "id": 34,
+                            "dependencies": []
+                          }
+                        },
+                        {
+                          "type": "VariableNode",
+                          "properties": {
+                            "rawType": "int",
+                            "coreType": "int",
+                            "reducedRawType": "int",
+                            "levelOfPointer": 0,
+                            "isReference": false,
+                            "isPrivate": false,
+                            "AST": {},
+                            "children": [],
+                            "name": "chieucao",
+                            "absolutePath": "C:\\Users\\Admin\\Dropbox\\Unit Test FGA\\test_data\\sample_001_class\\test_data_003\\class.cpp\\HinhChuNhat\\chieucao",
+                            "id": 35,
+                            "dependencies": []
+                          }
+                        },
+                        {
+                          "type": "ConstructorNode",
+                          "properties": {
+                            "AST": {},
+                            "children": [],
+                            "name": "HinhChuNhat()",
+                            "absolutePath": "C:\\Users\\Admin\\Dropbox\\Unit Test FGA\\test_data\\sample_001_class\\test_data_003\\class.cpp\\HinhChuNhat\\HinhChuNhat()",
+                            "id": 36,
+                            "dependencies": []
+                          }
+                        },
+                        {
+                          "type": "ConstructorNode",
+                          "properties": {
+                            "AST": {},
+                            "children": [
+                              {
+                                "type": "InternalVariableNode",
+                                "properties": {
+                                  "rawType": "int",
+                                  "coreType": "int",
+                                  "reducedRawType": "int",
+                                  "levelOfPointer": 0,
+                                  "isReference": false,
+                                  "isPrivate": false,
+                                  "AST": {},
+                                  "children": [],
+                                  "name": "rong",
+                                  "absolutePath": "\\rong",
+                                  "id": 79,
+                                  "dependencies": []
+                                }
+                              }
+                            ],
+                            "name": "HinhChuNhat(int)",
+                            "absolutePath": "C:\\Users\\Admin\\Dropbox\\Unit Test FGA\\test_data\\sample_001_class\\test_data_003\\class.cpp\\HinhChuNhat\\HinhChuNhat(int)",
+                            "id": 37,
+                            "dependencies": []
+                          }
+                        },
+                        {
+                          "type": "ConstructorNode",
+                          "properties": {
+                            "AST": {},
+                            "children": [
+                              {
+                                "type": "InternalVariableNode",
+                                "properties": {
+                                  "rawType": "int",
+                                  "coreType": "int",
+                                  "reducedRawType": "int",
+                                  "levelOfPointer": 0,
+                                  "isReference": false,
+                                  "isPrivate": false,
+                                  "AST": {},
+                                  "children": [],
+                                  "name": "rong",
+                                  "absolutePath": "\\rong",
+                                  "id": 81,
+                                  "dependencies": []
+                                }
+                              },
+                              {
+                                "type": "InternalVariableNode",
+                                "properties": {
+                                  "rawType": "int",
+                                  "coreType": "int",
+                                  "reducedRawType": "int",
+                                  "levelOfPointer": 0,
+                                  "isReference": false,
+                                  "isPrivate": false,
+                                  "AST": {},
+                                  "children": [],
+                                  "name": "cao",
+                                  "absolutePath": "\\cao",
+                                  "id": 82,
+                                  "dependencies": []
+                                }
+                              }
+                            ],
+                            "name": "HinhChuNhat(int,int)",
+                            "absolutePath": "C:\\Users\\Admin\\Dropbox\\Unit Test FGA\\test_data\\sample_001_class\\test_data_003\\class.cpp\\HinhChuNhat\\HinhChuNhat(int,int)",
+                            "id": 39,
+                            "dependencies": []
+                          }
+                        }
+                      ],
+                      "name": "returnVar",
+                      "absolutePath": "C:\\Users\\Admin\\Dropbox\\Unit Test FGA\\test_data\\sample_001_class\\test_data_003\\class.cpp\\changeRongHCN(HinhChuNhat,int)\\returnVar",
+                      "id": 33,
+                      "dependencies": []
+                    }
+                  }
+                ],
+                "name": "changeRongHCN(HinhChuNhat,int)",
+                "absolutePath": "C:\\Users\\Admin\\Dropbox\\Unit Test FGA\\test_data\\sample_001_class\\test_data_003\\class.cpp\\changeRongHCN(HinhChuNhat,int)",
+                "id": 22,
+                "dependencies": []
+              }
+            },
+            {
+              "type": "FunctionNode",
+              "properties": {
+                "AST": {},
+                "children": [
+                  {
+                    "type": "InternalVariableNode",
+                    "properties": {
+                      "rawType": "HinhChuNhat",
+                      "coreType": "HinhChuNhat",
+                      "reducedRawType": "HinhChuNhat",
+                      "levelOfPointer": 0,
+                      "isReference": false,
+                      "isPrivate": false,
+                      "AST": {},
+                      "children": [
+                        {
+                          "type": "VariableNode",
+                          "properties": {
+                            "rawType": "int",
+                            "coreType": "int",
+                            "reducedRawType": "int",
+                            "levelOfPointer": 0,
+                            "isReference": false,
+                            "isPrivate": false,
+                            "AST": {},
+                            "children": [],
+                            "name": "chieurong",
+                            "absolutePath": "C:\\Users\\Admin\\Dropbox\\Unit Test FGA\\test_data\\sample_001_class\\test_data_003\\class.cpp\\HinhChuNhat\\chieurong",
+                            "id": 44,
+                            "dependencies": []
+                          }
+                        },
+                        {
+                          "type": "VariableNode",
+                          "properties": {
+                            "rawType": "int",
+                            "coreType": "int",
+                            "reducedRawType": "int",
+                            "levelOfPointer": 0,
+                            "isReference": false,
+                            "isPrivate": false,
+                            "AST": {},
+                            "children": [],
+                            "name": "chieucao",
+                            "absolutePath": "C:\\Users\\Admin\\Dropbox\\Unit Test FGA\\test_data\\sample_001_class\\test_data_003\\class.cpp\\HinhChuNhat\\chieucao",
+                            "id": 45,
+                            "dependencies": []
+                          }
+                        },
+                        {
+                          "type": "ConstructorNode",
+                          "properties": {
+                            "AST": {},
+                            "children": [],
+                            "name": "HinhChuNhat()",
+                            "absolutePath": "C:\\Users\\Admin\\Dropbox\\Unit Test FGA\\test_data\\sample_001_class\\test_data_003\\class.cpp\\HinhChuNhat\\HinhChuNhat()",
+                            "id": 46,
+                            "dependencies": []
+                          }
+                        },
+                        {
+                          "type": "ConstructorNode",
+                          "properties": {
+                            "AST": {},
+                            "children": [
+                              {
+                                "type": "InternalVariableNode",
+                                "properties": {
+                                  "rawType": "int",
+                                  "coreType": "int",
+                                  "reducedRawType": "int",
+                                  "levelOfPointer": 0,
+                                  "isReference": false,
+                                  "isPrivate": false,
+                                  "AST": {},
+                                  "children": [],
+                                  "name": "rong",
+                                  "absolutePath": "\\rong",
+                                  "id": 79,
+                                  "dependencies": []
+                                }
+                              }
+                            ],
+                            "name": "HinhChuNhat(int)",
+                            "absolutePath": "C:\\Users\\Admin\\Dropbox\\Unit Test FGA\\test_data\\sample_001_class\\test_data_003\\class.cpp\\HinhChuNhat\\HinhChuNhat(int)",
+                            "id": 47,
+                            "dependencies": []
+                          }
+                        },
+                        {
+                          "type": "ConstructorNode",
+                          "properties": {
+                            "AST": {},
+                            "children": [
+                              {
+                                "type": "InternalVariableNode",
+                                "properties": {
+                                  "rawType": "int",
+                                  "coreType": "int",
+                                  "reducedRawType": "int",
+                                  "levelOfPointer": 0,
+                                  "isReference": false,
+                                  "isPrivate": false,
+                                  "AST": {},
+                                  "children": [],
+                                  "name": "rong",
+                                  "absolutePath": "\\rong",
+                                  "id": 81,
+                                  "dependencies": []
+                                }
+                              },
+                              {
+                                "type": "InternalVariableNode",
+                                "properties": {
+                                  "rawType": "int",
+                                  "coreType": "int",
+                                  "reducedRawType": "int",
+                                  "levelOfPointer": 0,
+                                  "isReference": false,
+                                  "isPrivate": false,
+                                  "AST": {},
+                                  "children": [],
+                                  "name": "cao",
+                                  "absolutePath": "\\cao",
+                                  "id": 82,
+                                  "dependencies": []
+                                }
+                              }
+                            ],
+                            "name": "HinhChuNhat(int,int)",
+                            "absolutePath": "C:\\Users\\Admin\\Dropbox\\Unit Test FGA\\test_data\\sample_001_class\\test_data_003\\class.cpp\\HinhChuNhat\\HinhChuNhat(int,int)",
+                            "id": 49,
+                            "dependencies": []
+                          }
+                        }
+                      ],
+                      "name": "hcn",
+                      "absolutePath": "\\hcn",
+                      "id": 43,
+                      "dependencies": []
+                    }
+                  },
+                  {
+                    "type": "InternalVariableNode",
+                    "properties": {
+                      "rawType": "int",
+                      "coreType": "int",
+                      "reducedRawType": "int",
+                      "levelOfPointer": 0,
+                      "isReference": false,
+                      "isPrivate": false,
+                      "AST": {},
+                      "children": [],
+                      "name": "cao",
+                      "absolutePath": "\\cao",
+                      "id": 52,
+                      "dependencies": []
+                    }
+                  },
+                  {
+                    "type": "ReturnVariableNode",
+                    "properties": {
+                      "rawType": "HinhChuNhat",
+                      "coreType": "HinhChuNhat",
+                      "reducedRawType": "HinhChuNhat",
+                      "levelOfPointer": 0,
+                      "isReference": false,
+                      "isPrivate": false,
+                      "children": [
+                        {
+                          "type": "VariableNode",
+                          "properties": {
+                            "rawType": "int",
+                            "coreType": "int",
+                            "reducedRawType": "int",
+                            "levelOfPointer": 0,
+                            "isReference": false,
+                            "isPrivate": false,
+                            "AST": {},
+                            "children": [],
+                            "name": "chieurong",
+                            "absolutePath": "C:\\Users\\Admin\\Dropbox\\Unit Test FGA\\test_data\\sample_001_class\\test_data_003\\class.cpp\\HinhChuNhat\\chieurong",
+                            "id": 54,
+                            "dependencies": []
+                          }
+                        },
+                        {
+                          "type": "VariableNode",
+                          "properties": {
+                            "rawType": "int",
+                            "coreType": "int",
+                            "reducedRawType": "int",
+                            "levelOfPointer": 0,
+                            "isReference": false,
+                            "isPrivate": false,
+                            "AST": {},
+                            "children": [],
+                            "name": "chieucao",
+                            "absolutePath": "C:\\Users\\Admin\\Dropbox\\Unit Test FGA\\test_data\\sample_001_class\\test_data_003\\class.cpp\\HinhChuNhat\\chieucao",
+                            "id": 55,
+                            "dependencies": []
+                          }
+                        },
+                        {
+                          "type": "ConstructorNode",
+                          "properties": {
+                            "AST": {},
+                            "children": [],
+                            "name": "HinhChuNhat()",
+                            "absolutePath": "C:\\Users\\Admin\\Dropbox\\Unit Test FGA\\test_data\\sample_001_class\\test_data_003\\class.cpp\\HinhChuNhat\\HinhChuNhat()",
+                            "id": 56,
+                            "dependencies": []
+                          }
+                        },
+                        {
+                          "type": "ConstructorNode",
+                          "properties": {
+                            "AST": {},
+                            "children": [
+                              {
+                                "type": "InternalVariableNode",
+                                "properties": {
+                                  "rawType": "int",
+                                  "coreType": "int",
+                                  "reducedRawType": "int",
+                                  "levelOfPointer": 0,
+                                  "isReference": false,
+                                  "isPrivate": false,
+                                  "AST": {},
+                                  "children": [],
+                                  "name": "rong",
+                                  "absolutePath": "\\rong",
+                                  "id": 79,
+                                  "dependencies": []
+                                }
+                              }
+                            ],
+                            "name": "HinhChuNhat(int)",
+                            "absolutePath": "C:\\Users\\Admin\\Dropbox\\Unit Test FGA\\test_data\\sample_001_class\\test_data_003\\class.cpp\\HinhChuNhat\\HinhChuNhat(int)",
+                            "id": 57,
+                            "dependencies": []
+                          }
+                        },
+                        {
+                          "type": "ConstructorNode",
+                          "properties": {
+                            "AST": {},
+                            "children": [
+                              {
+                                "type": "InternalVariableNode",
+                                "properties": {
+                                  "rawType": "int",
+                                  "coreType": "int",
+                                  "reducedRawType": "int",
+                                  "levelOfPointer": 0,
+                                  "isReference": false,
+                                  "isPrivate": false,
+                                  "AST": {},
+                                  "children": [],
+                                  "name": "rong",
+                                  "absolutePath": "\\rong",
+                                  "id": 81,
+                                  "dependencies": []
+                                }
+                              },
+                              {
+                                "type": "InternalVariableNode",
+                                "properties": {
+                                  "rawType": "int",
+                                  "coreType": "int",
+                                  "reducedRawType": "int",
+                                  "levelOfPointer": 0,
+                                  "isReference": false,
+                                  "isPrivate": false,
+                                  "AST": {},
+                                  "children": [],
+                                  "name": "cao",
+                                  "absolutePath": "\\cao",
+                                  "id": 82,
+                                  "dependencies": []
+                                }
+                              }
+                            ],
+                            "name": "HinhChuNhat(int,int)",
+                            "absolutePath": "C:\\Users\\Admin\\Dropbox\\Unit Test FGA\\test_data\\sample_001_class\\test_data_003\\class.cpp\\HinhChuNhat\\HinhChuNhat(int,int)",
+                            "id": 59,
+                            "dependencies": []
+                          }
+                        }
+                      ],
+                      "name": "returnVar",
+                      "absolutePath": "C:\\Users\\Admin\\Dropbox\\Unit Test FGA\\test_data\\sample_001_class\\test_data_003\\class.cpp\\changeCaoHCN(HinhChuNhat,int)\\returnVar",
+                      "id": 53,
+                      "dependencies": []
+                    }
+                  }
+                ],
+                "name": "changeCaoHCN(HinhChuNhat,int)",
+                "absolutePath": "C:\\Users\\Admin\\Dropbox\\Unit Test FGA\\test_data\\sample_001_class\\test_data_003\\class.cpp\\changeCaoHCN(HinhChuNhat,int)",
+                "id": 42,
+                "dependencies": []
+              }
+            },
+            {
+              "type": "FunctionNode",
+              "properties": {
+                "AST": {},
+                "children": [
+                  {
+                    "type": "InternalVariableNode",
+                    "properties": {
+                      "rawType": "HinhChuNhat",
+                      "coreType": "HinhChuNhat",
+                      "reducedRawType": "HinhChuNhat",
+                      "levelOfPointer": 0,
+                      "isReference": false,
+                      "isPrivate": false,
+                      "AST": {},
+                      "children": [
+                        {
+                          "type": "VariableNode",
+                          "properties": {
+                            "rawType": "int",
+                            "coreType": "int",
+                            "reducedRawType": "int",
+                            "levelOfPointer": 0,
+                            "isReference": false,
+                            "isPrivate": false,
+                            "AST": {},
+                            "children": [],
+                            "name": "chieurong",
+                            "absolutePath": "C:\\Users\\Admin\\Dropbox\\Unit Test FGA\\test_data\\sample_001_class\\test_data_003\\class.cpp\\HinhChuNhat\\chieurong",
+                            "id": 64,
+                            "dependencies": []
+                          }
+                        },
+                        {
+                          "type": "VariableNode",
+                          "properties": {
+                            "rawType": "int",
+                            "coreType": "int",
+                            "reducedRawType": "int",
+                            "levelOfPointer": 0,
+                            "isReference": false,
+                            "isPrivate": false,
+                            "AST": {},
+                            "children": [],
+                            "name": "chieucao",
+                            "absolutePath": "C:\\Users\\Admin\\Dropbox\\Unit Test FGA\\test_data\\sample_001_class\\test_data_003\\class.cpp\\HinhChuNhat\\chieucao",
+                            "id": 65,
+                            "dependencies": []
+                          }
+                        },
+                        {
+                          "type": "ConstructorNode",
+                          "properties": {
+                            "AST": {},
+                            "children": [],
+                            "name": "HinhChuNhat()",
+                            "absolutePath": "C:\\Users\\Admin\\Dropbox\\Unit Test FGA\\test_data\\sample_001_class\\test_data_003\\class.cpp\\HinhChuNhat\\HinhChuNhat()",
+                            "id": 66,
+                            "dependencies": []
+                          }
+                        },
+                        {
+                          "type": "ConstructorNode",
+                          "properties": {
+                            "AST": {},
+                            "children": [
+                              {
+                                "type": "InternalVariableNode",
+                                "properties": {
+                                  "rawType": "int",
+                                  "coreType": "int",
+                                  "reducedRawType": "int",
+                                  "levelOfPointer": 0,
+                                  "isReference": false,
+                                  "isPrivate": false,
+                                  "AST": {},
+                                  "children": [],
+                                  "name": "rong",
+                                  "absolutePath": "\\rong",
+                                  "id": 79,
+                                  "dependencies": []
+                                }
+                              }
+                            ],
+                            "name": "HinhChuNhat(int)",
+                            "absolutePath": "C:\\Users\\Admin\\Dropbox\\Unit Test FGA\\test_data\\sample_001_class\\test_data_003\\class.cpp\\HinhChuNhat\\HinhChuNhat(int)",
+                            "id": 67,
+                            "dependencies": []
+                          }
+                        },
+                        {
+                          "type": "ConstructorNode",
+                          "properties": {
+                            "AST": {},
+                            "children": [
+                              {
+                                "type": "InternalVariableNode",
+                                "properties": {
+                                  "rawType": "int",
+                                  "coreType": "int",
+                                  "reducedRawType": "int",
+                                  "levelOfPointer": 0,
+                                  "isReference": false,
+                                  "isPrivate": false,
+                                  "AST": {},
+                                  "children": [],
+                                  "name": "rong",
+                                  "absolutePath": "\\rong",
+                                  "id": 81,
+                                  "dependencies": []
+                                }
+                              },
+                              {
+                                "type": "InternalVariableNode",
+                                "properties": {
+                                  "rawType": "int",
+                                  "coreType": "int",
+                                  "reducedRawType": "int",
+                                  "levelOfPointer": 0,
+                                  "isReference": false,
+                                  "isPrivate": false,
+                                  "AST": {},
+                                  "children": [],
+                                  "name": "cao",
+                                  "absolutePath": "\\cao",
+                                  "id": 82,
+                                  "dependencies": []
+                                }
+                              }
+                            ],
+                            "name": "HinhChuNhat(int,int)",
+                            "absolutePath": "C:\\Users\\Admin\\Dropbox\\Unit Test FGA\\test_data\\sample_001_class\\test_data_003\\class.cpp\\HinhChuNhat\\HinhChuNhat(int,int)",
+                            "id": 69,
+                            "dependencies": []
+                          }
+                        }
+                      ],
+                      "name": "hcn",
+                      "absolutePath": "\\hcn",
+                      "id": 63,
+                      "dependencies": []
+                    }
+                  },
+                  {
+                    "type": "InternalVariableNode",
+                    "properties": {
+                      "rawType": "int",
+                      "coreType": "int",
+                      "reducedRawType": "int",
+                      "levelOfPointer": 0,
+                      "isReference": false,
+                      "isPrivate": false,
+                      "AST": {},
+                      "children": [],
+                      "name": "rong",
+                      "absolutePath": "\\rong",
+                      "id": 72,
+                      "dependencies": []
+                    }
+                  },
+                  {
+                    "type": "InternalVariableNode",
+                    "properties": {
+                      "rawType": "int",
+                      "coreType": "int",
+                      "reducedRawType": "int",
+                      "levelOfPointer": 0,
+                      "isReference": false,
+                      "isPrivate": false,
+                      "AST": {},
+                      "children": [],
+                      "name": "cao",
+                      "absolutePath": "\\cao",
+                      "id": 73,
+                      "dependencies": []
+                    }
+                  },
+                  {
+                    "type": "ReturnVariableNode",
+                    "properties": {
+                      "rawType": "HinhChuNhat",
+                      "coreType": "HinhChuNhat",
+                      "reducedRawType": "HinhChuNhat",
+                      "levelOfPointer": 0,
+                      "isReference": false,
+                      "isPrivate": false,
+                      "children": [
+                        {
+                          "type": "VariableNode",
+                          "properties": {
+                            "rawType": "int",
+                            "coreType": "int",
+                            "reducedRawType": "int",
+                            "levelOfPointer": 0,
+                            "isReference": false,
+                            "isPrivate": false,
+                            "AST": {},
+                            "children": [],
+                            "name": "chieurong",
+                            "absolutePath": "C:\\Users\\Admin\\Dropbox\\Unit Test FGA\\test_data\\sample_001_class\\test_data_003\\class.cpp\\HinhChuNhat\\chieurong",
+                            "id": 75,
+                            "dependencies": []
+                          }
+                        },
+                        {
+                          "type": "VariableNode",
+                          "properties": {
+                            "rawType": "int",
+                            "coreType": "int",
+                            "reducedRawType": "int",
+                            "levelOfPointer": 0,
+                            "isReference": false,
+                            "isPrivate": false,
+                            "AST": {},
+                            "children": [],
+                            "name": "chieucao",
+                            "absolutePath": "C:\\Users\\Admin\\Dropbox\\Unit Test FGA\\test_data\\sample_001_class\\test_data_003\\class.cpp\\HinhChuNhat\\chieucao",
+                            "id": 76,
+                            "dependencies": []
+                          }
+                        },
+                        {
+                          "type": "ConstructorNode",
+                          "properties": {
+                            "AST": {},
+                            "children": [],
+                            "name": "HinhChuNhat()",
+                            "absolutePath": "C:\\Users\\Admin\\Dropbox\\Unit Test FGA\\test_data\\sample_001_class\\test_data_003\\class.cpp\\HinhChuNhat\\HinhChuNhat()",
+                            "id": 77,
+                            "dependencies": []
+                          }
+                        },
+                        {
+                          "type": "ConstructorNode",
+                          "properties": {
+                            "AST": {},
+                            "children": [
+                              {
+                                "type": "InternalVariableNode",
+                                "properties": {
+                                  "rawType": "int",
+                                  "coreType": "int",
+                                  "reducedRawType": "int",
+                                  "levelOfPointer": 0,
+                                  "isReference": false,
+                                  "isPrivate": false,
+                                  "AST": {},
+                                  "children": [],
+                                  "name": "rong",
+                                  "absolutePath": "\\rong",
+                                  "id": 79,
+                                  "dependencies": []
+                                }
+                              }
+                            ],
+                            "name": "HinhChuNhat(int)",
+                            "absolutePath": "C:\\Users\\Admin\\Dropbox\\Unit Test FGA\\test_data\\sample_001_class\\test_data_003\\class.cpp\\HinhChuNhat\\HinhChuNhat(int)",
+                            "id": 78,
+                            "dependencies": []
+                          }
+                        },
+                        {
+                          "type": "ConstructorNode",
+                          "properties": {
+                            "AST": {},
+                            "children": [
+                              {
+                                "type": "InternalVariableNode",
+                                "properties": {
+                                  "rawType": "int",
+                                  "coreType": "int",
+                                  "reducedRawType": "int",
+                                  "levelOfPointer": 0,
+                                  "isReference": false,
+                                  "isPrivate": false,
+                                  "AST": {},
+                                  "children": [],
+                                  "name": "rong",
+                                  "absolutePath": "\\rong",
+                                  "id": 81,
+                                  "dependencies": []
+                                }
+                              },
+                              {
+                                "type": "InternalVariableNode",
+                                "properties": {
+                                  "rawType": "int",
+                                  "coreType": "int",
+                                  "reducedRawType": "int",
+                                  "levelOfPointer": 0,
+                                  "isReference": false,
+                                  "isPrivate": false,
+                                  "AST": {},
+                                  "children": [],
+                                  "name": "cao",
+                                  "absolutePath": "\\cao",
+                                  "id": 82,
+                                  "dependencies": []
+                                }
+                              }
+                            ],
+                            "name": "HinhChuNhat(int,int)",
+                            "absolutePath": "C:\\Users\\Admin\\Dropbox\\Unit Test FGA\\test_data\\sample_001_class\\test_data_003\\class.cpp\\HinhChuNhat\\HinhChuNhat(int,int)",
+                            "id": 80,
+                            "dependencies": []
+                          }
+                        }
+                      ],
+                      "name": "returnVar",
+                      "absolutePath": "C:\\Users\\Admin\\Dropbox\\Unit Test FGA\\test_data\\sample_001_class\\test_data_003\\class.cpp\\changeKichThuocHCN(HinhChuNhat,int,int)\\returnVar",
+                      "id": 74,
+                      "dependencies": []
+                    }
+                  }
+                ],
+                "name": "changeKichThuocHCN(HinhChuNhat,int,int)",
+                "absolutePath": "C:\\Users\\Admin\\Dropbox\\Unit Test FGA\\test_data\\sample_001_class\\test_data_003\\class.cpp\\changeKichThuocHCN(HinhChuNhat,int,int)",
+                "id": 62,
+                "dependencies": []
+              }
+            },
+            {
+              "type": "FunctionNode",
+              "properties": {
+                "AST": {},
+                "children": [
+                  {
+                    "type": "InternalVariableNode",
+                    "properties": {
+                      "rawType": "void",
+                      "coreType": "void",
+                      "reducedRawType": "void",
+                      "levelOfPointer": 0,
+                      "isReference": false,
+                      "isPrivate": false,
+                      "AST": {},
+                      "children": [],
+                      "name": "",
+                      "absolutePath": "\\",
+                      "id": 84,
+                      "dependencies": []
+                    }
+                  },
+                  {
+                    "type": "ReturnVariableNode",
+                    "properties": {
+                      "rawType": "int",
+                      "coreType": "int",
+                      "reducedRawType": "int",
+                      "levelOfPointer": 0,
+                      "isReference": false,
+                      "isPrivate": false,
+                      "children": [],
+                      "name": "returnVar",
+                      "absolutePath": "C:\\Users\\Admin\\Dropbox\\Unit Test FGA\\test_data\\sample_001_class\\test_data_003\\class.cpp\\main(void)\\returnVar",
+                      "id": 85,
+                      "dependencies": []
+                    }
+                  }
+                ],
+                "name": "main(void)",
+                "absolutePath": "C:\\Users\\Admin\\Dropbox\\Unit Test FGA\\test_data\\sample_001_class\\test_data_003\\class.cpp\\main(void)",
+                "id": 83,
+                "dependencies": []
+              }
+            },
+            {
+              "type": "IncludeHeaderNode",
+              "properties": {
+                "AST": {},
+                "children": [],
+                "name": "\"iostream\"",
+                "absolutePath": "C:\\Users\\Admin\\Dropbox\\Unit Test FGA\\test_data\\sample_001_class\\test_data_003\\class.cpp\\\"iostream\"",
+                "id": 86,
+                "dependencies": []
+              }
+            }
+          ],
+          "name": "class.cpp",
+          "absolutePath": "C:\\Users\\Admin\\Dropbox\\Unit Test FGA\\test_data\\sample_001_class\\test_data_003\\class.cpp",
+          "id": 1,
+          "dependencies": []
+        }
+      }
+    ],
+    "name": "test_data_003",
+    "absolutePath": "C:\\Users\\Admin\\Dropbox\\Unit Test FGA\\test_data\\sample_001_class\\test_data_003",
+    "id": 0
+  }
+}

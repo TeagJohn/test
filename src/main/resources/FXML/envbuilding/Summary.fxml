@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane prefHeight="765.0" prefWidth="570.0" xmlns="http://javafx.com/javafx/8.0.231" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dse.guifx_v3.controllers.build_environment.SummaryController">
+   <children>
+      <ScrollPane layoutY="-186.0" prefHeight="706.0" prefWidth="570.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <content>
+            <AnchorPane prefHeight="794.0" prefWidth="558.0">
+               <children>
+                  <VBox layoutX="-53.0" layoutY="186.0" minWidth="254.0" prefHeight="612.0" prefWidth="558.0" spacing="4.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <children>
+                        <AnchorPane prefHeight="148.0" prefWidth="558.0">
+                           <children>
+                              <Label fx:id="labelChooseCompiler" layoutX="33.0" layoutY="27.0" prefHeight="29.0" prefWidth="189.0" style="-fx-border-color: grey; -fx-background-color: white;" text="Choose Compiler" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="350.0" AnchorPane.topAnchor="5.0">
+                                 <padding>
+                                    <Insets bottom="5.0" left="25.0" right="10.0" top="5.0" />
+                                 </padding>
+                              </Label>
+                              <Label alignment="CENTER" layoutX="-5.0" layoutY="5.0" prefHeight="29.0" prefWidth="29.0" style="-fx-background-radius: 25 25 25 25; -fx-background-color: grey;" text="1" textFill="WHITE" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="5.0" />
+                              <AnchorPane prefHeight="124.0" prefWidth="558.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="35.0">
+                                 <children>
+                                    <Label layoutX="15.0" layoutY="6.0" text="Compiler template:" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="400.0" />
+                                    <Label layoutX="15.0" layoutY="73.0" text="Compile command:" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="400.0" />
+                                    <Label layoutX="15.0" layoutY="40.0" text="Preprocessor command:" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="400.0" />
+                                    <TextField fx:id="compilerTemplate" editable="false" layoutX="349.0" layoutY="2.0" AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="5.0" />
+                                    <TextField fx:id="tfPreprocessorCommand" editable="false" layoutX="200.0" layoutY="36.0" AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="5.0" />
+                                    <TextField fx:id="tfCompileCommand" editable="false" layoutX="200.0" layoutY="69.0" AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="5.0" />
+                                 </children>
+                              </AnchorPane>
+                           </children>
+                        </AnchorPane>
+                        <Separator prefHeight="5.0" prefWidth="200.0" />
+                        <AnchorPane layoutX="10.0" layoutY="10.0" prefHeight="116.0" prefWidth="558.0">
+                           <children>
+                              <Label layoutX="33.0" layoutY="27.0" prefHeight="29.0" prefWidth="189.0" style="-fx-border-color: grey; -fx-background-color: white;" text="Name the Environment" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="350.0" AnchorPane.topAnchor="5.0">
+                                 <padding>
+                                    <Insets bottom="5.0" left="25.0" right="10.0" top="5.0" />
+                                 </padding>
+                              </Label>
+                              <Label alignment="CENTER" layoutX="-5.0" layoutY="5.0" prefHeight="29.0" prefWidth="29.0" style="-fx-background-radius: 25 25 25 25; -fx-background-color: grey;" text="2" textFill="WHITE" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="5.0" />
+                              <AnchorPane prefHeight="53.0" prefWidth="558.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="35.0">
+                                 <children>
+                                    <Label layoutX="15.0" layoutY="10.0" text="Work Space:" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="400.0" />
+                                    <Label layoutX="15.0" layoutY="42.0" text="Environment Name:" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="400.0" />
+                                    <TextField fx:id="tfWorkSpace" editable="false" layoutX="207.0" layoutY="6.0" prefHeight="25.0" prefWidth="187.0" AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="5.0" />
+                                    <TextField fx:id="environmentName" editable="false" layoutX="209.0" layoutY="38.0" prefHeight="25.0" prefWidth="185.0" AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="5.0" />
+                                 </children>
+                              </AnchorPane>
+                           </children>
+                        </AnchorPane>
+                        <Separator prefWidth="200.0" />
+                        <AnchorPane layoutX="10.0" layoutY="10.0" prefHeight="84.0" prefWidth="558.0">
+                           <children>
+                              <Label layoutX="33.0" layoutY="27.0" prefHeight="29.0" prefWidth="189.0" style="-fx-border-color: grey; -fx-background-color: white;" text="Testing Method" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="350.0" AnchorPane.topAnchor="5.0">
+                                 <padding>
+                                    <Insets bottom="5.0" left="25.0" right="10.0" top="5.0" />
+                                 </padding>
+                              </Label>
+                              <Label alignment="CENTER" layoutX="-5.0" layoutY="5.0" prefHeight="29.0" prefWidth="29.0" style="-fx-background-radius: 25 25 25 25; -fx-background-color: grey;" text="3" textFill="WHITE" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="5.0" />
+                              <AnchorPane prefHeight="82.0" prefWidth="550.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="35.0">
+                                 <children>
+                                    <Label layoutX="15.0" layoutY="11.0" text="Testing Method:" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="400.0" />
+                                    <TextField fx:id="tfTestingMethod" editable="false" layoutX="169.0" layoutY="7.0" prefHeight="25.0" prefWidth="185.0" AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="5.0" />
+                                 </children>
+                              </AnchorPane>
+                           </children>
+                        </AnchorPane>
+                        <Separator prefWidth="200.0" />
+                        <AnchorPane layoutX="10.0" layoutY="262.0" prefHeight="118.0" prefWidth="558.0">
+                           <children>
+                              <Label fx:id="labelChooseCompiler21" layoutX="33.0" layoutY="27.0" prefHeight="29.0" prefWidth="189.0" style="-fx-border-color: grey; -fx-background-color: white;" text="Build Options" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="350.0" AnchorPane.topAnchor="5.0">
+                                 <padding>
+                                    <Insets bottom="5.0" left="25.0" right="10.0" top="5.0" />
+                                 </padding>
+                              </Label>
+                              <Label alignment="CENTER" layoutX="-5.0" layoutY="5.0" prefHeight="29.0" prefWidth="29.0" style="-fx-background-radius: 25 25 25 25; -fx-background-color: grey;" text="4" textFill="WHITE" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="5.0" />
+                              <AnchorPane prefHeight="82.0" prefWidth="550.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="35.0">
+                                 <children>
+                                    <Label layoutX="15.0" layoutY="9.0" text="Coverage Type:" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="400.0" />
+                                    <Label layoutX="15.0" layoutY="42.0" text="Whitebox:" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="400.0" />
+                                    <TextField fx:id="coverageType" editable="false" layoutX="290.0" layoutY="5.0" prefHeight="25.0" prefWidth="185.0" AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="5.0" />
+                                    <TextField fx:id="whitebox" editable="false" layoutX="290.0" layoutY="38.0" prefHeight="25.0" prefWidth="185.0" AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="5.0" />
+                                 </children>
+                              </AnchorPane>
+                           </children>
+                        </AnchorPane>
+                        <Separator prefWidth="200.0" />
+                        <AnchorPane layoutX="10.0" layoutY="398.0" prefHeight="173.0" prefWidth="558.0">
+                           <children>
+                              <Label fx:id="labelChooseCompiler211" layoutX="33.0" layoutY="27.0" prefHeight="29.0" prefWidth="189.0" style="-fx-border-color: grey; -fx-background-color: white;" text="Locate Source Files" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="350.0" AnchorPane.topAnchor="5.0">
+                                 <padding>
+                                    <Insets bottom="5.0" left="25.0" right="10.0" top="5.0" />
+                                 </padding>
+                              </Label>
+                              <Label alignment="CENTER" layoutX="-5.0" layoutY="5.0" prefHeight="29.0" prefWidth="29.0" style="-fx-background-radius: 25 25 25 25; -fx-background-color: grey;" text="5" textFill="WHITE" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="5.0" />
+                              <AnchorPane prefHeight="82.0" prefWidth="550.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="35.0">
+                                 <children>
+                                    <Label layoutX="15.0" layoutY="8.0" text="Testable source directories:" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="370.0" />
+                                    <Label layoutX="15.0" layoutY="78.0" text="Library include directories:" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="370.0" />
+                                    <Label layoutX="15.0" layoutY="42.0" prefHeight="17.0" prefWidth="177.0" text="Type-handled source directories:" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="370.0" />
+                                    <TextField fx:id="testableSourceDirectories" editable="false" layoutX="285.0" layoutY="4.0" prefHeight="25.0" prefWidth="185.0" AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="5.0" />
+                                    <TextField fx:id="typeHandledSourceDirectories" editable="false" layoutX="285.0" layoutY="38.0" prefHeight="25.0" prefWidth="185.0" AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="5.0" />
+                                    <TextField fx:id="libraryIncludeDirectories" editable="false" layoutX="295.0" layoutY="74.0" prefHeight="25.0" prefWidth="185.0" AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="5.0" />
+                                 </children>
+                              </AnchorPane>
+                           </children>
+                        </AnchorPane>
+                        <Separator prefWidth="200.0" />
+                        <AnchorPane layoutX="10.0" layoutY="484.0" prefHeight="139.0" prefWidth="558.0">
+                           <children>
+                              <Label fx:id="labelChooseCompiler2111" layoutX="33.0" layoutY="27.0" prefHeight="29.0" prefWidth="189.0" style="-fx-border-color: grey; -fx-background-color: white;" text="Choose UUTs &amp; Stubs" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="350.0" AnchorPane.topAnchor="5.0">
+                                 <padding>
+                                    <Insets bottom="5.0" left="25.0" right="10.0" top="5.0" />
+                                 </padding>
+                              </Label>
+                              <Label alignment="CENTER" layoutX="-5.0" layoutY="5.0" prefHeight="29.0" prefWidth="29.0" style="-fx-background-radius: 25 25 25 25; -fx-background-color: grey;" text="6" textFill="WHITE" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="5.0" />
+                              <AnchorPane prefHeight="82.0" prefWidth="550.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="35.0">
+                                 <children>
+                                    <Label layoutX="14.0" layoutY="6.0" text="Stub dependencies:" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="400.0" />
+                                    <Label layoutX="15.0" layoutY="47.0" text="UUT(s)(t):" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="400.0" />
+                                    <TextField fx:id="stubDependencies" editable="false" layoutX="305.0" layoutY="7.0" prefHeight="25.0" prefWidth="185.0" AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="5.0" />
+                                    <TextField fx:id="uuts" editable="false" layoutX="315.0" layoutY="42.0" prefHeight="25.0" prefWidth="185.0" AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="5.0" />
+                                 </children>
+                              </AnchorPane>
+                           </children>
+                        </AnchorPane>
+                        <Separator prefWidth="200.0" />
+                        <AnchorPane layoutX="10.0" layoutY="592.0" prefHeight="114.0" prefWidth="550.0">
+                           <children>
+                              <Label fx:id="labelChooseCompiler21111" layoutX="33.0" layoutY="27.0" prefHeight="29.0" prefWidth="189.0" style="-fx-border-color: grey; -fx-background-color: white;" text="User Code (optional)" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="350.0" AnchorPane.topAnchor="5.0">
+                                 <padding>
+                                    <Insets bottom="5.0" left="25.0" right="10.0" top="5.0" />
+                                 </padding>
+                              </Label>
+                              <Label alignment="CENTER" layoutX="-5.0" layoutY="5.0" prefHeight="29.0" prefWidth="29.0" style="-fx-background-radius: 25 25 25 25; -fx-background-color: grey;" text="7" textFill="WHITE" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="5.0" />
+                              <AnchorPane prefHeight="82.0" prefWidth="550.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="35.0" />
+                           </children>
+                        </AnchorPane>
+                     </children>
+                  </VBox>
+               </children>
+            </AnchorPane>
+         </content>
+      </ScrollPane>
+   </children>
+</AnchorPane>

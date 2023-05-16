@@ -1,0 +1,96 @@
+-- VectorCAST Environment Script
+-- Copyright 2008 Vector Software, Inc.
+--
+-- This environment script refers to three units:
+-- a, which is the UUT,
+-- b, a stubbed (by implementation) dependent of a
+-- and having subprogram b(),
+-- and c, a stubbed dependent of a and having subprogram c().
+ENVIRO.NEW
+ENVIRO.NAME: TEST
+ENVIRO.UUT: a
+ENVIRO.WHITE_BOX: NO
+
+ENVIRO.STUB: b
+ENVIRO.STUB: c
+
+ENVIRO.STUB_DEPEND_USER_CODE_FILE:
+	BEGIN_Uc:
+		b
+		// Configure Stubs |Stub Dependency, Unit b
+	END_Uc:
+
+	BEGIN_Uc:
+		c
+		// Configure Stubs |Stub Dependency, Unit c
+	END_Uc:
+ENVIRO.END_STUB_DEPEND_USER_CODE_FILE:
+
+ENVIRO.STUB_USER_CODE_FILE:
+
+	BEGINNING_OF_STUB.b.b
+	printf( " Configure Stubs | Beginning of Stub for Unit b, Subprogram b {\n" );
+	END_BEGINNING_OF_STUB.b.b
+
+	END_OF_STUB.b.b
+	printf( " } Configure Stubs | End of Stub for Unit b, Subprogram b\n\n" );
+	END_END_OF_STUB.b.b
+
+	BEGINNING_OF_STUB.c.c
+	printf( " Configure Stubs | Beginning of Stub for Unit c, Subprogram c {\n" );
+	END_BEGINNING_OF_STUB.c.c
+	
+	END_OF_STUB.c.c
+	printf( " } Configure Stubs | End of Stub for Unit c, Subprogram c\n\n" );
+	END_END_OF_STUB.c.c
+
+ENVIRO.END_STUB_USER_CODE_FILE:
+
+ENVIRO.USER_CODE_CAPTURE:
+	printf( " } Environment User Code | Test Case Term\n\n" );
+ENVIRO.END_USER_CODE_CAPTURE:
+
+ENVIRO.STUB_ENTRY_USER_CODE:
+	printf(" stub entry user code\n");
+ENVIRO.END_STUB_ENTRY_USER_CODE:
+
+ENVIRO.STUB_EXIT_USER_CODE:
+	printf(" stub exit user code\n");
+ENVIRO.END_STUB_EXIT_USER_CODE:
+
+ENVIRO.USER_CODE_DEPENDENCIES:
+	// Environment User Code | Header
+	#include <stdio.h>
+ENVIRO.END_USER_CODE_DEPENDENCIES:
+
+ENVIRO.USER_CODE_INITIALIZE:
+	printf( " Environment User Code | Test Case Init {\n\n" );
+ENVIRO.END_USER_CODE_INITIALIZE:
+
+ENVIRO.USER_CODE_OBJECTS:
+	// Environment User Code | Data
+ENVIRO.END_USER_CODE_OBJECTS:
+
+ENVIRO.USER_CODE_ONE_SHOT_INIT:
+	printf( "Environment User Code | Harness Init {\n\n" );
+ENVIRO.END_USER_CODE_ONE_SHOT_INIT:
+
+ENVIRO.USER_CODE_ONE_SHOT_TERM:
+	printf( "} Environment User Code | Harness Term\n" );
+ENVIRO.END_USER_CODE_ONE_SHOT_TERM:
+
+ENVIRO.USER_CODE_STUB_PROCESSING:
+	printf( " Environment User Code | Stub Processing\n" );
+ENVIRO.END_USER_CODE_STUB_PROCESSING:
+
+ENVIRO.USER_CODE_TIMER_START:
+	printf(" timer start...\n");
+ENVIRO.END_USER_CODE_TIMER_START:
+
+ENVIRO.USER_CODE_TIMER_STOP:
+	printf(" timer end...\n");
+ENVIRO.END_USER_CODE_TIMER_STOP:
+
+ENVIRO.SEARCH_LIST: .
+
+ENVIRO.END
